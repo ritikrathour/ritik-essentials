@@ -1,0 +1,89 @@
+@import "tailwindcss";
+:root {
+  --primary-color: #173334;
+  --secondry-color: #febd2f;
+  --light-primary: #1e4243;
+  --white: #fff;
+  --black: #000;
+  --border-color: #c4c4c4;
+}
+::-webkit-scrollbar {
+  width: 0px;
+  display: none;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  vertical-align: baseline;
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  color: #173334;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -mozosx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+* {
+  box-sizing: border-box;
+  list-style: none;
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+button {
+  border: none;
+  outline: none;
+}
+/* image skeleton  */
+.imageAnim {
+  background-size: "200% 100%";
+  animation: "shimmer 1.5s infinite";
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+/* .loading */
+.loading {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  animation: loading 0.4s linear infinite;
+}
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* home  */
+.ad-bg,
+.bg_image {
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: 0.5s ease-in-out;
+}
+.tran {
+  transition: 0.5s ease-in-out;
+}
+.card:hover .bg_image {
+  scale: 1.1;
+}
+.ad-bg:hover .ad-bg-image {
+  scale: 1.1;
+}

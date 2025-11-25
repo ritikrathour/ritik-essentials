@@ -1,0 +1,25 @@
+import dotenv from "dotenv";
+dotenv.config();
+export const config = {
+  port: process.env.PORT,
+  baseURL: process.env.BASE_URL,
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_KEY,
+  jwtSecret: process.env.JWT_SECRET,
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
+  jwtSecretExpiry: process.env.JWT_SECRET_EXPIRY,
+  jwtRefreshSecretExpiry: process.env.JWT_REFRESH_SECRET_EXPIRY,
+  mongoDBDevURI: process.env.MONGODB_DEV_URI,
+  mongoDBProdURI: process.env.MONGODB_PROD_URI,
+  corsOriginProd: process.env.CORS_ORIGIN_PROD,
+  corsOrigindev: process.env.CORS_ORIGIN_DEV,
+  nodeENV: process.env.CORS_ORIGIN_DEV,
+  redisURL: process.env.REDIS_URL,
+  redisPassword: process.env.REDIS_PASSWORD,
+  emailHost: process.env.EMAIL_HOST,
+  emailPort: process.env.EMAIL_PORT,
+  emailFrom: process.env.EMAIL_FROM,
+  emailpass: process.env.EMAIL_Pass,
+  frontendUrl: process.env.FRONTEND_DEV_URL,
+};

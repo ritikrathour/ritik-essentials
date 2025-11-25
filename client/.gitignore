@@ -1,0 +1,52 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# assets folder 
+public/
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# production build
+/build
+/dist
+
+# misc
+.DS_Store
+*.pem
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# typescript cache
+*.tsbuildinfo
+
+# eslint cache
+.eslintcache
+
+# local storage
+*.local
+
+# macOS system files
+._*
+Thumbs.db
+
+# vite specific
+vite.config.ts.timestamp-*
