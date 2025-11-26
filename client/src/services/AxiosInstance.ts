@@ -8,12 +8,6 @@ export const AxiosInstense = axios.create({
   baseURL: isProduction,
   withCredentials: true,
 });
-// // attach access token if mobile device
-// AxiosInstense.interceptors.request.use(
-//   (config)=>{
-//
-//   }
-// )
 AxiosInstense.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<any>) => {

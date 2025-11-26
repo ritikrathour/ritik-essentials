@@ -41,7 +41,7 @@ export interface IProductFormData {
   category: string;
   price: string;
   tags: String[];
-  comparePrice: string;
+  originalPrice: string;
   brand: string;
   unit: string;
   stock: string;

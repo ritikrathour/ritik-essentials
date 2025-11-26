@@ -3,7 +3,7 @@ import ApiError from "../../utils/ApiError";
 
 export const isVendor = async (
   req: Request,
-  res: Response,
+  _: Response,
   next: NextFunction
 ) => {
   // Check if the user is a vendor

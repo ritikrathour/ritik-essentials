@@ -1,6 +1,10 @@
 import { AxiosInstense } from "./AxiosInstance";
 
 export const ProductApi = {
+  createProduct: async (url: string, formData: any) => {
+    const { data } = await AxiosInstense.post(url, formData);
+    return data?.data;
+  },
   getProducts: async (url: string) => {
     const { data } = await AxiosInstense.get(url);
     return data?.data;

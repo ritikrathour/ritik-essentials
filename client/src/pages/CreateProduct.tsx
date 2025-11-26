@@ -15,10 +15,8 @@ import { Button } from "../components/ui/Button";
 import Input from "../components/Input";
 import SelectField from "../components/SelectField";
 import { useImageUpload } from "../hooks/useImageUpload";
-
-interface ValidationErrors {
-  [key: string]: string;
-}
+import { useCreateProductValidation } from "../hooks/Validationhooks/useCreateProductValidation";
+import { ProductApi } from "../services/Product.service";
 
 enum ProductCategory {
   FRUITS_VEGETABLES = "Fruits & Vegetables",
@@ -47,7 +45,7 @@ const INITIAL_FORM_STATE: IProductFormData = {
   name: "",
   category: "",
   price: "",
-  comparePrice: "",
+  originalPrice: "",
   unit: "",
   stock: "",
   sku: "",
@@ -138,74 +136,75 @@ const INITIAL_FORM_STATE: IProductFormData = {
 //   };
 // };
 
-const useFormValidation = (formData: IProductFormData) => {
-  const [errors, setErrors] = useState<ValidationErrors>({});
-
-  const validate = useCallback((): boolean => {
-    const newErrors: ValidationErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Product name is required";
-    } else if (formData.name.length < 3) {
-      newErrors.name = "Product name must be at least 3 characters";
-    }
-
-    if (!formData.category) {
-      newErrors.category = "Category is required";
-    }
-
-    if (!formData.price) {
-      newErrors.price = "Price is required";
-    } else if (parseFloat(formData.price) <= 0) {
-      newErrors.price = "Price must be greater than 0";
-    }
-
-    if (
-      formData.comparePrice &&
-      parseFloat(formData.comparePrice) < parseFloat(formData.price)
-    ) {
-      newErrors.comparePrice = "Compare price must be greater than price";
-    }
-
-    if (!formData.stock) {
-      newErrors.stock = "Stock quantity is required";
-    } else if (parseInt(formData.stock) < 0) {
-      newErrors.stock = "Stock cannot be negative";
-    }
-
-    if (!formData.unit) {
-      newErrors.unit = "Unit is required";
-    }
-
-    if (
-      formData.discount &&
-      (parseFloat(formData.discount) < 0 || parseFloat(formData.discount) > 100)
-    ) {
-      newErrors.discount = "Discount must be between 0 and 100";
-    }
-
-    if (formData.expiryDate) {
-      const expiryDate = new Date(formData.expiryDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      if (expiryDate < today) {
-        newErrors.expiryDate = "Expiry date cannot be in the past";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [formData]);
-
-  return { errors, validate, setErrors };
-};
+// const useFormValidation = (formData: IProductFormData) => {
+//   const [errors, setErrors] = useState<ValidationErrors>({});
+//
+//   const validate = useCallback((): boolean => {
+//     const newErrors: ValidationErrors = {};
+//
+//     if (!formData.name.trim()) {
+//       newErrors.name = "Product name is required";
+//     } else if (formData.name.length < 3) {
+//       newErrors.name = "Product name must be at least 3 characters";
+//     }
+//
+//     if (!formData.category) {
+//       newErrors.category = "Category is required";
+//     }
+//
+//     if (!formData.price) {
+//       newErrors.price = "Price is required";
+//     } else if (parseFloat(formData.price) <= 0) {
+//       newErrors.price = "Price must be greater than 0";
+//     }
+//
+//     if (
+//       formData.comparePrice &&
+//       parseFloat(formData.comparePrice) < parseFloat(formData.price)
+//     ) {
+//       newErrors.comparePrice = "Compare price must be greater than price";
+//     }
+//
+//     if (!formData.stock) {
+//       newErrors.stock = "Stock quantity is required";
+//     } else if (parseInt(formData.stock) < 0) {
+//       newErrors.stock = "Stock cannot be negative";
+//     }
+//
+//     if (!formData.unit) {
+//       newErrors.unit = "Unit is required";
+//     }
+//
+//     if (
+//       formData.discount &&
+//       (parseFloat(formData.discount) < 0 || parseFloat(formData.discount) > 100)
+//     ) {
+//       newErrors.discount = "Discount must be between 0 and 100";
+//     }
+//
+//     if (formData.expiryDate) {
+//       const expiryDate = new Date(formData.expiryDate);
+//       const today = new Date();
+//       today.setHours(0, 0, 0, 0);
+//
+//       if (expiryDate < today) {
+//         newErrors.expiryDate = "Expiry date cannot be in the past";
+//       }
+//     }
+//
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   }, [formData]);
+//
+//   return { errors, validate, setErrors };
+// };
 
 // Main Component
 const CreateProduct = () => {
   const [formData, setFormData] =
     useState<IProductFormData>(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDraftting, setIsDraftting] = useState<boolean>(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const {
@@ -217,12 +216,11 @@ const CreateProduct = () => {
     removeImage,
     setPrimaryImage,
   } = useImageUpload();
-
-  const { errors, validate, setErrors } = useFormValidation(formData);
-
   const categories = useMemo(() => Object.values(ProductCategory), []);
   const units = useMemo(() => Object.values(ProductUnit), []);
-
+  const [imageError, setImageError] = useState<string>("");
+  const { errors, validate, setErrors } = useCreateProductValidation(formData);
+  // fetched category from server
   const handleInputChange = useCallback(
     (
       e: React.ChangeEvent<
@@ -277,62 +275,51 @@ const CreateProduct = () => {
 
   const handleFileInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      setImageError("");
       if (e.target.files) {
         handleFiles(e.target.files);
       }
     },
     [handleFiles]
   );
-
+  // handleDraftSave
+  const handleDraftSave = useCallback(() => {}, []);
+  // handle submit product
   const handleSubmit = useCallback(
     async (isDraft: boolean = false) => {
-      if (!isDraft && !validate()) {
+      if (!isDraft && !validate().IsError) {
         return;
       }
-
       if (!isDraft && images.length === 0) {
-        alert("Please upload at least one product image");
+        setImageError("Please upload at least one product image");
         return;
       }
-
-      setIsSubmitting(true);
 
       try {
         // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        const productData = {
-          ...formData,
-          images: images.map((img) => ({
-            file: img.file.name,
-            isPrimary: img.isPrimary,
-          })),
-          status: isDraft ? "draft" : "published",
-          createdAt: new Date().toISOString(),
-        };
-
-        console.log("Product Data:", productData);
-
+        // await new Promise((resolve) => setTimeout(resolve, 1500));
+        // const productData = {
+        //   ...formData,
+        //   images: images.map((img) => ({
+        //     file: img.file.name,
+        //     isPrimary: img.isPrimary,
+        //   })),
+        //   status: isDraft ? "draft" : "published",
+        // };
+        const response = await ProductApi.createProduct("/product", formData);
+        console.log(response);
         setSubmitSuccess(true);
         setTimeout(() => {
-          setSubmitSuccess(false);
-          if (!isDraft) {
-            // Reset form after successful publish
-            setFormData(INITIAL_FORM_STATE);
-          }
-        }, 2000);
+          setFormData(INITIAL_FORM_STATE);
+        }, 1000);
       } catch (error) {
         console.error("Error submitting product:", error);
-        alert(
-          "An error occurred while submitting the product. Please try again."
-        );
       } finally {
         setIsSubmitting(false);
       }
     },
     [formData, images, validate]
   );
-
   const calculatedPrice = useMemo(() => {
     const price = parseFloat(formData.price) || 0;
     const discount = parseFloat(formData.discount) || 0;
@@ -449,6 +436,12 @@ const CreateProduct = () => {
                 Click on an image to set it as primary
               </p>
             )}
+            {imageError && (
+              <div className="mt-1 flex gap-1.5 items-center text-sm text-red-600">
+                <AlertCircle className="w-3 h-3" />
+                {imageError}
+              </div>
+            )}
           </div>
 
           {/* Basic Information */}
@@ -483,26 +476,38 @@ const CreateProduct = () => {
                 label="SKU"
                 name="sku"
                 type="text"
+                required
                 value={formData.sku}
                 onchange={handleInputChange}
                 placeholder="e.g., APL-ORG-001"
+                error={errors.sku}
               />
               <div className="md:col-span-2">
-                <label
-                  htmlFor="text-area"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Description
-                </label>
+                <div className="flex gap-1">
+                  <label
+                    htmlFor="text-area"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Description
+                  </label>
+                  <span className="text-red-500">*</span>
+                </div>
                 <textarea
                   id="text-area"
                   name="description"
+                  required
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
                   placeholder="Describe your product, its quality, origin, and benefits..."
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-1 outline-none resize-none"
                 />
+                {errors.description && (
+                  <div className="mt-1 flex gap-1.5 items-center text-sm text-red-600">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.description}
+                  </div>
+                )}
               </div>
             </form>
           </div>
@@ -529,15 +534,16 @@ const CreateProduct = () => {
               />
 
               <Input
-                label="Compare Price"
-                name="comparePrice"
+                label="original Price"
+                name="originalPrice"
                 type="number"
-                value={formData.comparePrice}
+                required
+                value={formData.originalPrice}
                 onchange={handleInputChange}
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                error={errors.comparePrice}
+                error={errors.originalPrice}
                 icon={<DollarSign className="w-5 h-5" />}
               />
 
@@ -596,6 +602,15 @@ const CreateProduct = () => {
                 error={errors.expiryDate}
                 icon={<Calendar className="w-5 h-5" />}
               />
+              <Input
+                label="Brand"
+                name="brand"
+                type="text"
+                value={formData.brand}
+                onchange={handleInputChange}
+                error={errors.brand}
+                placeholder="e.g., Milk Made"
+              />
             </div>
           </div>
 
@@ -639,11 +654,11 @@ const CreateProduct = () => {
             <Button
               variant="secondary"
               type="button"
-              onClick={() => handleSubmit(true)}
-              disabled={isSubmitting}
+              onClick={() => handleDraftSave()}
+              // disabled={isSubmitting}
               className="flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Saving..." : "Save as Draft"}
+              {isDraftting ? "Saving..." : "Save as Draft"}
             </Button>
             <Button
               type="button"
