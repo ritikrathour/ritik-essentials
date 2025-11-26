@@ -15,13 +15,6 @@ import { Button } from "../components/ui/Button";
 import Input from "../components/Input";
 import SelectField from "../components/SelectField";
 import { useImageUpload } from "../hooks/useImageUpload";
-// Types and Interfaces
-interface ProductImage {
-  id: string;
-  url: string;
-  file: File;
-  isPrimary: boolean;
-}
 
 interface ValidationErrors {
   [key: string]: string;

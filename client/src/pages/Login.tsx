@@ -2,42 +2,39 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { validateForm } from "../utils/validation";
-import { IFormErrors } from "../utils/Types/Component.types";
 import { IUser } from "../utils/Types/Auth.types";
 import { AxiosInstense } from "../services/AxiosInstance";
 import axios from "axios";
 import { Button } from "../components/ui/Button";
+import { useValidateAuthForm } from "../hooks/Validationhooks/useValidateAuthForm";
 
 const Login = () => {
   const [formData, setFormData] = useState<IUser>({
     email: "",
     password: "",
   });
-  const [errors, setErrors] = useState<IFormErrors>({
-    email: "",
-    password: "",
-  });
   const navigate = useNavigate();
   const [logging, setLogging] = useState<boolean>(false);
   // handleChange
+  const { errors, setErrors, validate } = useValidateAuthForm({
+    email: formData.email,
+    password: formData.password,
+  });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors({});
+    if (errors[e.target.name]) {
+      setErrors((prev) => {
+        const newError = { ...prev };
+        delete newError[e.target.name];
+        return newError;
+      });
+    }
   };
   // handleLogin
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // validation
-    if (
-      !validateForm(
-        undefined,
-        formData.email,
-        formData.password,
-        setErrors,
-        "login"
-      )
-    ) {
+    if (!validate()) {
       return;
     }
     try {

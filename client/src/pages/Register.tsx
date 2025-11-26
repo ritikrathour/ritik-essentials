@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { validateForm } from "../utils/validation";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { Role } from "../utils/constant";
 import { IUser } from "../utils/Types/Auth.types";
-import { IFormErrors } from "../utils/Types/Component.types";
 import axios from "axios";
 import { AxiosInstense } from "../services/AxiosInstance";
 import { Button } from "../components/ui/Button";
+import { useValidateAuthForm } from "../hooks/Validationhooks/useValidateAuthForm";
 const Register = () => {
   const [formData, setFormData] = useState<IUser>({
     name: "",
@@ -17,28 +16,27 @@ const Register = () => {
   });
   const [role, setRole] = useState<string>("customer"); // default role
   const [loading, setLoading] = useState<boolean>(false);
-  const [errors, setErrors] = useState<IFormErrors>({
-    name: "",
-    email: "",
-    password: "",
+  const { errors, setErrors, validate } = useValidateAuthForm({
+    name: formData.name || "",
+    email: formData.email,
+    password: formData.password,
+    type: "Register",
   });
   // handleChange
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors({});
+    if (errors[e.target.name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[e.target.name];
+        return newErrors;
+      });
+    }
   };
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // check validation
-    if (
-      !validateForm(
-        formData?.name,
-        formData.email,
-        formData.password,
-        setErrors,
-        "register"
-      )
-    ) {
+    if (!validate()) {
       return;
     }
     try {

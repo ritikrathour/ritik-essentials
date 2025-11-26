@@ -38,9 +38,9 @@ const Input: React.FC<InputProps> = ({
           </div>
         )}
         <input
-          id={value}
+          id={name}
           type={inputType}
-          value={value || defaultValue}
+          value={value}
           name={name}
           required={required}
           autoComplete="off"
@@ -70,7 +70,7 @@ const Input: React.FC<InputProps> = ({
         )}
       </div>
       {error && (
-        <div className="mt-1 flex items-center text-sm text-red-600">
+        <div className="mt-1 flex gap-1.5 items-center text-sm text-red-600">
           <AlertCircle className="w-3 h-3" />
           {error}
         </div>

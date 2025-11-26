@@ -1,59 +1,9 @@
-import { useCallback, useState } from "react";
-import { IFormErrors } from "./Types/Component.types";
-import { IProductFormData } from "./Types/Product.types";
-
-export const validEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-export const validPassword = (password: string): boolean => {
-  // At least 6 characters, 1 uppercase, 1 lowercase, 1 number, 1 special character
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
-  return passwordRegex.test(password);
-};
-export const useValidateAuthForm = (formData: {
-  name: string | undefined;
-  email: string;
-  password: string;
-  setErrors: any;
-  type: string;
-}) => {
-  const [errors, setErrors] = useState({});
-  const validate = useCallback(() => {
-    const newErrors: IFormErrors = {};
-    // First name validation
-    if (formData.type === "register") {
-      if (!formData?.name?.trim()) {
-        newErrors.name = "Name is required";
-      } else if (formData.name?.trim().length < 3) {
-        newErrors.name = "Name must be at least 3 characters";
-      }
-    }
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!validEmail(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (!validPassword(formData.password)) {
-      newErrors.password =
-        "Password must be at least 6 characters with uppercase, lowercase, number, and special character";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, []);
-  return { errors, validate, setErrors };
-};
+import { useState } from "react";
+import { IProductFormData } from "../../utils/Types/Product.types";
 interface IValidationErrors {
   [key: string]: string;
 }
-export const CreateProductValidation = (formData: IProductFormData) => {
+export const useCreateProductValidation = (formData: IProductFormData) => {
   const [errors, setErrors] = useState<IValidationErrors>({});
   const newErrors: IValidationErrors = {};
   // product name
