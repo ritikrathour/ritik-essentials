@@ -8,6 +8,7 @@ import AsyncHandler from "../../utils/AsyncHandler";
 import { Cart } from "../services/Cart.service";
 import ApiError from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { ICartItem } from "../../types/Cart.type";
 
 interface CartItem {
   productId: string;
@@ -81,11 +82,9 @@ const validateAddToCart = (
   body: any
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
-
   if (!body.productId || typeof body.productId !== "string") {
     errors.push("Product ID is required and must be a string");
   }
-
   if (
     !body.quantity ||
     typeof body.quantity !== "number" ||
@@ -93,19 +92,15 @@ const validateAddToCart = (
   ) {
     errors.push("Quantity is required and must be a positive number");
   }
-
   if (!body.price || typeof body.price !== "number" || body.price <= 0) {
     errors.push("Price is required and must be a positive number");
   }
-
   if (!body.name || typeof body.name !== "string") {
     errors.push("Product name is required");
   }
-
   if (body.imageUrl && typeof body.imageUrl !== "string") {
     errors.push("Image URL must be a string");
   }
-
   return { isValid: errors.length === 0, errors };
 };
 
@@ -193,18 +188,6 @@ const requestLogger = (
   next();
 };
 
-const GetCart = AsyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(401, "UnAuthorized user!");
-  }
-  const cart = await Cart.getOrCreateCart(userId);
-  if (!cart) {
-    throw new ApiError(500, "Cart Not Created! Somthing went wrong!", false);
-  }
-  res.json(new ApiResponse(200, cart, "Cart Created or get Succcessfully"));
-});
-export { GetCart };
 // ============================================================================
 // CART REPOSITORY
 // ============================================================================
@@ -370,6 +353,30 @@ const getUserCart = async (userId: string): Promise<Cart> => {
 // CART CONTROLLERS
 // ============================================================================
 
+////////////////////////////////////////////////////////////////////////
+const GetCart = AsyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(401, "UnAuthorized user!");
+  }
+  const cart = await Cart.getOrCreateCart(userId);
+  if (!cart) {
+    throw new ApiError(500, "Cart Not Created! Somthing went wrong!", false);
+  }
+  res.json(new ApiResponse(200, cart, "Cart Created or get Succcessfully"));
+});
+const AddToCart = AsyncHandler(async (req: Request, res: Response) => {
+  // validate cart items
+  const validation = validateAddToCart(req.body);
+  if (!validation?.isValid) {
+    throw new ApiError(400, validation?.errors.join(", "), false);
+  }
+  const userId = req.user?._id
+  const itemData:ICartItem = req.body
+  const cart = await 
+  res.json({ ok: "ji" });
+});
+export { GetCart, AddToCart };
 const getCart = async (
   req: Request,
   res: Response<ApiResponsee<Cart>>,
@@ -398,7 +405,6 @@ const addToCart = async (
     if (!validation.isValid) {
       throw createError(400, validation.errors.join(", "));
     }
-
     const userId = (req as any).user.id;
     const itemData: CartItem = req.body;
 
@@ -518,25 +524,3 @@ const createApp = (): express.Application => {
 
   return app;
 };
-
-// ============================================================================
-// SERVER START
-// ============================================================================
-
-const startServer = async (): Promise<void> => {
-  await connectDB();
-
-  const app = createApp();
-  const PORT = process.env.PORT || 3000;
-
-  app.listen(PORT, () => {
-    console.log(`Cart API server running on port ${PORT}`);
-  });
-};
-
-startServer().catch((error) => {
-  console.error("Failed to start server:", error);
-  process.exit(1);
-});
-
-export { createApp, connectDB };

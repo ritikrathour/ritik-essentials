@@ -14,7 +14,9 @@ const Authenticate = async (req: Request, _: Response, next: NextFunction) => {
   const verifyToken = VERIFY_ACCESSTOKEN(token) as CustomJwtPayload;
 
   // find user in database
-  const user = await UserModel.findOne({ email: verifyToken.email });
+  const user = await UserModel.findOne({ email: verifyToken.email }).select(
+    "-password"
+  );
   if (!user) {
     throw new ApiError(404, "User not found", false);
   }

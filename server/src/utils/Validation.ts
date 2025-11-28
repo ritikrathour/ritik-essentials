@@ -343,3 +343,30 @@ export const CategoryValidate = (category: ICategoryValidate) => {
   }
   return { valid: error === undefined, error };
 };
+
+// cart validation
+export const validateAddToCart = (
+  body: any
+): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  if (!body.productId || typeof body.productId !== "string") {
+    errors.push("Product ID is required and must be a string");
+  }
+  if (
+    !body.quantity ||
+    typeof body.quantity !== "number" ||
+    body.quantity <= 0
+  ) {
+    errors.push("Quantity is required and must be a positive number");
+  }
+  if (!body.price || typeof body.price !== "number" || body.price <= 0) {
+    errors.push("Price is required and must be a positive number");
+  }
+  if (!body.name || typeof body.name !== "string") {
+    errors.push("Product name is required");
+  }
+  if (body.imageUrl && typeof body.imageUrl !== "string") {
+    errors.push("Image URL must be a string");
+  }
+  return { isValid: errors.length === 0, errors };
+};
