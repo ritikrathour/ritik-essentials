@@ -442,5 +442,6 @@ export const ProductFilters = [
 ];
 
 // for image constants
-export const MAX_IMAGES = 5;
+
+export let MAX_IMAGES = 5;
 export const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];

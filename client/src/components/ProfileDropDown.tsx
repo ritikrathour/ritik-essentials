@@ -1,13 +1,17 @@
 import { Heart, LogOut, MapPin, Moon, Package, Settings } from "lucide-react";
 import React, { memo } from "react";
-import { useSelector } from "react-redux";
+import { IUser } from "../utils/Types/Auth.types";
 import { Link } from "react-router-dom";
 
 const ProfileDropDown = ({
   state,
+  user,
 }: {
   state: React.Dispatch<React.SetStateAction<boolean>>;
+  user: IUser;
 }) => {
+  console.log(user);
+
   const menuItems = [
     {
       icon: Package,
@@ -23,11 +27,10 @@ const ProfileDropDown = ({
       url: "/wishlist",
     },
   ];
-  const { user: data } = useSelector((state: any) => state.user);
 
   return (
     <>
-      <div className="absolute -left-40 mt-2 w-64 bg-white rounded-lg shadow-xl overflow-hidden z-50">
+      {/* <div className="absolute -left-40 mt-2 w-64 bg-white rounded-lg shadow-xl overflow-hidden z-50">
         <Link to={"/profile"}>
           <div
             className="flex justify-between items-center px-4"
@@ -35,15 +38,15 @@ const ProfileDropDown = ({
           >
             <div className="py-3 border-b border-gray-200">
               <p className="text-sm font-semibold text-gray-900 capitalize">
-                {data?.data?.name}
+                {user?.data?.name}
               </p>
-              <p className="text-xs text-gray-500">{data?.data?.email}</p>
+              <p className="text-xs text-gray-500">{user?.data?.email}</p>
             </div>
             <div className="w-[38px] h-[38px] flex items-center justify-center cursor-pointer overflow-hidden rounded-full">
               <img
                 className=" object-cover border rounded-full"
                 src={"./assets/girl.png"}
-                alt={data?.data?.email}
+                alt={user?.data?.email}
               />
             </div>
           </div>
@@ -60,11 +63,11 @@ const ProfileDropDown = ({
                 <item.icon className="w-4 h-4" />
                 <span className="text-sm">{item.label}</span>
               </div>
-              {/* {item.badge && (
+              {item.badge && (
                 <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
                   {item.badge}
                 </span>
-              )} */}
+              )}
             </Link>
           ))}
         </div>
@@ -83,7 +86,7 @@ const ProfileDropDown = ({
             <span className="text-sm">Logout</span>
           </button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

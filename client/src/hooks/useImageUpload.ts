@@ -1,34 +1,33 @@
 import { useCallback, useState } from "react";
-import { ProductImage } from "../utils/Types/Product.types";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGES } from "../utils/constant";
-
+import { ProductImage } from "../utils/Types/Product.types";
 export const useImageUpload = () => {
   const [images, setImages] = useState<ProductImage[]>([]);
-  const [dragActive, setDragActive] = useState<boolean>(false);
+  const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState<string>("");
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; //5MB
-  const validateImage = useCallback((file: File) => {
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+  const validateImage = useCallback((file: File): string | null => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       return "Only JPEG, PNG, and WebP images are allowed";
     }
-    if (file.size > MAX_FILE_SIZE) {
+    if (file.size > MAX_IMAGE_SIZE) {
       return "Image size must be less than 5MB";
     }
+    return null;
   }, []);
 
   const handleFiles = useCallback(
     (files: FileList) => {
       setUploadError("");
-      // remainingSlot
-      const remainingSlot = MAX_IMAGES - images.length;
-      if (remainingSlot === 0) {
+      const remainingSlots = MAX_IMAGES - images.length;
+      if (remainingSlots === 0) {
         setUploadError(`Maximum ${MAX_IMAGES} images allowed`);
         return;
       }
-      // validFiles array
+
       const validFiles: ProductImage[] = [];
       Array.from(files)
-        .slice(0, remainingSlot)
+        .slice(0, remainingSlots)
         .forEach((file) => {
           const error = validateImage(file);
           if (error) {
@@ -36,30 +35,30 @@ export const useImageUpload = () => {
             return;
           }
           validFiles.push({
-            id: `${Date.now()}-${Math.random().toString(36)}`,
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             url: URL.createObjectURL(file),
             file,
             isPrimary: images.length === 0 && validFiles.length === 0,
           });
-          setImages((prev) => [...prev, ...validFiles]);
         });
+      setImages((prev) => [...prev, ...validFiles]);
     },
     [images.length, validateImage]
   );
+
   const removeImage = useCallback((id: string) => {
     setImages((prev) => {
-      const filterdImage = prev.filter((img) => img.id !== id);
-      // if user delete first image (primary image) then make another image to primary image
-      if (
-        filterdImage.length > 0 &&
-        !filterdImage.some((img) => img.isPrimary)
-      ) {
-        filterdImage[0].isPrimary = true;
+      const filtered = prev.filter((img) => img.id !== id);
+      // If we removed the primary image, make the first remaining image primary
+      if (filtered.length > 0 && !filtered.some((img) => img.isPrimary)) {
+        filtered[0].isPrimary = true;
       }
-      return filterdImage;
+      return filtered;
     });
   }, []);
+
   const setPrimaryImage = useCallback((id: string) => {}, []);
+
   return {
     images,
     dragActive,
@@ -70,3 +69,9 @@ export const useImageUpload = () => {
     setPrimaryImage,
   };
 };
+// setImages((prev) =>
+//   prev.map((img) => ({
+//     ...img,
+//     isPrimary: img.id === id,
+//   }))
+// );

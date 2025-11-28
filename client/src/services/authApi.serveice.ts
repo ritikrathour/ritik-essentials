@@ -4,7 +4,7 @@ export const AuthApi = {
   currentUser: async () => {
     try {
       const { data } = await AxiosInstense.get("/user");
-      return data;
+      return data?.data;
     } catch (error) {
       console.log(error, "current user error");
       throw error;

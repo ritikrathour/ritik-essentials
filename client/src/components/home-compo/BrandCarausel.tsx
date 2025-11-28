@@ -7,9 +7,6 @@ import { OptimizedImage } from "../ui/OptimizedImage";
 const BrandCarausel = () => {
   const { brands, error, isError, isLoading, refetch } =
     useProduct().getBrands("/brands");
-
-  console.log(brands, "brands");
-
   if (isLoading) {
     return <BrandSkeleton style="" />;
   }
