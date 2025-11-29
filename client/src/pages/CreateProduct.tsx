@@ -8,6 +8,7 @@ import {
   Calendar,
   AlertCircle,
   Check,
+  IndianRupee,
 } from "lucide-react";
 import { ALLOWED_IMAGE_TYPES, MAX_IMAGES } from "../utils/constant";
 import { IProductFormData } from "../utils/Types/Product.types";
@@ -17,17 +18,8 @@ import SelectField from "../components/SelectField";
 import { useImageUpload } from "../hooks/useImageUpload";
 import { useCreateProductValidation } from "../hooks/Validationhooks/useCreateProductValidation";
 import { ProductApi } from "../services/Product.service";
-
-enum ProductCategory {
-  FRUITS_VEGETABLES = "Fruits & Vegetables",
-  DAIRY_EGGS = "Dairy & Eggs",
-  BAKERY = "Bakery",
-  MEAT_SEAFOOD = "Meat & Seafood",
-  BEVERAGES = "Beverages",
-  SNACKS = "Snacks",
-  FROZEN_FOODS = "Frozen Foods",
-  PANTRY_STAPLES = "Pantry Staples",
-}
+import { useSelector } from "react-redux";
+import { useProduct } from "../hooks/useProduct";
 
 enum ProductUnit {
   KG = "kg",
@@ -57,84 +49,6 @@ const INITIAL_FORM_STATE: IProductFormData = {
   brand: "",
   tags: [],
 };
-
-// Custom upload image Hook
-// const useImageUpload = () => {
-//   const [images, setImages] = useState<ProductImage[]>([]);
-//   const [dragActive, setDragActive] = useState(false);
-//   const [uploadError, setUploadError] = useState<string>("");
-//   const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-//   const validateImage = useCallback((file: File): string | null => {
-//     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-//       return "Only JPEG, PNG, and WebP images are allowed";
-//     }
-//     if (file.size > MAX_IMAGE_SIZE) {
-//       return "Image size must be less than 5MB";
-//     }
-//     return null;
-//   }, []);
-//
-//   const handleFiles = useCallback(
-//     (files: FileList) => {
-//       setUploadError("");
-//       const remainingSlots = MAX_IMAGES - images.length;
-//       if (remainingSlots === 0) {
-//         setUploadError(`Maximum ${MAX_IMAGES} images allowed`);
-//         return;
-//       }
-//
-//       const validFiles: ProductImage[] = [];
-//       Array.from(files)
-//         .slice(0, remainingSlots)
-//         .forEach((file) => {
-//           const error = validateImage(file);
-//           if (error) {
-//             setUploadError(error);
-//             return;
-//           }
-//           validFiles.push({
-//             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-//             url: URL.createObjectURL(file),
-//             file,
-//             isPrimary: images.length === 0 && validFiles.length === 0,
-//           });
-//         });
-//
-//       setImages((prev) => [...prev, ...validFiles]);
-//     },
-//     [images.length, validateImage]
-//   );
-//
-//   const removeImage = useCallback((id: string) => {
-//     setImages((prev) => {
-//       const filtered = prev.filter((img) => img.id !== id);
-//       // If we removed the primary image, make the first remaining image primary
-//       if (filtered.length > 0 && !filtered.some((img) => img.isPrimary)) {
-//         filtered[0].isPrimary = true;
-//       }
-//       return filtered;
-//     });
-//   }, []);
-//
-//   const setPrimaryImage = useCallback((id: string) => {
-//     setImages((prev) =>
-//       prev.map((img) => ({
-//         ...img,
-//         isPrimary: img.id === id,
-//       }))
-//     );
-//   }, []);
-//
-//   return {
-//     images,
-//     dragActive,
-//     setDragActive,
-//     uploadError,
-//     handleFiles,
-//     removeImage,
-//     setPrimaryImage,
-//   };
-// };
 
 // const useFormValidation = (formData: IProductFormData) => {
 //   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -201,6 +115,7 @@ const INITIAL_FORM_STATE: IProductFormData = {
 
 // Main Component
 const CreateProduct = () => {
+  const { user } = useSelector((state: any) => state.user);
   const [formData, setFormData] =
     useState<IProductFormData>(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -216,7 +131,17 @@ const CreateProduct = () => {
     removeImage,
     setPrimaryImage,
   } = useImageUpload();
-  const categories = useMemo(() => Object.values(ProductCategory), []);
+  // const categories = useMemo(() => Object.values(ProductCategory), []);
+  const { categories: data } = useProduct().getCategories("/categories");
+  // get object values from categories
+  const categories = useMemo(() => {
+    return (
+      data?.category &&
+      data?.category?.map((cate: any) => {
+        return Object.values(cate?.name);
+      })
+    );
+  }, [data]);
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
   const { errors, validate, setErrors } = useCreateProductValidation(formData);
@@ -265,7 +190,6 @@ const CreateProduct = () => {
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
-
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         handleFiles(e.dataTransfer.files);
       }
@@ -285,6 +209,12 @@ const CreateProduct = () => {
   // handleDraftSave
   const handleDraftSave = useCallback(() => {}, []);
   // handle submit product
+  let newData = {
+    ...formData,
+    vendor: user?.data && user?.data?._id,
+    price: Number(formData.price),
+    stock: Number(formData.stock),
+  };
   const handleSubmit = useCallback(
     async (isDraft: boolean = false) => {
       if (!isDraft && !validate().IsError) {
@@ -296,8 +226,6 @@ const CreateProduct = () => {
       }
 
       try {
-        // Simulate API call
-        // await new Promise((resolve) => setTimeout(resolve, 1500));
         // const productData = {
         //   ...formData,
         //   images: images.map((img) => ({
@@ -306,7 +234,7 @@ const CreateProduct = () => {
         //   })),
         //   status: isDraft ? "draft" : "published",
         // };
-        const response = await ProductApi.createProduct("/product", formData);
+        const response = await ProductApi.createProduct("/product", newData);
         console.log(response);
         setSubmitSuccess(true);
         setTimeout(() => {
@@ -330,17 +258,17 @@ const CreateProduct = () => {
     <section className="min-h-screen px-4 md:px-10 p-2">
       <div className="mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-lg shadow-sm p-2 mb-6">
+          <div className="flex flex-col gap-2 md:flex-row items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-yellow-50 border border-[#c4c4c4] rounded-lg flex items-center justify-center">
                 <Package className="w-6 h-6 text-[#febd2f]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#173334]">
+                <h1 className="text-xl md:text-2xl font-bold text-[#173334]">
                   Add New Product
                 </h1>
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-500 text-xs md:text-sm">
                   Fill in the details to list your product
                 </p>
               </div>
@@ -354,9 +282,9 @@ const CreateProduct = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Product Images */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-2">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Product Images
             </h2>
@@ -382,7 +310,7 @@ const CreateProduct = () => {
                 Browse Files
                 <input
                   type="file"
-                  multiple
+                  multiple={true}
                   accept={ALLOWED_IMAGE_TYPES.join(",")}
                   onChange={handleFileInput}
                   className="hidden"
@@ -445,7 +373,7 @@ const CreateProduct = () => {
           </div>
 
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Basic Details
             </h2>
@@ -513,7 +441,7 @@ const CreateProduct = () => {
           </div>
 
           {/* Pricing & Inventory */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Pricing & Inventory
             </h2>
@@ -530,7 +458,7 @@ const CreateProduct = () => {
                 min="0"
                 required
                 error={errors.price}
-                icon={<DollarSign className="w-5 h-5" />}
+                icon={<IndianRupee className="w-5 h-5" />}
               />
 
               <Input
@@ -544,7 +472,7 @@ const CreateProduct = () => {
                 step="0.01"
                 min="0"
                 error={errors.originalPrice}
-                icon={<DollarSign className="w-5 h-5" />}
+                icon={<IndianRupee className="w-5 h-5" />}
               />
 
               <Input
@@ -565,7 +493,7 @@ const CreateProduct = () => {
                   <p className="text-sm text-gray-700">
                     Final Price:{" "}
                     <span className="font-semibold text-green-700">
-                      ${calculatedPrice.toFixed(2)}
+                      ₹ {calculatedPrice.toFixed(2)}
                     </span>
                   </p>
                 </div>
@@ -615,7 +543,7 @@ const CreateProduct = () => {
           </div>
 
           {/* Additional Options */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Additional Options
             </h2>
@@ -650,7 +578,7 @@ const CreateProduct = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex md:flex-row flex-col-reverse gap-4">
             <Button
               variant="secondary"
               type="button"

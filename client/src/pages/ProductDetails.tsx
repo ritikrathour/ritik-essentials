@@ -129,42 +129,45 @@ const ProductDetails = () => {
             </div>
             <div className="flex items-center flex-wrap justify-center mt-4 gap-4">
               <div className="flex justify-start items-center gap-2 w-[250px] overflow-scroll">
-                {products?.images.map((image: string, index: number) => {
-                  return (
-                    <div
-                      onClick={() => setImageIndex(index)}
-                      key={index}
-                      className={`${
-                        imageIndex === index && "border-black"
-                      } w-[150px] h-[50px] rounded-md cursor-pointer border-2 border-[#c4c4c4] hover:border-black transition-all duration-200 ease-in-out flex justify-center items-center`}
-                    >
-                      <OptimizedImage
-                        src={image}
-                        alt={image}
-                        className="w-[50px]! object-cover h-[40px] rounded-md"
-                      />
-                    </div>
-                  );
-                })}
+                {products?.images?.length > 1 &&
+                  products?.images.map((image: string, index: number) => {
+                    return (
+                      <div
+                        onClick={() => setImageIndex(index)}
+                        key={index}
+                        className={`${
+                          imageIndex === index && "border-black"
+                        } w-[150px] h-[50px] rounded-md cursor-pointer border-2 border-[#c4c4c4] hover:border-black transition-all duration-200 ease-in-out flex justify-center items-center`}
+                      >
+                        <OptimizedImage
+                          src={image}
+                          alt={image}
+                          className="w-[50px]! object-cover h-[40px] rounded-md"
+                        />
+                      </div>
+                    );
+                  })}
               </div>
-              <div className="flex gap-2">
-                <Button
-                  disabled={imageIndex === 0}
-                  onClick={() => handleClickPrev()}
-                  type="button"
-                  className={`w-[40px] h-[40px]`}
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  disabled={imageIndex === products?.images?.length - 1}
-                  onClick={() => handleClickNext()}
-                  type="button"
-                  className="w-[40px] h-[40px] cursor-pointer rounded-full bg-yellow-500 flex justify-center items-center"
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
+              {products?.images?.length > 1 && (
+                <div className="flex gap-2">
+                  <Button
+                    disabled={imageIndex === 0}
+                    onClick={() => handleClickPrev()}
+                    type="button"
+                    className={`w-[40px] h-[40px]`}
+                  >
+                    <ChevronLeft />
+                  </Button>
+                  <Button
+                    disabled={imageIndex === products?.images?.length - 1}
+                    onClick={() => handleClickNext()}
+                    type="button"
+                    className="w-[40px] h-[40px] cursor-pointer rounded-full bg-yellow-500 flex justify-center items-center"
+                  >
+                    <ChevronRight />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
           {/* description and product details   */}

@@ -164,11 +164,7 @@ function App() {
               />
               {/* Protected routes */}
               {/* --------------------- only vedor -------------------------  */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={["customer", "vendor"]} />
-                }
-              >
+              <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
                 <Route
                   path="/create-product"
                   element={

@@ -50,7 +50,7 @@ app.use("/api/v1", productroute);
 app.use("/api/v1", orderRouter);
 app.use("/api/v1", favProductsRouter);
 app.use("/api/v1", categoryRouter);
-app.use("/api/v1", cartRouter);
+// app.use("/api/v1", cartRouter);
 // ⛔ Global Error Handler
 app.use(ErrorHandler);
 

@@ -19,12 +19,12 @@ export const validateCreateProduct = (data: any) => {
 
   if (!data.description || typeof data.description !== "string") {
     errors.push({
-      field: "Description",
+      field: "description",
       message: "Desciption is required and must be a string.",
     });
   } else if (data.description.trim() === "") {
     errors.push({
-      field: "Description",
+      field: "description",
       message: "Description cannot be empty.",
     });
   } else if (data.description.length > 2000) {
@@ -35,12 +35,12 @@ export const validateCreateProduct = (data: any) => {
   }
   if (!data.price || typeof data.price !== "number") {
     errors.push({
-      field: "Price",
+      field: "price",
       message: "Price is required and must be a number",
     });
   } else if (data.price < 0) {
     errors.push({
-      field: "Price",
+      field: "price",
       message: "Price must be greater than or equal to 0",
     });
   }

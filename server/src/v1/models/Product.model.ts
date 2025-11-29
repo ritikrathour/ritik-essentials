@@ -38,8 +38,7 @@ const Product = new mongoose.Schema<IProduct>({
     index: true,
   },
   brand: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand",
+    type: String,
     required: true,
     trim: true,
     maxlength: 100,

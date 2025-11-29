@@ -1,13 +1,17 @@
 import { Search, ShoppingCart } from "lucide-react";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { openCartDrawer } from "../redux-store/UISlice";
+import {
+  HideHeaderMenu,
+  openCartDrawer,
+  ShowHeaderMenu,
+} from "../redux-store/UISlice";
+import { RootState } from "../redux-store/Store";
 const ProfileDropDown = lazy(() => import("../components/ProfileDropDown"));
 
 const Header = () => {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
   const [showDropDownProfile, setShowDropDownProfile] =
     useState<boolean>(false);
   const dispatch = useDispatch();
@@ -15,18 +19,12 @@ const Header = () => {
   const handleShowSearchBar = () => {
     setShowSearchBar((prev) => !prev);
   };
-  // handle show menu
-  const handleShowMenu = useMemo(() => {
-    return () => {
-      setShowMenu((prev) => !prev);
-    };
-  }, []);
   // handleDropDown
   const handleDropDown = () => {
     setShowDropDownProfile((prev) => !prev);
   };
-  const { user: data } = useSelector((state: any) => state.user);
-
+  const user = useSelector((state: RootState) => state.user);
+  const { headerMenu } = useSelector((state: RootState) => state.ui);
   return (
     <>
       <nav className="flex justify-between items-center h-full relative">
@@ -43,7 +41,6 @@ const Header = () => {
          hover:bg-gray-800 transition-all`}
         >
           <label htmlFor="search" className="text-center text-[#febd2f] mt-1">
-            {/* <i className="fas fa-search text-[#febd2f]" /> */}
             <Search size={20} />
           </label>
           <input
@@ -58,36 +55,58 @@ const Header = () => {
           {/* nav links  */}
           <ul
             className={`
-              ${showMenu ? "translate-y-8" : "-translate-y-24"}
-              lg:translate-y-0 absolute left-0 bg-[#173334] border lg:border-none px-[10px] rounded-[5px] transition-all w-full z-50 py-[2px]  lg:flex lg:relative lg:w-full items-center gap-2 text-white text-[14px] mr-1.5`}
+                ${headerMenu ? "translate-y-18" : "-translate-y-24"}
+                lg:translate-y-0 fixed left-0 bg-[#173334] border lg:border-none px-[10px] transition-all w-full z-50 py-[2px] lg:flex lg:relative lg:w-full items-center gap-2 text-[#c4c4c4] text-[14px] mr-1.5`}
           >
             <button
               type="button"
               className="lg:hidden text-xl cursor-pointer w-[20px] h-[20px] flex items-center justify-center rounded-[2px] hover:bg-white text-white hover:text-[#febd2f] transition-all absolute top-1 right-1 mt-1 mr-1"
-              onClick={() => handleShowMenu()}
+              onClick={() => dispatch(HideHeaderMenu())}
             >
               <i className="fas fa-times"></i>
             </button>
-            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-              <Link className="w-full" to="/otp-verify">
-                Faq
-              </Link>
-            </li>
-            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-              <Link className="w-full" to="about">
-                About
-              </Link>
-            </li>
-            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-              <Link className="w-full" to="contact">
-                Contact
-              </Link>
-            </li>
-            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-              <Link className="w-full" to="support">
-                Support
-              </Link>
-            </li>
+            {user?.user?.role === "vendor" ? (
+              <>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="/dashboard">
+                    Dashboard
+                  </Link>
+                </li>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="/dashboard">
+                    My Product
+                  </Link>
+                </li>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="/create-product">
+                    Create Product
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="/otp-verify">
+                    Faq
+                  </Link>
+                </li>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="about">
+                    About
+                  </Link>
+                </li>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="contact">
+                    Contact
+                  </Link>
+                </li>
+                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+                  <Link className="w-full" to="support">
+                    Support
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
           <div className="relative cursor-pointer">
             <Link
@@ -104,9 +123,9 @@ const Header = () => {
             </Link>
           </div>
           <div>
-            {data?.isLoading ? (
+            {user?.loading ? (
               <div className="w-[35px] h-[35px] bg-gray-400 rounded-full animate-pulse"></div>
-            ) : data?.data?.email ? (
+            ) : user?.user?.email ? (
               <div className="relative">
                 <div
                   onClick={() => handleDropDown()}
@@ -115,12 +134,15 @@ const Header = () => {
                   <img
                     className=" object-cover border rounded-full"
                     src={"./assets/girl.png"}
-                    alt={data?.data?.email}
+                    alt={user?.user?.email}
                   />
                 </div>
                 {showDropDownProfile && (
                   <Suspense>
-                    <ProfileDropDown state={setShowDropDownProfile} />
+                    <ProfileDropDown
+                      user={{ ...user.user }}
+                      state={setShowDropDownProfile}
+                    />
                   </Suspense>
                 )}
               </div>
@@ -138,7 +160,7 @@ const Header = () => {
               <i className={`fas text-[#febd2f] text-[14px] fa-search`}></i>
             </span>
           </div>
-          <div className="lg:hidden" onClick={() => handleShowMenu()}>
+          <div className="lg:hidden" onClick={() => dispatch(ShowHeaderMenu())}>
             <span className="px-2 py-1 sm:px-4 sm:py-2 rounded hover:bg-gray-700 bg-gray-900">
               <i className={`fas text-[#febd2f] text-[14px] fa-bars`}></i>
             </span>

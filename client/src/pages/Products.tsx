@@ -152,6 +152,7 @@ const Products = () => {
       return newSet;
     });
   };
+  console.log(location.search);
 
   return (
     <section className="md:px-10 px-2 min-h-screen bg-gray-50">
