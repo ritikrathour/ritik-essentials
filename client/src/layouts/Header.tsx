@@ -1,12 +1,8 @@
 import { Search, ShoppingCart } from "lucide-react";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  HideHeaderMenu,
-  openCartDrawer,
-  ShowHeaderMenu,
-} from "../redux-store/UISlice";
+import { openCartDrawer, ShowHeaderMenu } from "../redux-store/UISlice";
 import { RootState } from "../redux-store/Store";
 const ProfileDropDown = lazy(() => import("../components/ProfileDropDown"));
 
@@ -25,6 +21,7 @@ const Header = () => {
   };
   const user = useSelector((state: RootState) => state.user);
   const { headerMenu } = useSelector((state: RootState) => state.ui);
+
   return (
     <>
       <nav className="flex justify-between items-center h-full relative">
@@ -55,72 +52,43 @@ const Header = () => {
           {/* nav links  */}
           <ul
             className={`
-                ${headerMenu ? "translate-y-18" : "-translate-y-24"}
-                lg:translate-y-0 fixed left-0 bg-[#173334] border lg:border-none px-[10px] transition-all w-full z-50 py-[2px] lg:flex lg:relative lg:w-full items-center gap-2 text-[#c4c4c4] text-[14px] mr-1.5`}
+              ${headerMenu ? "translate-y-8" : "-translate-y-24"}
+              lg:translate-y-0 absolute left-0 bg-[#173334] border lg:border-none px-[10px] rounded-[5px] transition-all w-full z-50 py-[2px]  lg:flex lg:relative lg:w-full items-center gap-2 text-white text-[14px] mr-1.5`}
           >
             <button
               type="button"
               className="lg:hidden text-xl cursor-pointer w-[20px] h-[20px] flex items-center justify-center rounded-[2px] hover:bg-white text-white hover:text-[#febd2f] transition-all absolute top-1 right-1 mt-1 mr-1"
-              onClick={() => dispatch(HideHeaderMenu())}
+              onClick={() => dispatch(ShowHeaderMenu())}
             >
               <i className="fas fa-times"></i>
             </button>
-            {user?.user?.role === "vendor" ? (
-              <>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="/dashboard">
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="/dashboard">
-                    My Product
-                  </Link>
-                </li>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="/create-product">
-                    Create Product
-                  </Link>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="/otp-verify">
-                    Faq
-                  </Link>
-                </li>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="about">
-                    About
-                  </Link>
-                </li>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="contact">
-                    Contact
-                  </Link>
-                </li>
-                <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-                  <Link className="w-full" to="support">
-                    Support
-                  </Link>
-                </li>
-              </>
-            )}
+            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+              <Link className="w-full" to="/otp-verify">
+                Orders
+              </Link>
+            </li>
+
+            <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
+              <Link className="w-full" to="support">
+                Support
+              </Link>
+            </li>
           </ul>
           <div className="relative cursor-pointer">
-            <Link
-              to=""
-              onClick={() => dispatch(openCartDrawer())}
-              className="bg-gray-900 block text-[#febd2f] px-2 py-1 sm:py-2 sm:px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
-            >
-              <ShoppingCart size={20} />
-              {5 > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs font-semibold">
-                  {5}
-                </span>
-              )}
-            </Link>
+            {user?.user?.email && (
+              <Link
+                to=""
+                onClick={() => dispatch(openCartDrawer())}
+                className="bg-gray-900 block text-[#febd2f] px-2 py-1 sm:py-2 sm:px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
+              >
+                <ShoppingCart size={20} />
+                {5 > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs font-semibold">
+                    {5}
+                  </span>
+                )}
+              </Link>
+            )}
           </div>
           <div>
             {user?.loading ? (
@@ -140,8 +108,9 @@ const Header = () => {
                 {showDropDownProfile && (
                   <Suspense>
                     <ProfileDropDown
-                      user={{ ...user.user }}
+                      user={user?.user}
                       state={setShowDropDownProfile}
+                      className="-left-40"
                     />
                   </Suspense>
                 )}

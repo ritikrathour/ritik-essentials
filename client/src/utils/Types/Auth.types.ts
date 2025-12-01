@@ -1,4 +1,5 @@
 export interface IUser {
+  _id: any;
   name?: string;
   email: string;
   password: string;
@@ -7,6 +8,10 @@ export interface IUser {
   address?: string;
   permisions?: string[];
   role?: "customer" | "admin" | "vendor";
+  avatar?: string;
+  shopName?: string;
+  gstNumber?: string;
+  createdAt?: any;
 }
 export type Role = "admin" | "vendor" | "customer";
 // ProtectedRouteProps

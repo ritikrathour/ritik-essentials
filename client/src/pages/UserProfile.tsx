@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
+import { RootState } from "../redux-store/Store";
 const Setting = lazy(
   () => import("../components/customerProfileCompo/Setting")
 );
@@ -41,7 +42,7 @@ interface Address {
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("orders");
-  const { user: data } = useSelector((state: any) => state.user);
+  const { user: data } = useSelector((state: RootState) => state.user);
 
   const orders: Order[] = [
     {
@@ -123,21 +124,21 @@ const UserProfile: React.FC = () => {
                   <img
                     className=" object-cover border rounded-full"
                     src={"./assets/girl.png"}
-                    alt={data?.data?.email}
+                    alt={data?.email}
                   />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold capitalize">
-                    {data?.data?.name}
+                    {data?.name}
                   </h2>
-                  <p className="text-sm text-gray-500">{data?.data?.email}</p>
+                  <p className="text-sm text-gray-500">{data?.email}</p>
                 </div>
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-gray-600">Member Since</span>
                   <span className="font-medium">
-                    {data?.data?.createdAt?.slice(0, 10)}
+                    {data?.createdAt?.slice(0, 10)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">

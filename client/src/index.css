@@ -37,7 +37,7 @@ img {
   object-fit: cover;
 }
 button {
-  border: none;
+  /* border: none; */
   outline: none;
 }
 /* image skeleton  */

@@ -50,6 +50,7 @@ const UserSchema: mongoose.Schema<IUser> = new mongoose.Schema<IUser>(
     address: String,
     // Vendor-only fields
     shopName: String,
+    shopImage: String,
     gstNumber: String,
     // Admin specific
     permissions: [String],

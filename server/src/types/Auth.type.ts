@@ -11,6 +11,7 @@ export interface IUser {
   phone?: string;
   avatar?: string;
   shopName?: string;
+  shopImage?: string;
   gstNumber?: string;
   address?: string;
   permissions: string[];

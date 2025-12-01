@@ -12,6 +12,7 @@ import { Breadcrumbs } from "./components/ui/Breadcrumb";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import CartDrawer from "./components/cart/CartDrawer";
+import VendorHeader from "./layouts/VendorHeader";
 // lazy pages
 const Category = lazy(() => import("./pages/Category"));
 const CreateProduct = lazy(() => import("./pages/CreateProduct"));
@@ -28,7 +29,7 @@ const Register = lazy(() => import("./pages/Register"));
 function App() {
   const [headerVisiable, setHeaderVisiable] = useState<boolean>(false);
   // call the current user
-  useAuth().currentUser(true);
+  const { data, isLoading } = useAuth().currentUser(true);
   const location = useLocation();
   // header show and hide on top scroll
   useEffect(() => {
@@ -67,10 +68,10 @@ function App() {
       {/* header  */}
       <header
         className={`${
-          headerVisiable ? "-top-20" : "top-0"
-        } lg:px-[6rem] sm:px-[5rem] px-[1rem] bg-[#173334] transition-all duration-150 py-4 flex flex-col gap-1.5 justify-center fixed left-0 w-full z-40`}
+          headerVisiable ? "-translate-y-full " : "translate-y-0"
+        } lg:px-[6rem] sm:px-[1rem] px-[1rem] bg-[#173334] transition-all duration-150 py-2 flex flex-col gap-1.5 justify-center fixed left-0 w-full z-40`}
       >
-        <Header />
+        {data && data?.role === "vendor" ? <VendorHeader /> : <Header />}
       </header>
       {/* main  */}
       <main className="overflow-hidden flex flex-col gap-5 pb-5">
@@ -175,9 +176,13 @@ function App() {
                 ></Route>
               </Route>
               {/* --------------------- only vedor -------------------------  */}
-              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+              <Route
+                element={
+                  <ProtectedRoute allowedRoles={["customer", "vendor"]} />
+                }
+              >
                 <Route
-                  path="/profile"
+                  path="/profile/:userId"
                   element={
                     <PageTransition variants="fade">
                       <UserProfile />
@@ -191,7 +196,7 @@ function App() {
                 }
               >
                 <Route
-                  path="/wishlist"
+                  path="/wishlist/:userId"
                   element={
                     <PageTransition variants="fade">
                       <Wishlist />
