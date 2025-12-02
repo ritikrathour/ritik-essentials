@@ -12,7 +12,6 @@ import { productroute } from "./v1/routes/Product.route";
 import { orderRouter } from "./v1/routes/Order.route";
 import { favProductsRouter } from "./v1/routes/FavProducts.route";
 import { categoryRouter } from "./v1/routes/Category.route";
-import { cartRouter } from "./v1/routes/Cart.route";
 dotenv.config();
 
 const app = express();

@@ -1,10 +1,11 @@
 import { lazy, Suspense, useState } from "react";
 import { Bell, ChevronDown, Menu, X, Plus, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
-import MobileMenuOpen from "./MobileLayouts/MobileMenu";
-import { useSelector } from "react-redux";
+import MobileMenu from "./MobileLayouts/MobileMenu";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
+import { openCartDrawer } from "../redux-store/UISlice";
 const ProfileDropDown = lazy(() => import("../components/ProfileDropDown"));
 
 const VendorHeader = () => {
@@ -22,9 +23,9 @@ const VendorHeader = () => {
     { name: "Reviews", icon: "⭐" },
     { name: "Settings", icon: "⚙️" },
   ];
-
+  const dispatch = useDispatch();
   return (
-    <div className="w-full">
+    <div className="w-full border">
       {/* Top Header */}
       <div className="sm:px-2 flex items-center justify-between">
         {/* Left Side - Logo and Badge */}
@@ -70,6 +71,7 @@ const VendorHeader = () => {
               </Link>
               <Link
                 to=""
+                onClick={() => dispatch(openCartDrawer())}
                 className="hidden bg-gray-900 sm:block text-[#febd2f] relative py-2 px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
               >
                 <ShoppingCart size={20} />
@@ -123,6 +125,7 @@ const VendorHeader = () => {
             <Suspense>
               <ProfileDropDown
                 user={user.user}
+                open={showDropDownProfile}
                 state={setShowDropDownProfile}
                 className="top-13 right-2"
               />
@@ -133,10 +136,11 @@ const VendorHeader = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <MobileMenuOpen
+        <MobileMenu
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           navItems={navItems}
+          mobileMenuOpen={mobileMenuOpen}
           setMobileMenuOpen={setMobileMenuOpen}
         />
       )}
@@ -165,17 +169,14 @@ const VendorHeader = () => {
           </ul>
 
           {/* Create Product Button */}
-          <Button type="button" variant="glass">
-            <Plus className="w-5 h-5" />
-            <span>Create Product</span>
-          </Button>
+          <Link to="/create-product">
+            <Button type="button" variant="glass">
+              <Plus className="w-5 h-5" />
+              <span>Create Product</span>
+            </Button>
+          </Link>
         </div>
       </nav>
-
-      {/* Mobile Floating Action Button */}
-      <button className="lg:hidden fixed right-4 top-20 bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-full shadow-lg transition-all hover:shadow-xl z-40">
-        <Plus className="w-6 h-6" />
-      </button>
     </div>
   );
 };

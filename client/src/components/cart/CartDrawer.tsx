@@ -5,10 +5,13 @@ import CartItem from "./CartItem";
 import { useDispatch, useSelector } from "react-redux";
 import { CloseCartDrawer } from "../../redux-store/UISlice";
 import { Link } from "react-router-dom";
+import useOverlayManager from "../../hooks/useOverLay";
 
 const CartDrawer = () => {
   const { cartDrawerOpen } = useSelector((state: any) => state.ui);
   const dispatch = useDispatch();
+  // prevent scrolling
+  useOverlayManager(cartDrawerOpen, CloseCartDrawer);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -169,42 +172,3 @@ const CartDrawer = () => {
 };
 
 export default CartDrawer;
-
-//  <div className="flex gap-3 mb-4">
-//             <Button
-//               type="button"
-//               variant="dark"
-//               iconPosition="right"
-//               icon={<Gift size={20} />}
-//               className="flex-1 py-3"
-//             >
-//               Apply Coupon
-//             </Button>
-//             <Button
-//               type="button"
-//               variant="dark"
-//               iconPosition="right"
-//               icon={<Gift size={20} />}
-//               className="flex-1 py-3"
-//             >
-//               Gift Wrap
-//             </Button>
-//           </div>
-//
-//           Totals
-// <div className="flex justify-between items-center mb-2">
-//   <span className="text-sm font-semibold text-[#173334]">
-//     Total Item
-//   </span>
-//   <span className="text-sm font-semibold text-[#173334]">
-//     {totalItems}
-//   </span>
-// </div>
-// <div className="flex justify-between items-center mb-6">
-//   <span className="text-sm font-semibold text-[#173334]">
-//     Subtotal
-//   </span>
-//   <span className="text-sm font-bold text-[#173334]">
-//     ₹{subtotal.toFixed(2)}
-//   </span>
-// </div>

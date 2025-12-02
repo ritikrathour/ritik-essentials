@@ -2,15 +2,18 @@ import { Heart, LogOut, MapPin, Moon, Package, Settings } from "lucide-react";
 import React, { memo } from "react";
 import { IUser } from "../utils/Types/Auth.types";
 import { Link } from "react-router-dom";
+import useOverlayManager from "../hooks/useOverLay";
 
 const ProfileDropDown = ({
   state,
   user,
   className,
+  open = true,
 }: {
   state: React.Dispatch<React.SetStateAction<boolean>>;
   user: IUser | null;
   className?: string;
+  open?: boolean;
 }) => {
   const menuItems = [
     {
@@ -27,6 +30,8 @@ const ProfileDropDown = ({
       url: "/wishlist",
     },
   ];
+  // prevent scrolling
+  useOverlayManager(open, close);
   return (
     <>
       <div

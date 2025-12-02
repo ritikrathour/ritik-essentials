@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import CartDrawer from "./components/cart/CartDrawer";
 import VendorHeader from "./layouts/VendorHeader";
+import CreateProductBtn from "./components/vendor/CreateProductBtn";
 // lazy pages
 const Category = lazy(() => import("./pages/Category"));
 const CreateProduct = lazy(() => import("./pages/CreateProduct"));
@@ -30,6 +31,7 @@ function App() {
   const [headerVisiable, setHeaderVisiable] = useState<boolean>(false);
   // call the current user
   const { data, isLoading } = useAuth().currentUser(true);
+
   const location = useLocation();
   // header show and hide on top scroll
   useEffect(() => {
@@ -69,12 +71,17 @@ function App() {
       <header
         className={`${
           headerVisiable ? "-translate-y-full " : "translate-y-0"
-        } lg:px-[6rem] sm:px-[1rem] px-[1rem] bg-[#173334] transition-all duration-150 py-2 flex flex-col gap-1.5 justify-center fixed left-0 w-full z-40`}
+        } lg:px-[6rem] sm:px-[1rem] px-[1rem] bg-[#173334] transition-all duration-150 flex flex-col gap-1.5 justify-center fixed left-0 w-full z-40`}
       >
         {data && data?.role === "vendor" ? <VendorHeader /> : <Header />}
       </header>
       {/* main  */}
-      <main className="overflow-hidden flex flex-col gap-5 pb-5">
+      <main
+        className={`overflow-hidden flex flex-col gap-5 pb-5 ${
+          data && data?.role === "vendor" && "md:pt-2"
+        }`}
+      >
+        {data && data?.role === "vendor" && <CreateProductBtn />}
         <ScrollToTop />
         {location.pathname !== "/" && (
           <Breadcrumbs items={generatedBreadcrumbs} maxItems={4} />

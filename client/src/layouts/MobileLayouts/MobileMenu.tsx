@@ -1,21 +1,26 @@
 import { Plus } from "lucide-react";
 import React from "react";
+import useOverlayManager from "../../hooks/useOverLay";
 interface INavItems {
   name: string;
   icon: string;
 }
 interface MobileMenuOpenProps {
   navItems: INavItems[];
+  mobileMenuOpen: boolean;
   setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   activeTab: String;
   setActiveTab: React.Dispatch<React.SetStateAction<string>>;
 }
-const MobileMenuOpen: React.FC<MobileMenuOpenProps> = ({
+const MobileMenu: React.FC<MobileMenuOpenProps> = ({
   navItems,
   setMobileMenuOpen,
   activeTab,
   setActiveTab,
+  mobileMenuOpen,
 }) => {
+  // prevent scrolling
+  useOverlayManager(mobileMenuOpen, close);
   return (
     <div className="lg:hidden border-t border-[#1e4243]">
       <div className="mx-auto py-3">
@@ -47,4 +52,4 @@ const MobileMenuOpen: React.FC<MobileMenuOpenProps> = ({
     </div>
   );
 };
-export default MobileMenuOpen;
+export default MobileMenu;
