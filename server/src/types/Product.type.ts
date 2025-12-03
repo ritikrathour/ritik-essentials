@@ -22,7 +22,7 @@ export interface IProduct {
   stock: number;
   images: string[];
   tags: string[];
-  isActive: boolean;
+  status: "publised" | "draft";
   weight?: number;
   unit: IProductUnit;
   featured?: boolean;

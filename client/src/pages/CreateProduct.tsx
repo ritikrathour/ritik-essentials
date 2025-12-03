@@ -3,7 +3,6 @@ import {
   Upload,
   X,
   Package,
-  DollarSign,
   Percent,
   Calendar,
   AlertCircle,
@@ -20,6 +19,9 @@ import { useCreateProductValidation } from "../hooks/Validationhooks/useCreatePr
 import { ProductApi } from "../services/Product.service";
 import { useSelector } from "react-redux";
 import { useProduct } from "../hooks/useProduct";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { RootState } from "../redux-store/Store";
 
 enum ProductUnit {
   KG = "kg",
@@ -49,73 +51,9 @@ const INITIAL_FORM_STATE: IProductFormData = {
   brand: "",
   tags: [],
 };
-
-// const useFormValidation = (formData: IProductFormData) => {
-//   const [errors, setErrors] = useState<ValidationErrors>({});
-//
-//   const validate = useCallback((): boolean => {
-//     const newErrors: ValidationErrors = {};
-//
-//     if (!formData.name.trim()) {
-//       newErrors.name = "Product name is required";
-//     } else if (formData.name.length < 3) {
-//       newErrors.name = "Product name must be at least 3 characters";
-//     }
-//
-//     if (!formData.category) {
-//       newErrors.category = "Category is required";
-//     }
-//
-//     if (!formData.price) {
-//       newErrors.price = "Price is required";
-//     } else if (parseFloat(formData.price) <= 0) {
-//       newErrors.price = "Price must be greater than 0";
-//     }
-//
-//     if (
-//       formData.comparePrice &&
-//       parseFloat(formData.comparePrice) < parseFloat(formData.price)
-//     ) {
-//       newErrors.comparePrice = "Compare price must be greater than price";
-//     }
-//
-//     if (!formData.stock) {
-//       newErrors.stock = "Stock quantity is required";
-//     } else if (parseInt(formData.stock) < 0) {
-//       newErrors.stock = "Stock cannot be negative";
-//     }
-//
-//     if (!formData.unit) {
-//       newErrors.unit = "Unit is required";
-//     }
-//
-//     if (
-//       formData.discount &&
-//       (parseFloat(formData.discount) < 0 || parseFloat(formData.discount) > 100)
-//     ) {
-//       newErrors.discount = "Discount must be between 0 and 100";
-//     }
-//
-//     if (formData.expiryDate) {
-//       const expiryDate = new Date(formData.expiryDate);
-//       const today = new Date();
-//       today.setHours(0, 0, 0, 0);
-//
-//       if (expiryDate < today) {
-//         newErrors.expiryDate = "Expiry date cannot be in the past";
-//       }
-//     }
-//
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   }, [formData]);
-//
-//   return { errors, validate, setErrors };
-// };
-
 // Main Component
 const CreateProduct = () => {
-  const { user } = useSelector((state: any) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
   const [formData, setFormData] =
     useState<IProductFormData>(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,17 +69,17 @@ const CreateProduct = () => {
     removeImage,
     setPrimaryImage,
   } = useImageUpload();
-  // const categories = useMemo(() => Object.values(ProductCategory), []);
   const { categories: data } = useProduct().getCategories("/categories");
   // get object values from categories
   const categories = useMemo(() => {
     return (
       data?.category &&
       data?.category?.map((cate: any) => {
-        return Object.values(cate?.name);
+        return [cate?.name].join(",");
       })
     );
   }, [data]);
+
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
   const { errors, validate, setErrors } = useCreateProductValidation(formData);
@@ -206,43 +144,53 @@ const CreateProduct = () => {
     },
     [handleFiles]
   );
-  // handleDraftSave
-  const handleDraftSave = useCallback(() => {}, []);
   // handle submit product
-  let newData = {
-    ...formData,
-    vendor: user?.data && user?.data?._id,
-    price: Number(formData.price),
-    stock: Number(formData.stock),
-  };
   const handleSubmit = useCallback(
     async (isDraft: boolean = false) => {
-      if (!isDraft && !validate().IsError) {
+      if (!validate().IsError) {
         return;
       }
-      if (!isDraft && images.length === 0) {
+      if (images.length === 0) {
         setImageError("Please upload at least one product image");
         return;
       }
-
-      try {
-        // const productData = {
-        //   ...formData,
-        //   images: images.map((img) => ({
-        //     file: img.file.name,
-        //     isPrimary: img.isPrimary,
-        //   })),
-        //   status: isDraft ? "draft" : "published",
-        // };
-        const response = await ProductApi.createProduct("/product", newData);
-        console.log(response);
+      if (isDraft) {
+        setIsDraftting(true);
+      } else {
         setSubmitSuccess(true);
+      }
+      try {
+        const productData = {
+          ...formData,
+          vendor: user && user?._id,
+          price: Number(formData.price),
+          stock: Number(formData.stock),
+          images: images.map((img) => ({
+            image: img.file.name,
+            isPrimary: img.isPrimary,
+          })),
+          status: isDraft ? "draft" : "published",
+        };
+        const response = await ProductApi.createProduct(
+          "/product",
+          productData
+        );
+        toast.success(
+          response?.data?.message || "Product Created Successfully!"
+        );
+        console.log(response);
         setTimeout(() => {
           setFormData(INITIAL_FORM_STATE);
         }, 1000);
       } catch (error) {
         console.error("Error submitting product:", error);
+        toast.error(
+          axios.isAxiosError(error)
+            ? error?.response?.data?.message || error?.response?.data?.error
+            : "Product not Created!"
+        );
       } finally {
+        setIsDraftting(false);
         setIsSubmitting(false);
       }
     },
@@ -582,8 +530,8 @@ const CreateProduct = () => {
             <Button
               variant="secondary"
               type="button"
-              onClick={() => handleDraftSave()}
-              // disabled={isSubmitting}
+              onClick={() => handleSubmit(true)}
+              disabled={isDraftting}
               className="flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDraftting ? "Saving..." : "Save as Draft"}

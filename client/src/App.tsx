@@ -14,7 +14,10 @@ import Login from "./pages/Login";
 import CartDrawer from "./components/cart/CartDrawer";
 import VendorHeader from "./layouts/VendorHeader";
 import CreateProductBtn from "./components/vendor/CreateProductBtn";
+import { useSelector } from "react-redux";
+import { RootState } from "./redux-store/Store";
 // lazy pages
+const SignOutPopUp = lazy(() => import("./components/popups/SignOutPopup"));
 const Category = lazy(() => import("./pages/Category"));
 const CreateProduct = lazy(() => import("./pages/CreateProduct"));
 const ProductDetails = lazy(() => import("./pages/ProductDetails"));
@@ -31,6 +34,7 @@ function App() {
   const [headerVisiable, setHeaderVisiable] = useState<boolean>(false);
   // call the current user
   const { data, isLoading } = useAuth().currentUser(true);
+  const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
 
   const location = useLocation();
   // header show and hide on top scroll
@@ -66,6 +70,16 @@ function App() {
   }, [location.pathname]);
   return (
     <>
+      {/* sign out popup  */}
+      <div
+        className={`w-full  fixed inset-0 h-screen z-50 flex justify-center pb-20 md:items-center items-end p-4 sm:p-6 bg-[#9ca3af69]
+          ${
+            isSignOutOpen ? "opacity-100 scale-100" : "opacity-0 scale-0"
+          }  transition-all`}
+      >
+        <SignOutPopUp />
+      </div>
+      {/* CartDrawer  */}
       <CartDrawer />
       {/* header  */}
       <header
@@ -77,12 +91,15 @@ function App() {
       </header>
       {/* main  */}
       <main
-        className={`overflow-hidden flex flex-col gap-5 pb-5 ${
+        className={`overflow-hidden flex flex-col md:gap-5 pb-5 ${
           data && data?.role === "vendor" && "md:pt-2"
         }`}
       >
+        {/* create project button for vendor  */}
         {data && data?.role === "vendor" && <CreateProductBtn />}
+        {/* scroll to top  */}
         <ScrollToTop />
+        {/* Breadcrumbs  */}
         {location.pathname !== "/" && (
           <Breadcrumbs items={generatedBreadcrumbs} maxItems={4} />
         )}

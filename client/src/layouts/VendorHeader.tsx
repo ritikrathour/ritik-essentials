@@ -6,7 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
 import { openCartDrawer } from "../redux-store/UISlice";
-const ProfileDropDown = lazy(() => import("../components/ProfileDropDown"));
+const ProfileDropDown = lazy(
+  () => import("../components/popups/ProfileDropDown")
+);
 
 const VendorHeader = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");

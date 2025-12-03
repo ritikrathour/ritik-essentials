@@ -18,8 +18,6 @@ const CreateProduct = AsyncHandler(async (req: Request, res: Response) => {
   const validation = validateCreateProduct(req.body);
   if (!validation.isvalid) {
     let { errors } = validation;
-    console.log(errors);
-
     throw new ApiError(400, "Validation failed", false, errors);
   }
   // Check if SKU already exists

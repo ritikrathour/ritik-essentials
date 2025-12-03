@@ -4,7 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { openCartDrawer, ShowHeaderMenu } from "../redux-store/UISlice";
 import { RootState } from "../redux-store/Store";
-const ProfileDropDown = lazy(() => import("../components/ProfileDropDown"));
+const ProfileDropDown = lazy(
+  () => import("../components/popups/ProfileDropDown")
+);
 
 const Header = () => {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);

@@ -57,7 +57,14 @@ export const useImageUpload = () => {
     });
   }, []);
 
-  const setPrimaryImage = useCallback((id: string) => {}, []);
+  const setPrimaryImage = useCallback((id: string) => {
+    setImages((prev: any) => {
+      return prev.map((img: any) => ({
+        ...img,
+        isPrimary: img.id === id,
+      }));
+    });
+  }, []);
 
   return {
     images,
@@ -69,9 +76,3 @@ export const useImageUpload = () => {
     setPrimaryImage,
   };
 };
-// setImages((prev) =>
-//   prev.map((img) => ({
-//     ...img,
-//     isPrimary: img.id === id,
-//   }))
-// );

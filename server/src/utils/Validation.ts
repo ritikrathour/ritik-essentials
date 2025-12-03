@@ -108,7 +108,9 @@ export const validateCreateProduct = (data: any) => {
     errors.push({ field: "images", message: "Images must be an array" });
   } else if (
     data.images &&
-    data.images.some((img: any) => typeof img !== "string" || img.length > 500)
+    data.images.some(
+      (img: any) => typeof img?.image !== "string" || img?.image.length > 500
+    )
   ) {
     errors.push({
       field: "images",
