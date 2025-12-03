@@ -6,6 +6,7 @@ const Input: React.FC<InputProps> = ({
   type,
   value,
   onchange,
+  onfocus,
   error,
   name,
   placeholder,
@@ -16,6 +17,8 @@ const Input: React.FC<InputProps> = ({
   min,
   max,
   step,
+  iconPosition,
+  clasName,
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const inputType = showPasswordToggle
@@ -33,7 +36,13 @@ const Input: React.FC<InputProps> = ({
       </label>
       <div className="relative rounded-[5px]">
         {icon && (
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <div
+            className={`absolute inset-y-0  pl-3 flex items-center  ${
+              iconPosition === "right"
+                ? "right-2 pointer-events-auto cursor-pointer"
+                : "left-0 pointer-events-none"
+            }`}
+          >
             <div className="text-gray-400">{icon}</div>
           </div>
         )}
@@ -45,11 +54,14 @@ const Input: React.FC<InputProps> = ({
           required={required}
           autoComplete="off"
           onChange={onchange}
+          onFocus={onfocus}
           min={min}
           max={max}
           step={step}
           placeholder={placeholder}
-          className={`w-full ${icon ? "pl-10" : "pl-3"} ${
+          className={`w-full ${clasName} ${
+            icon && iconPosition !== "right" ? "pl-10" : "pl-3"
+          } ${
             showPasswordToggle ? "pr-10" : "pr-3"
           } py-2 md:py-3 border focus:outline-1 rounded-[5px] transition-colors  ${
             error ? "border-red-500 bg-red-50" : "border-[#c4c4c4]"

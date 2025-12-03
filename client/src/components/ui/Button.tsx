@@ -68,6 +68,7 @@ export const Button: React.FC<ButtonProps> = ({
         reflectionEffect,
         className
       )}
+      type={type}
       disabled={isLoading || props.disabled}
       {...props}
     >

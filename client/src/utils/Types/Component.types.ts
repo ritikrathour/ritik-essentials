@@ -11,19 +11,22 @@ export interface IFormErrors {
 // Input Component
 export interface InputProps {
   name: string;
-  label: string;
+  label?: string;
   type: string;
   value: string | undefined;
   onchange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onfocus?: () => void;
   error?: string;
   placeholder?: string;
   required?: boolean;
   icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
   showPasswordToggle?: boolean;
   defaultValue?: string;
   min?: string;
   max?: string;
   step?: string;
+  clasName?: string;
 }
 // button
 export interface IButtonProps {

@@ -22,6 +22,7 @@ import { useProduct } from "../hooks/useProduct";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { RootState } from "../redux-store/Store";
+import SelectCategory from "../components/ui/SelectCategory";
 
 enum ProductUnit {
   KG = "kg",
@@ -339,7 +340,7 @@ const CreateProduct = () => {
                   error={errors.name}
                 />
               </div>
-              <SelectField
+              {/* <SelectField
                 label="Category"
                 name="category"
                 value={formData.category}
@@ -347,6 +348,11 @@ const CreateProduct = () => {
                 options={categories}
                 required
                 error={errors.category}
+              /> */}
+              <SelectCategory
+                value={formData.category}
+                onchange={handleInputChange}
+                options={categories}
               />
               <Input
                 label="SKU"
