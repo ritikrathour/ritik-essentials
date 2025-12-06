@@ -13,9 +13,11 @@ import {
 } from "../controllers/Auth.controller";
 const authRoute = Router();
 authRoute.route("/register").post(authLimiter, Register);
-authRoute.route("/login").post(authLimiter, Login);
+authRoute.route("/login").post(Login);
+// authLimiter
 authRoute.route("/verify-email").get(authLimiter, VerifyEmail);
-authRoute.route("/verify-login-otp").post(authLimiter, VerifyLogInOTP);
+authRoute.route("/verify-login-otp").post(VerifyLogInOTP);
+// authLimiter
 authRoute.route("/resend-otp").post(ReSendOTP);
 authRoute.route("/refresh-token").post(
   // authLimiter,
@@ -25,5 +27,6 @@ authRoute.route("/forget-password").post(authLimiter, ForgetPassword);
 authRoute
   .route("/verify-forget-password")
   .post(authLimiter, VerifyForgetPassword);
-authRoute.route("/logout").post(authLimiter, Logout);
+authRoute.route("/logout").post(Logout);
+// authLimiter
 export default authRoute;

@@ -70,17 +70,6 @@ const CreateProduct = () => {
     removeImage,
     setPrimaryImage,
   } = useImageUpload();
-  const { categories: data } = useProduct().getCategories("/categories");
-  // get object values from categories
-  const categories = useMemo(() => {
-    return (
-      data?.category &&
-      data?.category?.map((cate: any) => {
-        return [cate?.name].join(",");
-      })
-    );
-  }, [data]);
-
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
   const { errors, validate, setErrors } = useCreateProductValidation(formData);
@@ -352,7 +341,6 @@ const CreateProduct = () => {
               <SelectCategory
                 value={formData.category}
                 onchange={handleInputChange}
-                options={categories}
               />
               <Input
                 label="SKU"

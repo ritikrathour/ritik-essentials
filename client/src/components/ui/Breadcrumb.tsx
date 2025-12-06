@@ -45,7 +45,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`flex items-center space-x-2 ${className} md:px-10 px-4 pb-2 pt-22 flex-wrap`}
+      className={`flex items-center space-x-2 ${className} md:px-10 px-4 pb-2 md:pt-8 pt-16 lg:pt-22 flex-wrap`}
     >
       <ol className="flex items-center space-x-2">
         {displayItems.map((item, index) => {
@@ -78,7 +78,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                   }`}
                   aria-current={isLast ? "page" : undefined}
                 >
-                  {item.label.slice(0, 14)}
+                  {item.label.slice(0, 15)}
                 </span>
               )}
 

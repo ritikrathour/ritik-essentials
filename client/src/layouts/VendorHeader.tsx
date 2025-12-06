@@ -1,11 +1,11 @@
 import { lazy, Suspense, useState } from "react";
 import { Bell, ChevronDown, Menu, X, Plus, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
-import MobileMenu from "./MobileLayouts/MobileMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
 import { openCartDrawer } from "../redux-store/UISlice";
+const MobileMenu = lazy(() => import("./MobileLayouts/MobileMenu"));
 const ProfileDropDown = lazy(
   () => import("../components/popups/ProfileDropDown")
 );
@@ -17,13 +17,13 @@ const VendorHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const user = useSelector((state: RootState) => state.user);
   const navItems = [
-    { name: "Dashboard", icon: "📊" },
-    { name: "My Products", icon: "📦" },
-    { name: "Orders", icon: "📋" },
-    { name: "Analytics", icon: "📈" },
-    { name: "Payments", icon: "💰" },
-    { name: "Reviews", icon: "⭐" },
-    { name: "Settings", icon: "⚙️" },
+    { name: "Dashboard", icon: "📊", url: "/dashboard" },
+    { name: "My-products", icon: "📦", url: "/vendor-products" },
+    { name: "Orders", icon: "📋", url: "/vendor-orders" },
+    { name: "Analytics", icon: "📈", url: "/analystics" },
+    { name: "Payments", icon: "💰", url: "/payments" },
+    { name: "Reviews", icon: "⭐", url: "/reviews" },
+    { name: "Settings", icon: "⚙️", url: "/setting" },
   ];
   const dispatch = useDispatch();
   return (
@@ -135,16 +135,17 @@ const VendorHeader = () => {
           )}
         </div>
       </div>
-
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <MobileMenu
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          navItems={navItems}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-        />
+        <Suspense>
+          <MobileMenu
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            navItems={navItems}
+            mobileMenuOpen={mobileMenuOpen}
+            setMobileMenuOpen={setMobileMenuOpen}
+          />
+        </Suspense>
       )}
 
       {/* Desktop Navigation Bar */}
@@ -152,8 +153,8 @@ const VendorHeader = () => {
         <div className="mx-auto flex items-center justify-between">
           <ul className="flex items-center gap-6 xl:gap-8 overflow-x-auto ">
             {navItems.map((item) => (
-              <Link to={item.name} key={item.name}>
-                <li key={item.name}>
+              <Link to={item.url} key={item.name}>
+                <li>
                   <button
                     onClick={() => setActiveTab(item.name)}
                     className={`flex items-center gap-2 py-4 text-sm font-medium hover:text-[#febd2f] transition-colors whitespace-nowrap ${
@@ -172,7 +173,7 @@ const VendorHeader = () => {
 
           {/* Create Product Button */}
           <Link to="/create-product">
-            <Button type="button" variant="glass">
+            <Button type="button" variant="glass" className="text-nowrap">
               <Plus className="w-5 h-5" />
               <span>Create Product</span>
             </Button>

@@ -11,11 +11,10 @@ export const AxiosInstense = axios.create({
 AxiosInstense.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<any>) => {
-    console.log(error);
     try {
       const originalRequest = error.config;
       if (error.response?.status === 401 && originalRequest) {
-        const data = await axios.post(
+        await axios.post(
           `${isProduction}/refresh-token`,
           {},
           { withCredentials: true }

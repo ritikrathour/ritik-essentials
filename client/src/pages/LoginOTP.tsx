@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import OTPInputBox from "../components/OTPInputBox";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useOTP } from "../hooks/useOTP";
 import OTPTimer from "../components/OTPTimer";
 
@@ -11,6 +11,7 @@ const LoginOTP = () => {
   const { email } = useParams<{ email: string }>();
   const [value, setValue] = useState(new Array(otp_length).fill(""));
   const isOtpComplete = value.every((digit) => digit !== "");
+  const navigate = useNavigate();
   if (!email) {
     return toast.error("Email is required!");
   }
@@ -19,11 +20,12 @@ const LoginOTP = () => {
     email,
     otp: value,
     setTtl,
-    redirect: "/",
   });
   // handleVerifyOTP
   const handleVerifyOTP = () => {
     VerifyOTP("/verify-login-otp");
+    navigate("/");
+    window.location.reload();
   };
   // timer count down for otp
   useEffect(() => {

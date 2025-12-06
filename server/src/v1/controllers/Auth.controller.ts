@@ -221,14 +221,14 @@ const Login = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "All fields are required!", false);
   }
   // is otp present in redis
-  const storedOTP = await redisClient.get(getOTPkey(email, "login"));
-  if (storedOTP) {
-    throw new ApiError(
-      400,
-      "Verify OTP sent to your email! Please complete login!",
-      false
-    );
-  }
+  // const storedOTP = await redisClient.get(getOTPkey(email, "login"));
+  // if (storedOTP) {
+  //   throw new ApiError(
+  //     400,
+  //     "Verify OTP sent to your email! Please complete login!",
+  //     false
+  //   );
+  // }
   // find user in Database
   const checkUser = await UserModel.findOne({ email });
   if (!checkUser) {
@@ -240,21 +240,21 @@ const Login = AsyncHandler(async (req: Request, res: Response) => {
   }
   // check password
   const checkPassword = await bcrypt.compare(password, checkUser.password);
-  if (!checkPassword) {
-    throw new ApiError(401, "Invalid password!", false);
-  }
+  // if (!checkPassword) {
+  //   throw new ApiError(400, "Invalid password!", false);
+  // }
   // store otp in redis, send OTP
   const otp = GENERATE_OTP();
-  await redisClient.setEx(getOTPkey(email, "login"), OTP_EXPIRY, otp);
+  // await redisClient.setEx(getOTPkey(email, "login"), OTP_EXPIRY, otp);
   // send email
-  const SentEmailOTP = await SendEmail(
-    email,
-    "Login OTP Verification",
-    LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp))
-  );
-  if (!SentEmailOTP) {
-    throw new ApiError(500, "Failed to send OTP", false);
-  }
+  // const SentEmailOTP = await SendEmail(
+  //   email,
+  //   "Login OTP Verification",
+  //   LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp))
+  // );
+  // if (!SentEmailOTP) {
+  //   throw new ApiError(500, "Failed to send OTP", false);
+  // }
   res.json(
     new ApiResponse(
       200,
@@ -273,14 +273,14 @@ const VerifyLogInOTP = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "OTP is required", false);
   }
   // get storedOTP from redis
-  const storedOTP = await redisClient.get(getOTPkey(email, "login"));
-  if (!storedOTP) {
-    throw new ApiError(400, "OTP expired or Used!", false);
-  }
-  // compare otp to storedOTP
-  if (storedOTP !== otp) {
-    throw new ApiError(400, "Invalid OTP", false);
-  }
+  // const storedOTP = await redisClient.get(getOTPkey(email, "login"));
+  // if (!storedOTP) {
+  //   throw new ApiError(400, "OTP expired or Used!", false);
+  // }
+  // // compare otp to storedOTP
+  // if (storedOTP !== otp) {
+  //   throw new ApiError(400, "Invalid OTP", false);
+  // }
   // get user by email
   const user = await UserModel.findOne({ email });
   if (!user) {
@@ -294,7 +294,7 @@ const VerifyLogInOTP = AsyncHandler(async (req: Request, res: Response) => {
     role: user.role,
   });
   // delete storedOTP from redis
-  await redisClient.del(getOTPkey(email, "login"));
+  // await redisClient.del(getOTPkey(email, "login"));
   // update refresh token in mongodb
   user.refreshToken = JWTRefreshToken;
   await user.save();

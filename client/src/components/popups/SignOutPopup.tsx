@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader";
@@ -8,6 +7,9 @@ import useOverlayManager from "../../hooks/useOverLay";
 import { RootState } from "../../redux-store/Store";
 import { closeSignOutPopup } from "../../redux-store/UISlice";
 import { Button } from "../ui/Button";
+import { AxiosInstense } from "../../services/AxiosInstance";
+import toast from "react-hot-toast";
+import axios from "axios";
 const SignOutPopUp = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -17,23 +19,27 @@ const SignOutPopUp = () => {
     isSignOutOpen,
     closeSignOutPopup
   );
+  const closePopup = () => {
+    return dispatch(closeSignOutPopup());
+  };
   const signOut = async () => {
     try {
       setLoading(true);
-      // const { data } = await AxiosInstance.put("/user/signout", {});
+      const { data } = await AxiosInstense.post("/logout", {});
+      console.log(data);
+
       setLoading(false);
-      // toast.success(data?.message);
-      // dispatch(autoScrolling(false));
-      window.location.reload();
+      toast.success(data?.message);
       navigate("/");
+      window.location.reload();
+      dispatch(closeSignOutPopup());
     } catch (error) {
       console.log(error);
-      //     toast.error(error?.response?.data?.message,{
-      //         iconTheme:{
-      //                primary:"#f44336",
-      //                secondary:"#fff"
-      //         }
-      //    })
+      toast.error(
+        axios.isAxiosError(error)
+          ? error?.response?.data?.message || error?.response?.data?.error
+          : "Log Out Failed!"
+      );
       setLoading(false);
     }
   };
@@ -42,13 +48,10 @@ const SignOutPopUp = () => {
       <OverlayBackdrop
         isOpen={isSignOutOpen}
         closeOnClick={closeOnOutsideClick}
-        onClose={closeSignOutPopup()}
+        onClose={closePopup}
       >
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="md:w-[40%] md:h-[40%] w-full h-[220px] rounded-xl bg-white drop-shadow-md flex justify-between p-5 flex-col gap-4 z-50"
-        >
-          <div className="absolute top-6 left-4 w-[35px] h-[35px] rounded-full leading-[35px] cursor-pointer bg-[#1e4243] text-center">
+        <div className="md:w-[40%] m-2 md:h-[40%] w-full h-[250px] rounded-xl bg-white drop-shadow-md flex justify-between p-4 sm:p-5 flex-col gap-4 z-50">
+          <div className="absolute top-4 md:top-6 left-4 w-[35px] h-[35px] rounded-full leading-[35px] cursor-pointer bg-[#1e4243] text-center">
             <i className="fas fa-warning leading-[35px] text-[#469bbf]"></i>
           </div>
           <div className="mt-12">
@@ -72,6 +75,7 @@ const SignOutPopUp = () => {
             <Button
               type="button"
               variant="dark"
+              onClick={signOut}
               disabled={loading}
               isLoading={loading}
               className="flex-1"

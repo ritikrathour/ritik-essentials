@@ -28,12 +28,14 @@ const Input: React.FC<InputProps> = ({
     : type;
   return (
     <div className="w-full">
-      <label
-        htmlFor={value}
-        className="block text-sm font-medium text-[#173334] mb-2 capitalize"
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+      {label && (
+        <label
+          htmlFor={value}
+          className="block text-sm font-medium text-[#173334] mb-2 capitalize"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div className="relative rounded-[5px]">
         {icon && (
           <div
@@ -63,7 +65,7 @@ const Input: React.FC<InputProps> = ({
             icon && iconPosition !== "right" ? "pl-10" : "pl-3"
           } ${
             showPasswordToggle ? "pr-10" : "pr-3"
-          } py-2 md:py-3 border focus:outline-1 rounded-[5px] transition-colors  ${
+          } py-2 md:py-3 border focus:outline-1 outline-[black] rounded-[5px] transition-colors  ${
             error ? "border-red-500 bg-red-50" : "border-[#c4c4c4]"
           }`}
         />

@@ -92,6 +92,10 @@ const Product = new mongoose.Schema<IProduct>(
     expiryDiscount: {
       type: Date,
     },
+    sales: {
+      type: Number,
+      default: 0,
+    },
     tags: [
       {
         type: String,

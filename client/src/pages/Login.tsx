@@ -51,6 +51,8 @@ const Login = () => {
         password: "",
       });
     } catch (error) {
+      console.log(error);
+
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error?.response?.data?.error

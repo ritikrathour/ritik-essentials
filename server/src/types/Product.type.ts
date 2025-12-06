@@ -21,6 +21,7 @@ export interface IProduct {
   sku: string;
   stock: number;
   images: string[];
+  sales?: number;
   tags: string[];
   status: "publised" | "draft";
   weight?: number;

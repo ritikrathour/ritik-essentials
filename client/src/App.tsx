@@ -17,6 +17,7 @@ import CreateProductBtn from "./components/vendor/CreateProductBtn";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
 // lazy pages
+const VendorProducts = lazy(() => import("./pages/VendorProducts"));
 const SignOutPopUp = lazy(() => import("./components/popups/SignOutPopup"));
 const Category = lazy(() => import("./pages/Category"));
 const CreateProduct = lazy(() => import("./pages/CreateProduct"));
@@ -184,6 +185,14 @@ function App() {
                 element={
                   <PageTransition variants="fade">
                     <Products />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/vendor-products"
+                element={
+                  <PageTransition variants="fade">
+                    <VendorProducts />
                   </PageTransition>
                 }
               />

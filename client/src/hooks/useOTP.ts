@@ -4,13 +4,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { IuseOTP } from "../utils/Types/Otp.types";
-export const useOTP = ({
-  email,
-  otp,
-  setTtl,
-  data,
-  redirect = "/",
-}: IuseOTP) => {
+export const useOTP = ({ email, otp, setTtl, data }: IuseOTP) => {
   const [isResending, setIsResending] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isOtpSending, setIsOtpSending] = useState<boolean>(false);
@@ -27,7 +21,6 @@ export const useOTP = ({
       });
       toast.success(response?.data?.message);
       setIsVerifying(false);
-      navgate(redirect);
     } catch (error) {
       setIsVerifying(false);
       toast.error(
