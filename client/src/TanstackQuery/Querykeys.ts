@@ -19,3 +19,6 @@ export const userKeys = {
   details: () => [...userKeys.all, "detail"] as const,
   detail: (id: string) => [...userKeys.details(), id] as const,
 };
+export const VendorProductsKeys = {
+  all: ["venderProducts"] as const,
+};

@@ -12,10 +12,9 @@ import {
   Package,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "../components/ui/Button";
-import SelectCategory from "../components/ui/SelectCategory";
-import { useProduct } from "../hooks/useProduct";
-import Input from "../components/Input";
+import Loader from "../../components/Loader";
+import { ProductRow } from "../../components/vendor/ProductRow";
+import { FilterBar } from "../../components/FilterBar";
 
 // Mock API Service Layer
 const ProductService = {
@@ -183,7 +182,7 @@ const ProductService = {
 
 // Custom Hooks
 const useProducts = (vendorId: any, filters: any) => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -192,7 +191,8 @@ const useProducts = (vendorId: any, filters: any) => {
       setLoading(true);
       setError(null);
       const result = await ProductService.fetchProducts(vendorId, filters);
-      // setProducts(result.data);
+      // const data = await ProductApi.getProductsByVendor(vendorId,"/products")
+      setProducts(result?.data);
     } catch (err) {
       // setError(err.message);
     } finally {
@@ -207,231 +207,9 @@ const useProducts = (vendorId: any, filters: any) => {
   return { products, loading, error, refetch: fetchProducts };
 };
 
-// Presentational Components
-const StatCard = ({ icon: Icon, label, value, trend, color }: any) => (
-  <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm font-medium text-gray-600">{label}</p>
-        <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
-        {trend && (
-          <p
-            className={`text-sm mt-2 flex items-center ${
-              trend >= 0 ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            <TrendingUp className="w-4 h-4 mr-1" />
-            {trend >= 0 ? "+" : ""}
-            {trend}% from last month
-          </p>
-        )}
-      </div>
-      <div className={`p-3 rounded-full ${color}`}>
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-    </div>
-  </div>
-);
-
-const FilterBar = ({ filters, onFilterChange }: any) => {
-  const { categories: data } = useProduct().getCategories("/categories");
-
-  const makeCategories = useMemo(() => {
-    return (
-      data?.category &&
-      data?.category?.map((cat: any) => {
-        return [cat?.name].join(",");
-      })
-    );
-  }, [data]);
-  console.log(makeCategories);
-
-  return (
-    <div className="bg-white rounded-lg shadow p-4 mb-6 border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Input
-          // label="fnaskdfjbs"
-          name="Search"
-          type="text"
-          onchange={() => {}}
-          required
-          placeholder="Search..."
-          value={""}
-          icon={<Search />}
-          iconPosition="right"
-        />
-
-        <select
-          id="status"
-          name="status"
-          value={filters.status}
-          onChange={(e) =>
-            onFilterChange({ ...filters, status: e.target.value })
-          }
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-        </select>
-
-        <select
-          id="categories"
-          name="categories"
-          value={filters.category}
-          onChange={(e) =>
-            onFilterChange({ ...filters, category: e.target.value })
-          }
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="all">All Categories</option>
-          {makeCategories?.map((cat: any) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-
-        <Button type="button" variant="primary">
-          <Plus className="w-5 h-5" />
-          Add Product
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const ProductRow = ({ product, onStatusToggle, onEdit, onDelete }: any) => {
-  const [showMenu, setShowMenu] = useState(false);
-
-  const getStockStatus = (stock: any) => {
-    if (stock === 0)
-      return { label: "Out of Stock", color: "bg-red-100 text-red-800" };
-    if (stock < 10)
-      return { label: "Low Stock", color: "bg-yellow-100 text-yellow-800" };
-    return { label: "In Stock", color: "bg-green-100 text-green-800" };
-  };
-
-  const stockStatus = getStockStatus(product.stock);
-
-  return (
-    <tr className="border-b border-gray-200 hover:bg-gray-50">
-      <td className="px-6 py-4">
-        <div className="flex items-center">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-12 h-12 rounded-lg object-cover"
-          />
-          <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">
-              {product.name}
-            </div>
-            <div className="text-sm text-gray-500">{product.sku}</div>
-          </div>
-        </div>
-      </td>
-
-      <td className="px-6 py-4">
-        <span className="text-sm text-gray-900">{product.category}</span>
-      </td>
-
-      <td className="px-6 py-4">
-        <span className="text-sm font-medium text-gray-900">
-          ${product.price.toFixed(2)}
-        </span>
-      </td>
-
-      <td className="px-6 py-4">
-        <div>
-          <span className="text-sm font-medium text-gray-900">
-            {product.stock}
-          </span>
-          <span
-            className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${stockStatus.color}`}
-          >
-            {stockStatus.label}
-          </span>
-        </div>
-      </td>
-
-      <td className="px-6 py-4">
-        <button
-          onClick={() =>
-            onStatusToggle(
-              product.id,
-              product.status === "published" ? "draft" : "published"
-            )
-          }
-          className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-            product.status === "published"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
-        >
-          {product.status === "published" ? (
-            <Eye className="w-3 h-3" />
-          ) : (
-            <EyeOff className="w-3 h-3" />
-          )}
-          {product.status === "published" ? "Published" : "Draft"}
-        </button>
-      </td>
-
-      <td className="px-6 py-4">
-        <div>
-          <div className="text-sm font-medium text-gray-900">
-            {product.sales} units
-          </div>
-          <div className="text-sm text-gray-500">
-            ${product.revenue.toFixed(2)}
-          </div>
-        </div>
-      </td>
-
-      <td className="px-6 py-4">
-        <div className="relative">
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <MoreVertical className="w-5 h-5 text-gray-600" />
-          </button>
-
-          {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
-              <button
-                onClick={() => {
-                  onEdit(product.id);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-              >
-                <Edit className="w-4 h-4" />
-                Edit Product
-              </button>
-              <button
-                onClick={() => {
-                  onDelete(product.id);
-                  setShowMenu(false);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete Product
-              </button>
-            </div>
-          )}
-        </div>
-      </td>
-    </tr>
-  );
-};
-
 // Main Component
 const VendorProducts = () => {
   const vendorId = "vendor_123"; // In production, get from auth context
-
   const [filters, setFilters] = useState({
     search: "",
     status: "all",
@@ -439,56 +217,14 @@ const VendorProducts = () => {
   });
 
   const { products, loading, error, refetch } = useProducts(vendorId, filters);
-
-  // Derived state using useMemo for performance
-  const stats = useMemo(() => {
-    const published = products.filter((p: any) => p.status === "published");
-    const totalRevenue = products.reduce((sum, p: any) => sum + p.revenue, 0);
-    const totalSales = products.reduce((sum, p: any) => sum + p.sales, 0);
-    const lowStock = products.filter(
-      (p: any) => p.stock < 10 && p.stock > 0
-    ).length;
-
-    return {
-      totalProducts: products.length,
-      published: published.length,
-      drafts: products.length - published.length,
-      totalRevenue,
-      totalSales,
-      lowStock,
-    };
-  }, [products]);
-
-  const categories = useMemo(
-    () => [...new Set(products.map((p: any) => p.category))].sort(),
-    [products]
-  );
-
   // Event Handlers
-  const handleStatusToggle = async (productId: any, newStatus: any) => {
-    try {
-      await ProductService.updateProductStatus(productId, newStatus);
-      refetch();
-    } catch (err) {
-      console.error("Failed to update product status:", err);
-    }
-  };
+  const handleStatusToggle = async (productId: any, newStatus: any) => {};
 
   const handleEdit = (productId: any) => {
-    console.log("Edit product:", productId);
     // Navigate to edit page or open modal
   };
 
-  const handleDelete = async (productId: any) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        await ProductService.deleteProduct(productId);
-        refetch();
-      } catch (err) {
-        console.error("Failed to delete product:", err);
-      }
-    }
-  };
+  const handleDelete = async (productId: any) => {};
 
   if (error) {
     return (
@@ -523,17 +259,13 @@ const VendorProducts = () => {
           </p>
         </div>
         {/* Filter Bar */}
-        <FilterBar
-          filters={filters}
-          onFilterChange={setFilters}
-          categories={categories}
-        />
+        <FilterBar filters={filters} onFilterChange={setFilters} />
 
         {/* Products Table */}
         <div className="bg-white rounded-lg shadow border border-gray-200">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <Loader />
               <p className="mt-4 text-gray-600">Loading products...</p>
             </div>
           ) : products.length === 0 ? (

@@ -1,8 +1,7 @@
 export interface ICategory {
-  // id: string;
-  icon: string;
-  title: string;
-  children?: any;
+  name: string;
+  image: string;
+  count: number;
 }
 export interface ProductImage {
   id: string;
@@ -52,13 +51,3 @@ export interface IProductFormData {
   organic: boolean;
   featured: boolean;
 }
-
-// id: 1,
-//     name: "Men Full Sleeve Graphic Print Hooded Sweatshirt",
-//     brand: "FLYIND VOGUE OUTFIT",
-//     price: 418,
-//     originalPrice: 1299,
-//     discount: 67,
-//     image: "../assets/daily.png",
-//     sponsored: true,
-//     badge: "Hot Deal",

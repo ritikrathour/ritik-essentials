@@ -63,7 +63,7 @@ const Login = () => {
   };
   return (
     <>
-      <section className="flex items-center justify-center gap-2 flex-col h-[100vh] px-1">
+      <section className="flex items-center justify-center gap-2 flex-col h-[90vh] px-1">
         <h2 className="font-[600] text-[35px] sm:text-[42px] text-[#173334]">
           Welcome Back
         </h2>

@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "../ui/Button";
 import WishlistCard from "../WishListCard";
+import { Fragment } from "react/jsx-runtime";
 
 const WishlistCompo = () => {
   return (
     <>
       <h2 className="text-2xl font-bold mb-6">My Wishlist 💖</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {[1, 2, 3, 4, 5, 6].map((item) => (
-          <WishlistCard />
+        {[1, 2, 3, 4, 5, 6].map((item, i) => (
+          <Fragment key={i}>
+            <WishlistCard />
+          </Fragment>
         ))}
       </div>
       {[1, 2, 3, 4, 5, 6].length > 5 && (

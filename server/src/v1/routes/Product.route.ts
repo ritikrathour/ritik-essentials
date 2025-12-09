@@ -6,6 +6,7 @@ import {
   GetProductById,
   GetProductBySku,
   GetProducts,
+  GetProductsByVendor,
 } from "../controllers/Product.controller";
 import express from "express";
 import Authenticate from "../middlewares/Authtenticate.middleware";
@@ -18,6 +19,7 @@ productroute.route("/brands").get(GetBrands);
 // productroute.route("/brand-products").get(GetProductByCategory);
 productroute.route("/product/:id").get(GetProductById);
 productroute.route("/categories").get(GetCategories);
+productroute.route("/vendor-products/:vendorId").get(GetProductsByVendor);
 productroute
   .route("/product/:id")
   .delete(Authenticate, isVendor, DeleteProduct);

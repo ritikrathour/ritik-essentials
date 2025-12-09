@@ -23,7 +23,6 @@ const VendorHeader = () => {
     { name: "Analytics", icon: "📈", url: "/analystics" },
     { name: "Payments", icon: "💰", url: "/payments" },
     { name: "Reviews", icon: "⭐", url: "/reviews" },
-    { name: "Settings", icon: "⚙️", url: "/setting" },
   ];
   const dispatch = useDispatch();
   return (

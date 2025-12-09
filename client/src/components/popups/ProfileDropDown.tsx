@@ -55,7 +55,7 @@ const ProfileDropDown = ({
           <Link
             to={`${
               user?.role === "customer"
-                ? `profile/${user?._id}`
+                ? `profile`
                 : `vendor-profile/${user?._id}`
             }`}
           >

@@ -17,7 +17,7 @@ import CreateProductBtn from "./components/vendor/CreateProductBtn";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
 // lazy pages
-const VendorProducts = lazy(() => import("./pages/VendorProducts"));
+const VendorProducts = lazy(() => import("./pages/VendorPages/VendorProducts"));
 const SignOutPopUp = lazy(() => import("./components/popups/SignOutPopup"));
 const Category = lazy(() => import("./pages/Category"));
 const CreateProduct = lazy(() => import("./pages/CreateProduct"));
@@ -209,13 +209,9 @@ function App() {
                 ></Route>
               </Route>
               {/* --------------------- only vedor -------------------------  */}
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={["customer", "vendor"]} />
-                }
-              >
+              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
                 <Route
-                  path="/profile/:userId"
+                  path="/profile"
                   element={
                     <PageTransition variants="fade">
                       <UserProfile />
@@ -223,13 +219,9 @@ function App() {
                   }
                 />
               </Route>
-              <Route
-                element={
-                  <ProtectedRoute allowedRoles={["customer", "vendor"]} />
-                }
-              >
+              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
                 <Route
-                  path="/wishlist/:userId"
+                  path="/wishlist"
                   element={
                     <PageTransition variants="fade">
                       <Wishlist />
