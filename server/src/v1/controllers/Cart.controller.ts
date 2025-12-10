@@ -1,14 +1,11 @@
-// ============================================================================
-// TYPES & INTERFACES
-// ============================================================================
-
-import express, { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { MongoClient, Db, Collection, ObjectId } from "mongodb";
 import AsyncHandler from "../../utils/AsyncHandler";
 import { Cart } from "../services/Cart.service";
 import ApiError from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { ICartItem } from "../../types/Cart.type";
+import { validateAddToCart } from "../../utils/Validation";
 
 interface CartItem {
   productId: string;
@@ -35,22 +32,6 @@ interface ApiResponsee<T = any> {
   message?: string;
 }
 
-interface AddToCartRequest {
-  productId: string;
-  quantity: number;
-  price: number;
-  name: string;
-  imageUrl?: string;
-}
-
-interface UpdateCartItemRequest {
-  quantity: number;
-}
-
-// ============================================================================
-// DATABASE CONNECTION
-// ============================================================================
-
 let db: Db;
 let cartsCollection: Collection<Cart>;
 
@@ -74,36 +55,6 @@ const connectDB = async (): Promise<void> => {
   }
 };
 
-// ============================================================================
-// VALIDATION FUNCTIONS
-// ============================================================================
-
-const validateAddToCart = (
-  body: any
-): { isValid: boolean; errors: string[] } => {
-  const errors: string[] = [];
-  if (!body.productId || typeof body.productId !== "string") {
-    errors.push("Product ID is required and must be a string");
-  }
-  if (
-    !body.quantity ||
-    typeof body.quantity !== "number" ||
-    body.quantity <= 0
-  ) {
-    errors.push("Quantity is required and must be a positive number");
-  }
-  if (!body.price || typeof body.price !== "number" || body.price <= 0) {
-    errors.push("Price is required and must be a positive number");
-  }
-  if (!body.name || typeof body.name !== "string") {
-    errors.push("Product name is required");
-  }
-  if (body.imageUrl && typeof body.imageUrl !== "string") {
-    errors.push("Image URL must be a string");
-  }
-  return { isValid: errors.length === 0, errors };
-};
-
 const validateUpdateCartItem = (
   body: any
 ): { isValid: boolean; errors: string[] } => {
@@ -120,77 +71,12 @@ const validateUpdateCartItem = (
   return { isValid: errors.length === 0, errors };
 };
 
-// ============================================================================
-// ERROR HANDLING
-// ============================================================================
-
 const createError = (statusCode: number, message: string): Error => {
   const error: any = new Error(message);
   error.statusCode = statusCode;
   error.isOperational = true;
   return error;
 };
-
-const errorHandler = (
-  err: any,
-  req: Request,
-  res: Response<ApiResponsee>,
-  next: NextFunction
-): void => {
-  const statusCode = err.statusCode || 500;
-  const message = err.isOperational ? err.message : "Internal server error";
-
-  if (!err.isOperational) {
-    console.error("Unhandled Error:", err);
-  }
-
-  res.status(statusCode).json({
-    success: false,
-    error: message,
-  });
-};
-
-// ============================================================================
-// MIDDLEWARE
-// ============================================================================
-
-const authenticate = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw createError(401, "No authentication token provided");
-    }
-
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      throw createError(401, "Invalid token");
-    }
-
-    // Mock user extraction (Replace with JWT verification)
-    (req as any).user = { id: token };
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-const requestLogger = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-  next();
-};
-
-// ============================================================================
-// CART REPOSITORY
-// ============================================================================
 
 const findCartByUserId = async (userId: string): Promise<Cart | null> => {
   return await cartsCollection.findOne({ userId });
@@ -232,10 +118,6 @@ const deleteCart = async (userId: string): Promise<boolean> => {
   const result = await cartsCollection.deleteOne({ userId });
   return result.deletedCount > 0;
 };
-
-// ============================================================================
-// CART SERVICE
-// ============================================================================
 
 const calculateCartTotals = (
   items: CartItem[]
@@ -290,12 +172,10 @@ const updateCartItem = async (
   quantity: number
 ): Promise<Cart> => {
   const cart = await getOrCreateCart(userId);
-
   const itemIndex = cart.items.findIndex((i) => i.productId === productId);
   if (itemIndex === -1) {
     throw createError(404, "Item not found in cart");
   }
-
   cart.items[itemIndex].quantity = quantity;
 
   const totals = calculateCartTotals(cart.items);
@@ -349,11 +229,7 @@ const getUserCart = async (userId: string): Promise<Cart> => {
   return await getOrCreateCart(userId);
 };
 
-// ============================================================================
-// CART CONTROLLERS
-// ============================================================================
-
-////////////////////////////////////////////////////////////////////////
+// get cart
 const GetCart = AsyncHandler(async (req: Request, res: Response) => {
   const userId = req.user?._id;
   if (!userId) {
@@ -365,18 +241,76 @@ const GetCart = AsyncHandler(async (req: Request, res: Response) => {
   }
   res.json(new ApiResponse(200, cart, "Cart Created or get Succcessfully"));
 });
+// add product to the cart
 const AddToCart = AsyncHandler(async (req: Request, res: Response) => {
+  const { productId } = req.params;
+  if (!productId) {
+    throw new ApiError(404, "product id is required!");
+  }
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(400, "Unauthorised user");
+  }
   // validate cart items
   const validation = validateAddToCart(req.body);
   if (!validation?.isValid) {
     throw new ApiError(400, validation?.errors.join(", "), false);
   }
-  const userId = req.user?._id
-  const itemData:ICartItem = req.body
-  const cart = await 
-  res.json({ ok: "ji" });
+  const itemData: ICartItem = req.body;
+  const cart = await Cart.addItemToCart(userId, itemData, productId);
+  if (!cart) {
+    throw new ApiError(500, "Items not added to Cart!");
+  }
+  res.json(new ApiResponse(200, cart, "Item added to cart successfully"));
 });
-export { GetCart, AddToCart };
+// update cart item
+const UpdateItem = AsyncHandler(async (req: Request, res: Response) => {
+  const { quantity } = req.body;
+  // validate QTY
+  if (!quantity || typeof quantity !== "number" || quantity <= 0) {
+    throw new ApiError(
+      400,
+      "Quantity is required and must be a positive number"
+    );
+  }
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(400, "Unauthorised User!");
+  }
+  const { productId } = req.params;
+  if (!productId) {
+    throw new ApiError(404, "ProductId not found");
+  }
+  // update cart
+  const updateCart = await Cart.updateCartItem(userId, productId, quantity);
+  if (!updateCart) {
+    throw new ApiError(500, "Cart not updated!");
+  }
+  res.json(new ApiResponse(200, updateCart, "Cart item updated successfully"));
+});
+// removeItem from cart
+const RemoverItem = AsyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(401, "Unauthorised user!");
+  }
+  const { productId } = req.params;
+  if (!productId) {
+    throw new ApiError(400, "ProductId is required!");
+  }
+  const cart = await Cart.removeItemFromCart(userId, productId);
+  res.json(new ApiResponse(200, cart, "Item removed from cart successfully"));
+});
+// clear cart
+const ClearCart = AsyncHandler(async (req: Request, res: Response) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    throw new ApiError(401, "Unauthorised user");
+  }
+  await Cart.clearCart(userId);
+  res.json(new ApiResponse(200, {}, "Cart cleared successfully"));
+});
+export { GetCart, AddToCart, UpdateItem, RemoverItem, ClearCart };
 const getCart = async (
   req: Request,
   res: Response<ApiResponsee<Cart>>,
@@ -484,43 +418,4 @@ const clearCart = async (
   } catch (error) {
     next(error);
   }
-};
-
-// ============================================================================
-// ROUTES
-// ============================================================================
-
-const createCartRouter = (): express.Router => {
-  const router = express.Router();
-
-  router.use(authenticate);
-
-  router.get("/", getCart);
-  router.post("/items", addToCart);
-  router.put("/items/:productId", updateItem);
-  router.delete("/items/:productId", removeItem);
-  router.delete("/", clearCart);
-
-  return router;
-};
-
-// ============================================================================
-// APP SETUP
-// ============================================================================
-
-const createApp = (): express.Application => {
-  const app = express();
-
-  app.use(express.json());
-  app.use(requestLogger);
-
-  app.get("/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
-  });
-
-  app.use("/api/cart", createCartRouter());
-
-  app.use(errorHandler);
-
-  return app;
 };
