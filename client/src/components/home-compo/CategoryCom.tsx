@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ICategory } from "../../utils/Types/Product.types";
 
-const CategoryCom: React.FC<ICategory> = ({ icon, title, children }) => {
+const CategoryCom: React.FC<any> = ({ icon, title, children }) => {
   const [isEnter, setIsEnter] = useState<boolean>(false);
   const handleMouseEnter = () => {
     setIsEnter(true);

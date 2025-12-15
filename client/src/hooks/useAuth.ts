@@ -13,7 +13,6 @@ export const useAuth = () => {
       queryKey: userKeys.all,
       queryFn: () => AuthApi.currentUser(),
       enabled,
-      retry: 1,
       refetchOnWindowFocus: false,
     });
     useEffect(() => {

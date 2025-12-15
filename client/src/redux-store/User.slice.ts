@@ -56,18 +56,13 @@ export const userSlice = createSlice({
     setUser: (state, action) => {
       state.loading = true;
       state.user = action.payload;
-      state.isAuthenticated = true;
+      state.isAuthenticated = action.payload ? true : false;
       state.loading = false;
     },
     logout: (state) => {
       state.user = null; // Clear user data on logout
     },
   },
-
-  // extraReducers: (builder) => {
-  //
-  // },
 });
-
 export const { setUser, logout } = userSlice.actions;
 export default userSlice.reducer;

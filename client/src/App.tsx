@@ -10,13 +10,15 @@ import { useAuth } from "./hooks/useAuth";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedPage";
 import { Breadcrumbs } from "./components/ui/Breadcrumb";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import CartDrawer from "./components/cart/CartDrawer";
 import VendorHeader from "./layouts/VendorHeader";
 import CreateProductBtn from "./components/vendor/CreateProductBtn";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
+import { initializeCartLocal } from "./redux-store/CartSlice";
+import { useCart } from "./hooks/useCart";
 // lazy pages
+const Login = lazy(() => import("./pages/Login"));
+const CartDrawer = lazy(() => import("./components/cart/CartDrawer"));
 const VendorProducts = lazy(() => import("./pages/VendorPages/VendorProducts"));
 const SignOutPopUp = lazy(() => import("./components/popups/SignOutPopup"));
 const Category = lazy(() => import("./pages/Category"));
@@ -33,10 +35,13 @@ const Register = lazy(() => import("./pages/Register"));
 
 function App() {
   const [headerVisiable, setHeaderVisiable] = useState<boolean>(false);
+  const dispatch = useDispatch();
   // call the current user
-  const { data, isLoading } = useAuth().currentUser(true);
+  const { data } = useAuth().currentUser(true);
   const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
-
+  // const { isCartDrawerOpen } = useSelector((state: RootState) => state.cart);
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const { isCartDrawerOpen, Cart, isLoading } = useCart();
   const location = useLocation();
   // header show and hide on top scroll
   useEffect(() => {
@@ -69,6 +74,10 @@ function App() {
     });
     return items;
   }, [location.pathname]);
+  // assign cart for guest user
+  useEffect(() => {
+    dispatch(initializeCartLocal({ isAuthenticated }));
+  }, []);
   return (
     <>
       {/* sign out popup  */}
@@ -78,10 +87,18 @@ function App() {
             isSignOutOpen ? "opacity-100 scale-100" : "opacity-0 scale-0"
           }  transition-all`}
       >
-        <SignOutPopUp />
+        {isSignOutOpen && (
+          <Suspense>
+            <SignOutPopUp />
+          </Suspense>
+        )}
       </div>
-      {/* CartDrawer  */}
-      <CartDrawer />
+      {/* CartDrawer */}
+      {isCartDrawerOpen && (
+        <Suspense>
+          <CartDrawer cartDrawerProps={{ isCartDrawerOpen, Cart, isLoading }} />
+        </Suspense>
+      )}
       {/* header  */}
       <header
         className={`${

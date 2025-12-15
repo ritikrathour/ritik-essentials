@@ -5,17 +5,27 @@ import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/Button";
 import Rating from "../Rating";
-import { useDispatch } from "react-redux";
-import { openCartDrawer } from "../../redux-store/UISlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux-store/Store";
+import { addToCartLocal } from "../../redux-store/CartSlice";
 interface ProductProps {
   product: IProduct;
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
+  // const {} =useSelector((state:RootState)=>state.cart)
+  console.log(typeof product._id);
+
   const dispatch = useDispatch();
   // handleAddToCart
   const handleAddToCart = () => {
-    dispatch(openCartDrawer());
+    dispatch(
+      addToCartLocal({
+        product,
+        productId: product._id.toString(),
+        quantity: 1,
+      })
+    );
   };
   return (
     <div>

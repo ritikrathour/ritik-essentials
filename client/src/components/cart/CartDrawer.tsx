@@ -2,16 +2,24 @@ import { useState } from "react";
 import { X, Truck } from "lucide-react";
 import { Button } from "../ui/Button";
 import CartItem from "./CartItem";
-import { useDispatch, useSelector } from "react-redux";
-import { CloseCartDrawer } from "../../redux-store/UISlice";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import useOverlayManager from "../../hooks/useOverLay";
-
-const CartDrawer = () => {
-  const { cartDrawerOpen } = useSelector((state: any) => state.ui);
+import CartItemSkeleton from "../SkeletonUI/CartItemsSkeleton";
+import EmptyCart from "./EmptyCard";
+import { CloseCartDrawer } from "../../redux-store/CartSlice";
+import { ICart } from "../../utils/Types/Cart.types";
+interface ICartDrawerOpenProps {
+  cartDrawerProps: {
+    isCartDrawerOpen: boolean;
+    Cart: ICart;
+    isLoading: boolean;
+  };
+}
+const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
   const dispatch = useDispatch();
   // prevent scrolling
-  useOverlayManager(cartDrawerOpen, CloseCartDrawer);
+  useOverlayManager(cartDrawerProps.isCartDrawerOpen, CloseCartDrawer);
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -30,12 +38,11 @@ const CartDrawer = () => {
       image: "🍪",
     },
   ]);
-
+  // const { Cart, isCartDrawerOpen, isLoading } = useCart();
   const FREE_SHIPPING_THRESHOLD = 1000;
   const calculateSubtotal = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
-
   const subtotal = calculateSubtotal();
   const shippingProgress = Math.min(
     (subtotal / FREE_SHIPPING_THRESHOLD) * 100,
@@ -56,21 +63,21 @@ const CartDrawer = () => {
   const removeItem = (id: any) => {
     setCartItems((items) => items.filter((item) => item.id !== id));
   };
-
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
   return (
     <>
       <div
         onClick={() => dispatch(CloseCartDrawer())}
         className={`${
-          !cartDrawerOpen ? "invisible" : "visible"
+          !cartDrawerProps.isCartDrawerOpen ? "invisible" : "visible"
         } min-h-screen flex items-center justify-center fixed inset-0 bg-[rgba(0,0,0,.2)] z-50`}
       />
       {/* Shopping Cart Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full w-full md:w-[480px] bg-white shadow-2xl transform transition-transform duration-200 ${
-          cartDrawerOpen ? "translate-x-0" : "translate-x-full"
+          cartDrawerProps.isCartDrawerOpen
+            ? "translate-x-0"
+            : "translate-x-full"
         } z-50 flex flex-col`}
       >
         {/* Header */}
@@ -117,37 +124,42 @@ const CartDrawer = () => {
 
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4">
-          {cartItems?.length > 0
-            ? cartItems.map((item) => (
-                <CartItem
-                  item={item}
-                  key={item?.id}
-                  updateQuantity={updateQuantity}
-                  removeItem={removeItem}
-                />
-              ))
-            : //  empty cart
-              ""}
+          {cartDrawerProps.isLoading ? (
+            <CartItemSkeleton />
+          ) : cartDrawerProps.Cart?.items?.length > 0 ? (
+            cartDrawerProps.Cart?.items.map((item: any) => (
+              <CartItem
+                item={item}
+                key={item?.id}
+                updateQuantity={updateQuantity}
+                removeItem={removeItem}
+              />
+            ))
+          ) : (
+            <EmptyCart />
+          )}
         </div>
         {/* cart total  */}
-        <div className="flex justify-between items-center px-2 md:px-4">
-          <div className="flex justify-between gap-2 items-center mb-2">
-            <span className="text-sm font-semibold text-[#173334]">
-              Total Item
-            </span>
-            <span className="text-sm font-semibold text-[#173334]">
-              {totalItems}
-            </span>
+        {cartDrawerProps.Cart?.items?.length > 0 && (
+          <div className="flex justify-between items-center px-2 md:px-4">
+            <div className="flex justify-between gap-2 items-center mb-2">
+              <span className="text-sm font-semibold text-[#173334]">
+                Total Item
+              </span>
+              <span className="text-sm font-semibold text-[#173334]">
+                {totalItems}
+              </span>
+            </div>
+            <div className="flex justify-between items-center gap-2">
+              <span className="text-sm font-semibold text-[#173334]">
+                Subtotal
+              </span>
+              <span className="text-sm font-bold text-[#173334]">
+                ₹{subtotal.toFixed(2)}
+              </span>
+            </div>
           </div>
-          <div className="flex justify-between items-center gap-2">
-            <span className="text-sm font-semibold text-[#173334]">
-              Subtotal
-            </span>
-            <span className="text-sm font-bold text-[#173334]">
-              ₹{subtotal.toFixed(2)}
-            </span>
-          </div>
-        </div>
+        )}
         {/* Checkout Buttons */}
         <div className="px-4 py-2 border-t border-[#c4c4c4]  bg-gray-50">
           <div className="flex gap-3">
@@ -161,7 +173,12 @@ const CartDrawer = () => {
                 View Cart
               </Button>
             </Link>
-            <Button type="button" variant="primary" className="flex-1 py-3">
+            <Button
+              type="button"
+              variant="primary"
+              className="flex-1 py-3"
+              disabled={cartDrawerProps.Cart?.items?.length < 1}
+            >
               Checkout
             </Button>
           </div>

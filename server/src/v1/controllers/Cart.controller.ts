@@ -6,6 +6,7 @@ import ApiError from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { ICartItem } from "../../types/Cart.type";
 import { validateAddToCart } from "../../utils/Validation";
+import mongoose from "mongoose";
 
 interface CartItem {
   productId: string;
@@ -231,10 +232,7 @@ const getUserCart = async (userId: string): Promise<Cart> => {
 
 // get cart
 const GetCart = AsyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(401, "UnAuthorized user!");
-  }
+  const userId = req.user._id;
   const cart = await Cart.getOrCreateCart(userId);
   if (!cart) {
     throw new ApiError(500, "Cart Not Created! Somthing went wrong!", false);
@@ -248,9 +246,6 @@ const AddToCart = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "product id is required!");
   }
   const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(400, "Unauthorised user");
-  }
   // validate cart items
   const validation = validateAddToCart(req.body);
   if (!validation?.isValid) {
@@ -274,9 +269,6 @@ const UpdateItem = AsyncHandler(async (req: Request, res: Response) => {
     );
   }
   const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(400, "Unauthorised User!");
-  }
   const { productId } = req.params;
   if (!productId) {
     throw new ApiError(404, "ProductId not found");
@@ -290,10 +282,7 @@ const UpdateItem = AsyncHandler(async (req: Request, res: Response) => {
 });
 // removeItem from cart
 const RemoverItem = AsyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(401, "Unauthorised user!");
-  }
+  const userId = req.user._id;
   const { productId } = req.params;
   if (!productId) {
     throw new ApiError(400, "ProductId is required!");
@@ -303,10 +292,7 @@ const RemoverItem = AsyncHandler(async (req: Request, res: Response) => {
 });
 // clear cart
 const ClearCart = AsyncHandler(async (req: Request, res: Response) => {
-  const userId = req.user?._id;
-  if (!userId) {
-    throw new ApiError(401, "Unauthorised user");
-  }
+  const userId = req.user._id;
   await Cart.clearCart(userId);
   res.json(new ApiResponse(200, {}, "Cart cleared successfully"));
 });

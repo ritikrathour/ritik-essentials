@@ -1,11 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 interface IInitialState {
-  cartDrawerOpen: boolean;
   headerMenu: boolean;
   isSignOutOpen: boolean;
 }
 const initialState: IInitialState = {
-  cartDrawerOpen: false,
   headerMenu: false,
   isSignOutOpen: false,
 };
@@ -13,12 +11,6 @@ export const UISlice = createSlice({
   name: "UISlice",
   initialState,
   reducers: {
-    openCartDrawer: (state) => {
-      state.cartDrawerOpen = true;
-    },
-    CloseCartDrawer: (state) => {
-      state.cartDrawerOpen = false;
-    },
     ShowHeaderMenu: (state) => {
       state.headerMenu = true;
     },
@@ -34,8 +26,6 @@ export const UISlice = createSlice({
   },
 });
 export const {
-  openCartDrawer,
-  CloseCartDrawer,
   ShowHeaderMenu,
   HideHeaderMenu,
   openSignOutPopup,

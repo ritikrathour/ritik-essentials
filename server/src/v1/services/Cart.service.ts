@@ -98,19 +98,24 @@ class CartService {
     // calculate total
     const totals = this.calculateCartTotals((await cart).items);
     // update cart
-    const updateCart = await CartModel.findByIdAndUpdate(
-      { userId },
-      {
-        $set: {
-          items: (await cart).items,
-          totalAmount: (await totals).totalAmount,
-          totalItems: (await totals).totalItems,
-        },
-      },
-      {
-        returnDocument: "after",
-      }
-    );
+    // const updateCart = await CartModel.findByIdAndUpdate(
+    //   { userId },
+    //   {
+    //     $set: {
+    //       items: (await cart).items,
+    //       totalAmount: (await totals).totalAmount,
+    //       totalItems: (await totals).totalItems,
+    //     },
+    //   },
+    //   {
+    //     returnDocument: "after",
+    //   }
+    // );
+    const updateCart = this.updateCart(userId, {
+      items: (await cart).items,
+      totalAmount: (await totals).totalAmount,
+      totalItems: (await totals).totalItems,
+    });
     return updateCart;
   };
   removeItemFromCart = async (

@@ -22,3 +22,7 @@ export const userKeys = {
 export const VendorProductsKeys = {
   all: ["venderProducts"] as const,
 };
+
+export const Cartkeys = {
+  cart: ["cart"] as const,
+};

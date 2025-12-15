@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
-import { openCartDrawer } from "../redux-store/UISlice";
+import { openCartDrawer } from "../redux-store/CartSlice";
 const MobileMenu = lazy(() => import("./MobileLayouts/MobileMenu"));
 const ProfileDropDown = lazy(
   () => import("../components/popups/ProfileDropDown")

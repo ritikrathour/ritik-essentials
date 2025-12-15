@@ -1,3 +1,4 @@
+export const CART_KEY = "ecommerce_guest_cart";
 export const DropDownMenuList = [
   {
     id: 2,
