@@ -39,7 +39,6 @@ function App() {
   // call the current user
   const { data } = useAuth().currentUser(true);
   const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
-  // const { isCartDrawerOpen } = useSelector((state: RootState) => state.cart);
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const { isCartDrawerOpen, Cart, isLoading } = useCart();
   const location = useLocation();
@@ -74,7 +73,7 @@ function App() {
     });
     return items;
   }, [location.pathname]);
-  // assign cart for guest user
+  // assign cart for user
   useEffect(() => {
     dispatch(initializeCartLocal({ isAuthenticated }));
   }, []);

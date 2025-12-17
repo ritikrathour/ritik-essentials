@@ -61,7 +61,7 @@ export const CartSlice = createSlice({
       if (existItem) {
         existItem.quantity += action.payload.quantity;
       } else {
-        state.Cart.items.push(action.payload);
+        state.Cart.items.push({ id: `temp_${Date.now()}`, ...action.payload });
       }
       const totals = calculateTotals(state.Cart.items);
       state.Cart.totalItems = totals.totalItems;
@@ -85,6 +85,25 @@ export const CartSlice = createSlice({
       if (!state.isAuthenticate)
         localStorage.setItem(CART_KEY, JSON.stringify(state.Cart));
     },
+    removeCartItemLocal: (state, action: PayloadAction<{ itemId: string }>) => {
+      const items = state.Cart.items.filter(
+        (item) => item.id !== action.payload.itemId
+      );
+      state.Cart.items = items;
+      const { totalItems, totalPrice } = calculateTotals(items);
+      state.Cart.totalItems = totalItems;
+      state.Cart.totalPrice = totalPrice;
+      if (!state.isAuthenticate) {
+        localStorage.setItem(CART_KEY, JSON.stringify(items));
+        setCart(state.Cart);
+      }
+    },
+    clearCartLocal: (state) => {
+      state.Cart = initialCart;
+      if (!state.isAuthenticate) {
+        localStorage.removeItem(CART_KEY);
+      }
+    },
   },
 });
 export const {
@@ -94,5 +113,7 @@ export const {
   addToCartLocal,
   setCart,
   updateCartItemLocal,
+  removeCartItemLocal,
+  clearCartLocal,
 } = CartSlice.actions;
 export default CartSlice.reducer;

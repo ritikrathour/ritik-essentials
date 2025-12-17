@@ -23,7 +23,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 // button.styles
 const buttonBase =
-  "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 outline-none disabled:opacity-90 disabled:cursor-not-allowed relative overflow-hidden cursor-pointer";
+  "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 outline-none disabled:opacity-90 disabled:cursor-not-allowed relative overflow-hidden cursor-pointer ";
 
 const buttonVariants = {
   primary:

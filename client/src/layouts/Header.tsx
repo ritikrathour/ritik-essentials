@@ -1,11 +1,12 @@
-import { Search, ShoppingCart } from "lucide-react";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { HideHeaderMenu, ShowHeaderMenu } from "../redux-store/UISlice";
 import { RootState } from "../redux-store/Store";
 import useOverlayManager from "../hooks/useOverLay";
-import { openCartDrawer } from "../redux-store/CartSlice";
+import { useCart } from "../hooks/useCart";
+import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
 const ProfileDropDown = lazy(
   () => import("../components/popups/ProfileDropDown")
 );
@@ -133,18 +134,7 @@ const Header = () => {
             )}
           </div>
           <div className="relative cursor-pointer">
-            <Link
-              to=""
-              onClick={() => dispatch(openCartDrawer())}
-              className="bg-gray-900 block text-[#febd2f] px-4 py-2 rounded shadow-lg hover:bg-gray-800 transition z-40"
-            >
-              <ShoppingCart size={20} />
-              {5 > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs font-semibold">
-                  {5}
-                </span>
-              )}
-            </Link>
+            <ShoppingCartCompo />
           </div>
           <div className="lg:hidden" onClick={() => handleShowSearchBar()}>
             <span className="px-4 py-2 rounded hover:bg-gray-700 bg-gray-900">

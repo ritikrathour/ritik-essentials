@@ -1,7 +1,7 @@
 import { IProduct } from "./Product.types";
 
 export interface ICartItem {
-  id?: string;
+  id: string;
   productId: string;
   product: IProduct;
   quantity: number;
@@ -29,4 +29,5 @@ export interface IAddToCartPayload {
 export interface IUpdateCartItemPayload {
   cartItemId: string;
   quantity: number;
+  productId?: string;
 }

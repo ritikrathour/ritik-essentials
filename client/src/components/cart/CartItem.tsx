@@ -5,14 +5,14 @@ import React from "react";
 import { ICartItem } from "../../utils/Types/Cart.types";
 import Rating from "../Rating";
 import { Link } from "react-router-dom";
+import { useCart } from "../../hooks/useCart";
 interface IItem {
   item: ICartItem;
-  updateQuantity: () => void;
-  removeItem: () => void;
 }
 // dummyn rate
 const rating = { average: 4.3, count: 20 };
-const CartItem: React.FC<any> = ({ item, removeItem, updateQuantity }) => {
+const CartItem: React.FC<IItem> = ({ item }) => {
+  const { updateCartItem, isUpdating, removeCartItem, isRemoving } = useCart();
   return (
     <div className="bg-white border border-[#c4c4c4] rounded-xl p-2">
       <div className="flex gap-1 sm:gap-4 ">
@@ -22,7 +22,7 @@ const CartItem: React.FC<any> = ({ item, removeItem, updateQuantity }) => {
             <OptimizedImage
               objectFit="contain"
               className=""
-              alt={item.name}
+              alt={item.product.name}
               src="../assets/cola.avif"
             />
           </div>
@@ -33,26 +33,29 @@ const CartItem: React.FC<any> = ({ item, removeItem, updateQuantity }) => {
         <div className="flex-1">
           <div className="flex justify-between items-start mb-2">
             <Link to={`/products/${item?.id}`}>
-              <h3 className="text-sm font-medium text-gray-900 mb-1">
-                {item.name}
+              <h3 className="text-sm font-medium text-gray-900 mb-1 capitalize">
+                {item.product.name}
               </h3>
               <div className="flex flex-col gap-1">
                 <Rating rating={{ ...rating }} />
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-green-600 font-medium">
-                    35% off
+                    {item.product.discount}% off
                   </span>
                   <span className="text-sm text-gray-500 line-through">
-                    ₹445
+                    ₹{item.product.originalPrice}
                   </span>
                   <p className="text-sm font-semibold text-gray-900">
-                    ₹{item.price.toFixed(2)}
+                    ₹{item.product.price.toFixed(2)}
                   </p>
                 </div>
               </div>
             </Link>
             <Button
-              onClick={() => removeItem(item.id)}
+              onClick={() => {
+                removeCartItem({ itemId: item.id });
+              }}
+              disabled={isRemoving}
               type="button"
               variant="dangerLight"
             >
@@ -61,27 +64,22 @@ const CartItem: React.FC<any> = ({ item, removeItem, updateQuantity }) => {
           </div>
 
           <div className="flex justify-between items-center">
-            {/* Attributes */}
-            <div>
-              {item.color && (
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Color:</span> {item.color}
-                </p>
-              )}
-              {item.material && (
-                <p className="text-sm text-gray-600">
-                  <span className="font-semibold">Material:</span>{" "}
-                  {item.material}
-                </p>
-              )}
-            </div>
+            {/* Attributes TODO  */}
 
             {/* Quantity Controls */}
             <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => updateQuantity(item.id, -1)}
+                className="bg-gray-100! hover:bg-gray-300!"
+                disabled={isUpdating}
+                onClick={() =>
+                  updateCartItem({
+                    productId: item.product._id.toString(),
+                    quantity: item.quantity - 1,
+                    cartItemId: item.id || "",
+                  })
+                }
               >
                 <Minus size={16} />
               </Button>
@@ -91,7 +89,15 @@ const CartItem: React.FC<any> = ({ item, removeItem, updateQuantity }) => {
               <Button
                 type="button"
                 variant="ghost"
-                onClick={() => updateQuantity(item.id, 1)}
+                disabled={isUpdating}
+                className="bg-gray-100! hover:bg-gray-300!"
+                onClick={() => {
+                  updateCartItem({
+                    cartItemId: item.id || "",
+                    quantity: item.quantity + 1,
+                    productId: item.productId,
+                  });
+                }}
               >
                 <Plus size={16} />
               </Button>

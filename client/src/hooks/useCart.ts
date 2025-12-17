@@ -3,8 +3,18 @@ import { Cartkeys } from "../TanstackQuery/Querykeys";
 import { CartApi } from "../services/Cart.serveice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
-import { IAddToCartPayload, ICart } from "../utils/Types/Cart.types";
-import { addToCartLocal, setCart } from "../redux-store/CartSlice";
+import {
+  IAddToCartPayload,
+  ICart,
+  IUpdateCartItemPayload,
+} from "../utils/Types/Cart.types";
+import {
+  addToCartLocal,
+  clearCartLocal,
+  removeCartItemLocal,
+  setCart,
+  updateCartItemLocal,
+} from "../redux-store/CartSlice";
 
 export const useCart = () => {
   const dispatch = useDispatch();
@@ -28,6 +38,31 @@ export const useCart = () => {
       }
     },
   });
+  const updateCartItemMutation = useMutation({
+    mutationFn: (payload: IUpdateCartItemPayload) =>
+      isAuthenticate ? CartApi.updateCartItem(payload) : Promise.resolve(null),
+    onMutate: (payload) => dispatch(updateCartItemLocal(payload)),
+    onSuccess: (data) => {
+      if (data) {
+        dispatch(setCart(data));
+        qClient.invalidateQueries({ queryKey: Cartkeys.cart });
+      }
+    },
+  });
+  const removeCartItemMutation = useMutation({
+    mutationFn: (payload: { itemId: string }) =>
+      isAuthenticate
+        ? CartApi.removeItemFromCart(payload)
+        : Promise.resolve(null),
+    onMutate: (payload) => dispatch(removeCartItemLocal(payload)),
+    onSuccess: (data) => {
+      if (data) {
+        dispatch(setCart(data));
+        qClient.invalidateQueries({ queryKey: Cartkeys.cart });
+      }
+    },
+  });
+
   return {
     isLoading,
     isCartDrawerOpen,
@@ -35,5 +70,11 @@ export const useCart = () => {
     isAuthenticate,
     error,
     addTocart: addMutation.mutate,
+    isAddingToCart: addMutation.isPending,
+    updateCartItem: updateCartItemMutation.mutate,
+    isUpdating: updateCartItemMutation.isPending,
+    removeCartItem: removeCartItemMutation.mutate,
+    isRemoving: removeCartItemMutation.isPending,
+    clearCart: () => dispatch(clearCartLocal()),
   };
 };

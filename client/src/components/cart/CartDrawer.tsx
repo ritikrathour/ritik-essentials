@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { X, Truck } from "lucide-react";
 import { Button } from "../ui/Button";
 import CartItem from "./CartItem";
@@ -9,6 +8,7 @@ import CartItemSkeleton from "../SkeletonUI/CartItemsSkeleton";
 import EmptyCart from "./EmptyCard";
 import { CloseCartDrawer } from "../../redux-store/CartSlice";
 import { ICart } from "../../utils/Types/Cart.types";
+import { useCart } from "../../hooks/useCart";
 interface ICartDrawerOpenProps {
   cartDrawerProps: {
     isCartDrawerOpen: boolean;
@@ -20,50 +20,14 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
   const dispatch = useDispatch();
   // prevent scrolling
   useOverlayManager(cartDrawerProps.isCartDrawerOpen, CloseCartDrawer);
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "All Type Bell Pepper",
-      price: 350.0,
-      quantity: 2,
-      color: "Red",
-      image: "🫑",
-    },
-    {
-      id: 2,
-      name: "Crunchy Healthy & Tasty Cookies",
-      price: 500.0,
-      quantity: 1,
-      material: "Choco",
-      image: "🍪",
-    },
-  ]);
-  // const { Cart, isCartDrawerOpen, isLoading } = useCart();
-  const FREE_SHIPPING_THRESHOLD = 1000;
-  const calculateSubtotal = () => {
-    return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  };
-  const subtotal = calculateSubtotal();
+  const { clearCart } = useCart();
+  const subTotal = cartDrawerProps.Cart.totalPrice;
+  const FREE_SHIPPING_THRESHOLD = 500;
+  let isEligibleForFreeShipping = subTotal > FREE_SHIPPING_THRESHOLD;
   const shippingProgress = Math.min(
-    (subtotal / FREE_SHIPPING_THRESHOLD) * 100,
+    (subTotal / FREE_SHIPPING_THRESHOLD) * 100,
     100
   );
-  const isEligibleForFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
-
-  const updateQuantity = (id: any, delta: any) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const removeItem = (id: any) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <>
       <div
@@ -81,7 +45,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
         } z-50 flex flex-col`}
       >
         {/* Header */}
-        <div className="bg-[#173334] text-white p-2 sm:p-4 flex items-center justify-between  shadow-md">
+        <div className="bg-[#173334] text-white p-2 sm:p-3 flex items-center justify-between shadow-md">
           <h2 className="text-xl font-semibold">Your Cart</h2>
           <button
             onClick={() => dispatch(CloseCartDrawer())}
@@ -90,9 +54,18 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
             <X size={24} />
           </button>
         </div>
-
+        <div className="items-end self-end flex px-2">
+          <button
+            onClick={() => clearCart()}
+            type="button"
+            className="text-sm cursor-pointer hover:text-red-400 duration-150 hover:underline disabled:opacity-80 py-1 disabled:cursor-not-allowed disabled:"
+            disabled={cartDrawerProps.Cart.items.length === 0}
+          >
+            Clear Cart
+          </button>
+        </div>
         {/* Free Shipping Banner */}
-        <div className="bg-white border-b border-[#c4c4c4] p-2 sm:p-4">
+        <div className="bg-white border-b border-[#c4c4c4] p-2 sm:p-3">
           <div className="flex items-start gap-3">
             <p className="text-[#173334] flex-1">
               <span className="font-bold">Congrats!</span>{" "}
@@ -103,7 +76,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                 </span>
               ) : (
                 <span>
-                  Add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} more
+                  Add ₹{(FREE_SHIPPING_THRESHOLD - subTotal).toFixed(2)} more
                   for <span className="font-bold">FREE Shipping</span>
                 </span>
               )}
@@ -123,17 +96,12 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
         </div>
 
         {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-4">
           {cartDrawerProps.isLoading ? (
             <CartItemSkeleton />
           ) : cartDrawerProps.Cart?.items?.length > 0 ? (
-            cartDrawerProps.Cart?.items.map((item: any) => (
-              <CartItem
-                item={item}
-                key={item?.id}
-                updateQuantity={updateQuantity}
-                removeItem={removeItem}
-              />
+            cartDrawerProps.Cart?.items.map((item) => (
+              <CartItem item={item} key={item?.product._id} />
             ))
           ) : (
             <EmptyCart />
@@ -147,7 +115,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                 Total Item
               </span>
               <span className="text-sm font-semibold text-[#173334]">
-                {totalItems}
+                {cartDrawerProps.Cart.totalItems}
               </span>
             </div>
             <div className="flex justify-between items-center gap-2">
@@ -155,7 +123,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                 Subtotal
               </span>
               <span className="text-sm font-bold text-[#173334]">
-                ₹{subtotal.toFixed(2)}
+                ₹{subTotal.toFixed(2)}
               </span>
             </div>
           </div>

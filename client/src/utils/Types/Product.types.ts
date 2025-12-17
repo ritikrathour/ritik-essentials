@@ -24,6 +24,7 @@ export interface IProduct {
   _id: number;
   name: string;
   brand: string;
+  stock: number;
   price: number;
   originalPrice: number;
   category?: string;

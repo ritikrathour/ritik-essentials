@@ -1,10 +1,10 @@
 import { lazy, Suspense, useState } from "react";
-import { Bell, ChevronDown, Menu, X, Plus, ShoppingCart } from "lucide-react";
+import { Bell, ChevronDown, Menu, X, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
-import { openCartDrawer } from "../redux-store/CartSlice";
+import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
 const MobileMenu = lazy(() => import("./MobileLayouts/MobileMenu"));
 const ProfileDropDown = lazy(
   () => import("../components/popups/ProfileDropDown")
@@ -70,18 +70,7 @@ const VendorHeader = () => {
                   </span>
                 )}
               </Link>
-              <Link
-                to=""
-                onClick={() => dispatch(openCartDrawer())}
-                className="hidden bg-gray-900 sm:block text-[#febd2f] relative py-2 px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
-              >
-                <ShoppingCart size={20} />
-                {5 > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-xs font-semibold">
-                    {5}
-                  </span>
-                )}
-              </Link>
+              <ShoppingCartCompo />
             </>
           )}
           {/* Vendor Profile */}

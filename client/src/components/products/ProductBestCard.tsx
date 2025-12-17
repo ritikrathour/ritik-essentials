@@ -5,17 +5,14 @@ import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/Button";
 import Rating from "../Rating";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux-store/Store";
+import { useDispatch } from "react-redux";
 import { addToCartLocal } from "../../redux-store/CartSlice";
+import AddToCartButton from "../ui/AddToCartButton";
 interface ProductProps {
   product: IProduct;
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
-  // const {} =useSelector((state:RootState)=>state.cart)
-  console.log(typeof product._id);
-
   const dispatch = useDispatch();
   // handleAddToCart
   const handleAddToCart = () => {
@@ -102,16 +99,7 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
             )}
           </div>
 
-          {isButton && (
-            <Button
-              onClick={() => handleAddToCart()}
-              variant="dark"
-              className="sm:w-full w-[200px]"
-              type="button"
-            >
-              Add to Cart
-            </Button>
-          )}
+          {isButton && <AddToCartButton product={product} />}
         </div>
       </div>
     </div>
