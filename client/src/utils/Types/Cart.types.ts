@@ -1,14 +1,14 @@
-import { IProduct } from "./Product.types";
-
 export interface ICartItem {
-  id: string;
+  _id: string;
+  name: string;
   productId: string;
-  product: IProduct;
   quantity: number;
+  image: string;
+  price: number;
 }
 
 export interface ICart {
-  id?: string;
+  _id?: string;
   userId?: string;
   items: ICartItem[];
   totalItems: number;
@@ -23,8 +23,10 @@ export interface ICartState {
 }
 export interface IAddToCartPayload {
   productId: string;
-  product: IProduct;
   quantity: number;
+  price: number;
+  name: string;
+  imageUrl: string | undefined;
 }
 export interface IUpdateCartItemPayload {
   cartItemId: string;

@@ -25,11 +25,13 @@ class CartService {
     cart: Partial<ICart>
   ) => {
     // find and update cart by userID
-    const result = await CartModel.findByIdAndUpdate(
+    const result = await CartModel.findOneAndUpdate(
       { userId },
       {
         $set: {
-          ...cart,
+          items: cart.items,
+          totalAmount: cart.totalAmount,
+          totalItems: cart.totalItems,
         },
       },
       {
@@ -40,23 +42,38 @@ class CartService {
   };
   updateCartItem = async (
     userId: mongoose.Types.ObjectId,
-    productId: string,
+    itemId: string,
     quantity: number
   ) => {
     // get cart
     const cart = this.getOrCreateCart(userId);
-    // find item by productId in the cart
-    const ItemIndex = (await cart).items.findIndex(
-      (i: any) => i.productId === productId
+    // find item in the cart
+    const Item = (await cart).items.find(
+      (item) => item._id.toString() === itemId
     );
-    if (ItemIndex === -1) {
+    if (!Item) {
       throw new ApiError(400, "Item not found in cart");
     }
-    (await cart)?.items[ItemIndex].quantity;
-
+    // Verify product still exists and get latest price
+    const product = await ProductModel.findById(Item.productId);
+    if (!product) {
+      throw new ApiError(400, "Product no longer available");
+    }
+    // Check product stock availability
+    if (!product.stock) {
+      throw new ApiError(404, "Product is out of stock");
+    }
+    if (product.stock < quantity) {
+      throw new ApiError(400, `Only ${product.stock} items available in stock`);
+    }
+    // Update item Quantity
+    console.log(quantity);
+    Item.quantity = quantity;
+    // Recalculate cart total
     const totals = this.calculateCartTotals((await cart).items);
     // update cart
     const updatedCart = this.updateCart(userId, {
+      items: (await cart).items,
       totalAmount: (await totals).totalAmount,
       totalItems: (await totals).totalItems,
     });
@@ -70,13 +87,9 @@ class CartService {
     const totalItems = items?.reduce((sum, item) => sum + item.quantity, 0);
     return { totalAmount, totalItems };
   };
-  addItemToCart = async (
-    userId: mongoose.Types.ObjectId,
-    item: ICartItem,
-    productId: string
-  ) => {
+  addItemToCart = async (userId: mongoose.Types.ObjectId, item: ICartItem) => {
     // check stock and get products
-    const product = await ProductModel.findById(productId);
+    const product = await ProductModel.findById(item.productId);
     if (!product) {
       throw new ApiError(404, "Product not found!");
     }
@@ -97,20 +110,6 @@ class CartService {
     }
     // calculate total
     const totals = this.calculateCartTotals((await cart).items);
-    // update cart
-    // const updateCart = await CartModel.findByIdAndUpdate(
-    //   { userId },
-    //   {
-    //     $set: {
-    //       items: (await cart).items,
-    //       totalAmount: (await totals).totalAmount,
-    //       totalItems: (await totals).totalItems,
-    //     },
-    //   },
-    //   {
-    //     returnDocument: "after",
-    //   }
-    // );
     const updateCart = this.updateCart(userId, {
       items: (await cart).items,
       totalAmount: (await totals).totalAmount,
@@ -118,20 +117,20 @@ class CartService {
     });
     return updateCart;
   };
-  removeItemFromCart = async (
-    userId: mongoose.Types.ObjectId,
-    productId: any
-  ) => {
+  removeItemFromCart = async (userId: mongoose.Types.ObjectId, itemId: any) => {
     const cart = this.getOrCreateCart(userId);
-    const initialLength = (await cart).items.length;
-    (await cart).items = (await cart).items.filter(
-      (i) => i.productId !== productId
+    const itemIndex = (await cart).items.findIndex(
+      (item) => item._id.toString() === itemId
     );
-    if ((await cart).items.length === initialLength) {
+    if (itemIndex === -1) {
       throw new ApiError(404, "item not found in cart!");
     }
+    // Remove item
+    (await cart).items.splice(itemIndex, 1);
     const totals = this.calculateCartTotals((await cart).items);
+    // update cart
     const updateCart = this.updateCart(userId, {
+      items: (await cart).items,
       totalAmount: (await totals).totalAmount,
       totalItems: (await totals).totalItems,
     });

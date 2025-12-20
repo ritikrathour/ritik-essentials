@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { HideHeaderMenu, ShowHeaderMenu } from "../redux-store/UISlice";
 import { RootState } from "../redux-store/Store";
 import useOverlayManager from "../hooks/useOverLay";
-import { useCart } from "../hooks/useCart";
 import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
 const ProfileDropDown = lazy(
   () => import("../components/popups/ProfileDropDown")

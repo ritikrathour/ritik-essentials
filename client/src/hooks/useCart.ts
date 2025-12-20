@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import {
   IAddToCartPayload,
-  ICart,
   IUpdateCartItemPayload,
 } from "../utils/Types/Cart.types";
 import {
@@ -15,22 +14,40 @@ import {
   setCart,
   updateCartItemLocal,
 } from "../redux-store/CartSlice";
+import { useEffect } from "react";
 
 export const useCart = () => {
   const dispatch = useDispatch();
   const qClient = useQueryClient();
   const { Cart, error, isAuthenticate, isCartDrawerOpen, isLoading } =
     useSelector((state: RootState) => state.cart);
-  useQuery({
+  const { data } = useQuery({
     queryKey: Cartkeys.cart,
     queryFn: () => CartApi.getCart("/cart"),
     enabled: isAuthenticate,
-    select: (data: ICart) => dispatch(setCart(data)),
   });
+  useEffect(() => {
+    if (data) {
+      dispatch(
+        setCart({
+          _id: data?.id,
+          items: data?.items,
+          totalItems: data?.totalItems,
+          totalPrice: data?.totalAmount,
+        })
+      );
+    }
+  }, [data, dispatch]);
   const addMutation = useMutation({
-    mutationFn: (payload: IAddToCartPayload) =>
-      isAuthenticate ? CartApi.addToCart(payload) : Promise.resolve(null),
-    onMutate: (payload) => dispatch(addToCartLocal(payload)),
+    mutationFn: (payload: IAddToCartPayload) => {
+      console.log("calllinnnnnng");
+      return isAuthenticate
+        ? CartApi.addToCart(payload)
+        : Promise.resolve(null);
+    },
+    onMutate: (payload) => {
+      return dispatch(addToCartLocal(payload));
+    },
     onSuccess: (data) => {
       if (data) {
         dispatch(setCart(data));
@@ -42,6 +59,7 @@ export const useCart = () => {
     mutationFn: (payload: IUpdateCartItemPayload) =>
       isAuthenticate ? CartApi.updateCartItem(payload) : Promise.resolve(null),
     onMutate: (payload) => dispatch(updateCartItemLocal(payload)),
+    retry: 0,
     onSuccess: (data) => {
       if (data) {
         dispatch(setCart(data));
@@ -54,6 +72,7 @@ export const useCart = () => {
       isAuthenticate
         ? CartApi.removeItemFromCart(payload)
         : Promise.resolve(null),
+    retry: 0,
     onMutate: (payload) => dispatch(removeCartItemLocal(payload)),
     onSuccess: (data) => {
       if (data) {

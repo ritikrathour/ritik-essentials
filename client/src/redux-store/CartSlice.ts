@@ -23,7 +23,7 @@ const initialState: ICartState = {
 const calculateTotals = (items: ICartItem[]) => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
   return { totalItems, totalPrice };
@@ -38,12 +38,9 @@ export const CartSlice = createSlice({
     CloseCartDrawer: (state) => {
       state.isCartDrawerOpen = false;
     },
-    initializeCartLocal: (
-      state,
-      action: PayloadAction<{ isAuthenticated: boolean }>
-    ) => {
-      state.isAuthenticate = action.payload.isAuthenticated;
-      if (!action.payload.isAuthenticated) {
+    initializeCartLocal: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticate = action.payload;
+      if (!action.payload) {
         const isCart = localStorage.getItem(CART_KEY);
         if (isCart) {
           state.Cart = JSON.parse(isCart) || initialCart;
@@ -61,7 +58,14 @@ export const CartSlice = createSlice({
       if (existItem) {
         existItem.quantity += action.payload.quantity;
       } else {
-        state.Cart.items.push({ id: `temp_${Date.now()}`, ...action.payload });
+        state.Cart.items.push({
+          _id: Date.now().toString(),
+          productId: action.payload.productId,
+          quantity: action.payload.quantity,
+          image: action.payload.imageUrl || "",
+          name: action.payload.name,
+          price: action.payload.price,
+        });
       }
       const totals = calculateTotals(state.Cart.items);
       state.Cart.totalItems = totals.totalItems;
@@ -76,7 +80,7 @@ export const CartSlice = createSlice({
     ) => {
       const { cartItemId, quantity } = action.payload;
       if (quantity > 0) {
-        const item = state.Cart.items.find((i) => i.id === cartItemId);
+        const item = state.Cart.items.find((i) => i._id === cartItemId);
         if (item) item.quantity = quantity;
       }
       const totals = calculateTotals(state.Cart.items);
@@ -87,7 +91,7 @@ export const CartSlice = createSlice({
     },
     removeCartItemLocal: (state, action: PayloadAction<{ itemId: string }>) => {
       const items = state.Cart.items.filter(
-        (item) => item.id !== action.payload.itemId
+        (item) => item._id !== action.payload.itemId
       );
       state.Cart.items = items;
       const { totalItems, totalPrice } = calculateTotals(items);

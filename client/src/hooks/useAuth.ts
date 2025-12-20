@@ -9,7 +9,7 @@ import { useEffect } from "react";
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const currentUser = (enabled: boolean) => {
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error, isSuccess } = useQuery({
       queryKey: userKeys.all,
       queryFn: () => AuthApi.currentUser(),
       enabled,
@@ -18,7 +18,7 @@ export const useAuth = () => {
     useEffect(() => {
       dispatch(setUser(data));
     }, [data]);
-    return { data, isLoading, error };
+    return { data, isLoading, error, isSuccess };
   };
   const orders = (url: string) => {
     const {

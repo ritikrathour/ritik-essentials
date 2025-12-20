@@ -6,8 +6,15 @@ import { Button } from "./Button";
 const AddToCartButton: React.FC<{ product: IProduct }> = ({ product }) => {
   const { addTocart, isAddingToCart } = useCart();
   const [showSuccess, setShowSuccess] = useState(false);
+  let cartItemPayload = {
+    productId: product._id.toString(),
+    quantity: 1,
+    price: product.price,
+    name: product.name,
+    imageUrl: product.image || "image url add karo",
+  };
   const handleAdd = () => {
-    addTocart({ productId: product._id.toString(), product, quantity: 1 });
+    addTocart(cartItemPayload);
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);

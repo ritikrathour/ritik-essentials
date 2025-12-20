@@ -14,8 +14,8 @@ import VendorHeader from "./layouts/VendorHeader";
 import CreateProductBtn from "./components/vendor/CreateProductBtn";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
-import { initializeCartLocal } from "./redux-store/CartSlice";
 import { useCart } from "./hooks/useCart";
+import { initializeCartLocal } from "./redux-store/CartSlice";
 // lazy pages
 const Login = lazy(() => import("./pages/Login"));
 const CartDrawer = lazy(() => import("./components/cart/CartDrawer"));
@@ -39,7 +39,7 @@ function App() {
   // call the current user
   const { data } = useAuth().currentUser(true);
   const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+
   const { isCartDrawerOpen, Cart, isLoading } = useCart();
   const location = useLocation();
   // header show and hide on top scroll
@@ -74,9 +74,15 @@ function App() {
     return items;
   }, [location.pathname]);
   // assign cart for user
+  let isAuth = data?.email ? true : false;
   useEffect(() => {
-    dispatch(initializeCartLocal({ isAuthenticated }));
-  }, []);
+    const init = async () => {
+      if (isAuth) {
+        dispatch(initializeCartLocal(isAuth));
+      }
+    };
+    init();
+  }, [isAuth, dispatch]);
   return (
     <>
       {/* sign out popup  */}

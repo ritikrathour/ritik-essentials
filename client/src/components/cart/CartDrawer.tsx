@@ -59,7 +59,10 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
             onClick={() => clearCart()}
             type="button"
             className="text-sm cursor-pointer hover:text-red-400 duration-150 hover:underline disabled:opacity-80 py-1 disabled:cursor-not-allowed disabled:"
-            disabled={cartDrawerProps.Cart.items.length === 0}
+            disabled={
+              cartDrawerProps?.Cart?.items &&
+              cartDrawerProps?.Cart?.items.length === 0
+            }
           >
             Clear Cart
           </button>
@@ -101,33 +104,34 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
             <CartItemSkeleton />
           ) : cartDrawerProps.Cart?.items?.length > 0 ? (
             cartDrawerProps.Cart?.items.map((item) => (
-              <CartItem item={item} key={item?.product._id} />
+              <CartItem item={item} key={item?._id} />
             ))
           ) : (
             <EmptyCart />
           )}
         </div>
         {/* cart total  */}
-        {cartDrawerProps.Cart?.items?.length > 0 && (
-          <div className="flex justify-between items-center px-2 md:px-4">
-            <div className="flex justify-between gap-2 items-center mb-2">
-              <span className="text-sm font-semibold text-[#173334]">
-                Total Item
-              </span>
-              <span className="text-sm font-semibold text-[#173334]">
-                {cartDrawerProps.Cart.totalItems}
-              </span>
+        {cartDrawerProps.Cart?.items &&
+          cartDrawerProps?.Cart?.items?.length > 0 && (
+            <div className="flex justify-between items-center px-2 md:px-4">
+              <div className="flex justify-between gap-2 items-center mb-2">
+                <span className="text-sm font-semibold text-[#173334]">
+                  Total Item
+                </span>
+                <span className="text-sm font-semibold text-[#173334]">
+                  {cartDrawerProps.Cart?.totalItems}
+                </span>
+              </div>
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-sm font-semibold text-[#173334]">
+                  Subtotal
+                </span>
+                <span className="text-sm font-bold text-[#173334]">
+                  ₹{subTotal?.toFixed(2)}
+                </span>
+              </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
-              <span className="text-sm font-semibold text-[#173334]">
-                Subtotal
-              </span>
-              <span className="text-sm font-bold text-[#173334]">
-                ₹{subTotal.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        )}
+          )}
         {/* Checkout Buttons */}
         <div className="px-4 py-2 border-t border-[#c4c4c4]  bg-gray-50">
           <div className="flex gap-3">
@@ -145,7 +149,10 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
               type="button"
               variant="primary"
               className="flex-1 py-3"
-              disabled={cartDrawerProps.Cart?.items?.length < 1}
+              disabled={
+                cartDrawerProps.Cart?.items &&
+                cartDrawerProps?.Cart?.items?.length < 1
+              }
             >
               Checkout
             </Button>
