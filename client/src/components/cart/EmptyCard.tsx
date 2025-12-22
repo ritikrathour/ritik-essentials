@@ -2,6 +2,8 @@ import { ShoppingBag, ShoppingCart } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
+import { CloseCartDrawer } from "../../redux-store/CartSlice";
+import { useDispatch } from "react-redux";
 
 type EmptyCartProps = {
   onContinueShopping?: () => void;
@@ -14,6 +16,7 @@ const EmptyCart: React.FC<EmptyCartProps> = ({
   onViewOrders,
   className = "",
 }) => {
+  const dispatch = useDispatch();
   return (
     <div
       className={`w-full max-w-xl mx-auto flex flex-col items-center justify-center py-2 text-center ${className}`}
@@ -38,16 +41,20 @@ const EmptyCart: React.FC<EmptyCartProps> = ({
 
       {/* CTAs */}
       <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <Button type="button" className="rounded-full! text-sm flex-1">
-          Continue shopping
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-full! text-sm"
-        >
-          View orders
-        </Button>
+        <Link to="/products" onClick={() => dispatch(CloseCartDrawer())}>
+          <Button type="button" className="rounded-full! text-sm flex-1">
+            Continue shopping
+          </Button>
+        </Link>
+        <Link to="/orders" onClick={() => dispatch(CloseCartDrawer())}>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full! text-sm"
+          >
+            View orders
+          </Button>
+        </Link>
       </div>
 
       {/* Helpful suggestions */}
@@ -58,7 +65,11 @@ const EmptyCart: React.FC<EmptyCartProps> = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-center">
           {["Snacks", "Beverages", "Groceries", "Household"].map((c) => (
-            <Link to="" key={c}>
+            <Link
+              to={`/products?category=${c}`}
+              key={c}
+              onClick={() => dispatch(CloseCartDrawer())}
+            >
               <Button
                 type="button"
                 variant="outline"

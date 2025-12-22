@@ -9,6 +9,9 @@ import EmptyCart from "./EmptyCard";
 import { CloseCartDrawer } from "../../redux-store/CartSlice";
 import { ICart } from "../../utils/Types/Cart.types";
 import { useCart } from "../../hooks/useCart";
+import { CartApi } from "../../services/Cart.serveice";
+import ErrorUI from "../ErrorsUI/ErrorUI";
+import { useMemo } from "react";
 interface ICartDrawerOpenProps {
   cartDrawerProps: {
     isCartDrawerOpen: boolean;
@@ -20,14 +23,23 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
   const dispatch = useDispatch();
   // prevent scrolling
   useOverlayManager(cartDrawerProps.isCartDrawerOpen, CloseCartDrawer);
-  const { clearCart } = useCart();
+  const { clearCart, error, isError, refetch } = useCart();
+
+  // const { clearCart,isUpdating } = useCart();
   const subTotal = cartDrawerProps.Cart.totalPrice;
   const FREE_SHIPPING_THRESHOLD = 500;
-  let isEligibleForFreeShipping = subTotal > FREE_SHIPPING_THRESHOLD;
-  const shippingProgress = Math.min(
-    (subTotal / FREE_SHIPPING_THRESHOLD) * 100,
-    100
-  );
+  const shippingStatus = useMemo(() => {
+    const amountNeeded = FREE_SHIPPING_THRESHOLD - subTotal;
+    const isEligible = subTotal >= FREE_SHIPPING_THRESHOLD;
+    const progress = Math.min((subTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+    return { amountNeeded, isEligible, progress };
+  }, [subTotal, FREE_SHIPPING_THRESHOLD]);
+  // handleClear cart
+  const handleClearCart = async () => {
+    clearCart();
+    await CartApi.clearCart();
+  };
+
   return (
     <>
       <div
@@ -56,7 +68,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
         </div>
         <div className="items-end self-end flex px-2">
           <button
-            onClick={() => clearCart()}
+            onClick={() => handleClearCart()}
             type="button"
             className="text-sm cursor-pointer hover:text-red-400 duration-150 hover:underline disabled:opacity-80 py-1 disabled:cursor-not-allowed disabled:"
             disabled={
@@ -70,20 +82,39 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
         {/* Free Shipping Banner */}
         <div className="bg-white border-b border-[#c4c4c4] p-2 sm:p-3">
           <div className="flex items-start gap-3">
-            <p className="text-[#173334] flex-1">
-              <span className="font-bold">Congrats!</span>{" "}
-              {isEligibleForFreeShipping ? (
-                <span>
-                  You are eligible for{" "}
-                  <span className="font-bold">FREE Shipping</span>
-                </span>
-              ) : (
-                <span>
-                  Add ₹{(FREE_SHIPPING_THRESHOLD - subTotal).toFixed(2)} more
-                  for <span className="font-bold">FREE Shipping</span>
-                </span>
-              )}
-            </p>
+            <div className="flex-1 min-w-0">
+              {/* Text with smooth transition */}
+              <div className="relative h-6 overflow-hidden">
+                <div
+                  className={`absolute inset-0 transition-all duration-300 ease-in-out ${
+                    shippingStatus.isEligible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 -translate-y-full"
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-green-700">
+                    Congrats! You are eligible for FREE Shipping
+                  </p>
+                </div>
+
+                <div
+                  className={`absolute inset-0 transition-all duration-300 ease-in-out ${
+                    !shippingStatus.isEligible
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-full"
+                  }`}
+                >
+                  <p className="text-sm font-semibold text-gray-800 ">
+                    Congrats! Add{" "}
+                    <span className="text-orange-600 w-[60px] inline-block">
+                      ₹{shippingStatus.amountNeeded.toFixed(2)}
+                    </span>{" "}
+                    more for{" "}
+                    <span className="text-green-600">FREE Shipping</span>
+                  </p>
+                </div>
+              </div>
+            </div>
             <div className="bg-[#febd2f] p-2 rounded-full">
               <Truck size={24} className="text-[#173334]" />
             </div>
@@ -93,7 +124,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
           <div className="mt-2 bg-gray-200 h-1 rounded-full overflow-hidden">
             <div
               className="bg-[#febd2f] h-full transition-all duration-500"
-              style={{ width: `${shippingProgress}%` }}
+              style={{ width: `${shippingStatus.progress}%` }}
             />
           </div>
         </div>
@@ -102,6 +133,8 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
         <div className="flex-1 overflow-y-auto p-2 sm:p-3 space-y-4">
           {cartDrawerProps.isLoading ? (
             <CartItemSkeleton />
+          ) : isError ? (
+            <ErrorUI error={error} onRetry={refetch} />
           ) : cartDrawerProps.Cart?.items?.length > 0 ? (
             cartDrawerProps.Cart?.items.map((item) => (
               <CartItem item={item} key={item?._id} />
@@ -119,14 +152,14 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                   Total Item
                 </span>
                 <span className="text-sm font-semibold text-[#173334]">
-                  {cartDrawerProps.Cart?.totalItems}
+                  {cartDrawerProps?.Cart?.totalItems}
                 </span>
               </div>
               <div className="flex justify-between items-center gap-2">
                 <span className="text-sm font-semibold text-[#173334]">
                   Subtotal
                 </span>
-                <span className="text-sm font-bold text-[#173334]">
+                <span className="text-sm font-bold text-[#173334]  w-[58px] inline-block">
                   ₹{subTotal?.toFixed(2)}
                 </span>
               </div>

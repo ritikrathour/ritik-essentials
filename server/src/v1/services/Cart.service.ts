@@ -67,7 +67,6 @@ class CartService {
       throw new ApiError(400, `Only ${product.stock} items available in stock`);
     }
     // Update item Quantity
-    console.log(quantity);
     Item.quantity = quantity;
     // Recalculate cart total
     const totals = this.calculateCartTotals((await cart).items);

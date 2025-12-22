@@ -6,35 +6,44 @@ import { ICartItem } from "../../utils/Types/Cart.types";
 import Rating from "../Rating";
 import { Link } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
+import { CloseCartDrawer } from "../../redux-store/CartSlice";
+import { useDispatch } from "react-redux";
 interface IItem {
   item: ICartItem;
 }
 // dummyn rate
 const rating = { average: 4.3, count: 20 };
 const CartItem: React.FC<IItem> = ({ item }) => {
+  const dispatch = useDispatch();
   const { updateCartItem, isUpdating, removeCartItem, isRemoving } = useCart();
   return (
     <div className="bg-white border border-[#c4c4c4] rounded-xl p-2">
       <div className="flex gap-1 sm:gap-4 ">
         {/* Product Image */}
         <div className="flex-shrink-0 flex flex-col gap-2 items-center">
-          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-4xl border border-[#c4c4c4]">
-            {/* <Link to={""}> */}
-            <OptimizedImage
-              objectFit="contain"
-              className=""
-              alt={item.name}
-              src="../assets/cola.avif"
-            />
-            {/* </Link> */}
-          </div>
+          <Link
+            to={`/products/${item?.productId}`}
+            onClick={() => dispatch(CloseCartDrawer())}
+          >
+            <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-4xl border border-[#c4c4c4]">
+              <OptimizedImage
+                objectFit="contain"
+                className=""
+                alt={item.name}
+                src="../assets/cola.avif"
+              />
+            </div>
+          </Link>
           {/* todo select  */}
         </div>
 
         {/* Product Details  */}
         <div className="flex-1">
           <div className="flex justify-between items-start mb-2">
-            <Link to={`/products/${item?._id}`}>
+            <Link
+              to={`/products/${item?.productId}`}
+              onClick={() => dispatch(CloseCartDrawer())}
+            >
               <h3 className="text-sm font-medium text-gray-900 mb-1 capitalize">
                 {item.name}
               </h3>
@@ -67,7 +76,7 @@ const CartItem: React.FC<IItem> = ({ item }) => {
                 type="button"
                 variant="ghost"
                 className="bg-gray-100! hover:bg-gray-300!"
-                disabled={isUpdating}
+                disabled={isUpdating || item.quantity - 1 < 1}
                 onClick={() =>
                   updateCartItem({
                     productId: item._id,
@@ -84,7 +93,7 @@ const CartItem: React.FC<IItem> = ({ item }) => {
               <Button
                 type="button"
                 variant="ghost"
-                disabled={isUpdating}
+                disabled={isUpdating || item.quantity > 99}
                 className="bg-gray-100! hover:bg-gray-300!"
                 onClick={() => {
                   updateCartItem({

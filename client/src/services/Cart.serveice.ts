@@ -32,7 +32,7 @@ export const CartApi = {
     return data?.data;
   },
   clearCart: async () => {
-    const { data } = await AxiosInstense.delete("/cart/clear");
+    const { data } = await AxiosInstense.delete("/cart/clear", {});
     return data?.data;
   },
 };

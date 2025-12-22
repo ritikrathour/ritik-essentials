@@ -32,6 +32,7 @@ const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 const ForgetPasswordOTP = lazy(() => import("./pages/ForgetPasswordOTP"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const Register = lazy(() => import("./pages/Register"));
+const CartPage = lazy(() => import("./pages/Cart"));
 
 function App() {
   const [headerVisiable, setHeaderVisiable] = useState<boolean>(false);
@@ -135,6 +136,14 @@ function App() {
                 element={
                   <PageTransition variants="fade">
                     <Home />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/cart"
+                element={
+                  <PageTransition variants="fade">
+                    <CartPage />
                   </PageTransition>
                 }
               />

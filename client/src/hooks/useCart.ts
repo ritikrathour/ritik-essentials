@@ -19,9 +19,10 @@ import { useEffect } from "react";
 export const useCart = () => {
   const dispatch = useDispatch();
   const qClient = useQueryClient();
-  const { Cart, error, isAuthenticate, isCartDrawerOpen, isLoading } =
-    useSelector((state: RootState) => state.cart);
-  const { data } = useQuery({
+  const { Cart, isAuthenticate, isCartDrawerOpen, isLoading } = useSelector(
+    (state: RootState) => state.cart
+  );
+  const { data, isError, error, refetch } = useQuery({
     queryKey: Cartkeys.cart,
     queryFn: () => CartApi.getCart("/cart"),
     enabled: isAuthenticate,
@@ -39,12 +40,8 @@ export const useCart = () => {
     }
   }, [data, dispatch]);
   const addMutation = useMutation({
-    mutationFn: (payload: IAddToCartPayload) => {
-      console.log("calllinnnnnng");
-      return isAuthenticate
-        ? CartApi.addToCart(payload)
-        : Promise.resolve(null);
-    },
+    mutationFn: (payload: IAddToCartPayload) =>
+      isAuthenticate ? CartApi.addToCart(payload) : Promise.resolve(null),
     onMutate: (payload) => {
       return dispatch(addToCartLocal(payload));
     },
@@ -87,7 +84,9 @@ export const useCart = () => {
     isCartDrawerOpen,
     Cart,
     isAuthenticate,
+    isError,
     error,
+    refetch,
     addTocart: addMutation.mutate,
     isAddingToCart: addMutation.isPending,
     updateCartItem: updateCartItemMutation.mutate,

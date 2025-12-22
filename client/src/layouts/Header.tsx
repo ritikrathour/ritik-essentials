@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { MenuIcon, MenuSquare, Search, Sidebar, User } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -128,14 +128,14 @@ const Header = () => {
                 to="/login"
                 className="text-[#febd2f] px-4 py-2 rounded hover:bg-gray-700 bg-gray-900"
               >
-                <i className="fas text-[14px] fa-user"></i>
+                <User size={20} />
               </Link>
             )}
           </div>
           <div className="relative cursor-pointer">
             <ShoppingCartCompo />
           </div>
-          <div className="lg:hidden" onClick={() => handleShowSearchBar()}>
+          <div className="hidden" onClick={() => handleShowSearchBar()}>
             <span className="px-4 py-2 rounded hover:bg-gray-700 bg-gray-900">
               <i
                 className={`fas text-[rgb(254,189,47)] text-[14px] fa-search`}
