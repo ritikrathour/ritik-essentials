@@ -20,6 +20,7 @@ import { AxiosInstense } from "../services/AxiosInstance";
 import ProductDetailsAccordion from "../components/products/ProductAcordianDetails";
 import { LazySection } from "../components/LazySection";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
+import AddToCartButton from "../components/ui/AddToCartButton";
 const RatingsAndReviews = lazy(
   () => import("../components/products/RatingsAndReviews")
 );
@@ -107,10 +108,13 @@ const ProductDetails = () => {
               <h4 className="line-through">₹225.00</h4>
             </div>
             <div className="flex gap-3 items-center mt-4">
-              <Button type="button" className="w-[200px]">
-                Add to Cart <ChevronRight />
-              </Button>
-              <Button variant="dark" type="button" className="w-[150px]">
+              <AddToCartButton product={products}></AddToCartButton>
+              {/* Add to Cart <ChevronRight /> */}
+              <Button
+                variant="dark"
+                type="button"
+                className="w-[150px] flex-1  "
+              >
                 Buy it now
               </Button>
             </div>
@@ -173,7 +177,7 @@ const ProductDetails = () => {
           {/* description and product details   */}
           <div className="flex flex-col gap-1 order-3">
             <div className="flex justify-start md:justify-end">
-              <Rating rating={{ ...products.rating }} />
+              <Rating rating={{ ...products?.rating }} />
             </div>
             <h2 className="text-start md:text-end text-[20px] font-semibold">
               Description:

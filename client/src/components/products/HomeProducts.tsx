@@ -32,7 +32,7 @@ const HomeProducts = () => {
               btnText="Shop Now"
               style="h-[250px] w-full md:w-[300px] shadow shadow-slate-400"
               icon={<i className="fas fa-shopping-cart" />}
-              to="/products"
+              to={`products?category=${item.name}`}
             />
           );
         })}

@@ -18,7 +18,6 @@ import { useImageUpload } from "../hooks/useImageUpload";
 import { useCreateProductValidation } from "../hooks/Validationhooks/useCreateProductValidation";
 import { ProductApi } from "../services/Product.service";
 import { useSelector } from "react-redux";
-import { useProduct } from "../hooks/useProduct";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { RootState } from "../redux-store/Store";

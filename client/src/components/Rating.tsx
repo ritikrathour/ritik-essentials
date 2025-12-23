@@ -1,4 +1,4 @@
-import { Star, StarHalf, StarHalfIcon } from "lucide-react";
+import { Star, StarHalf } from "lucide-react";
 import React from "react";
 
 const Rating: React.FC<any> = ({ rating }) => {

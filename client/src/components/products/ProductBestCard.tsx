@@ -13,17 +13,17 @@ interface ProductProps {
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // handleAddToCart
-  const handleAddToCart = () => {
-    dispatch(
-      addToCartLocal({
-        product,
-        productId: product._id.toString(),
-        quantity: 1,
-      })
-    );
-  };
+  // const handleAddToCart = () => {
+  //   dispatch(
+  //     addToCartLocal({
+  //       product,
+  //       productId: product._id.toString(),
+  //       quantity: 1,
+  //     })
+  //   );
+  // };
   return (
     <div>
       <div className="relative bg-white sm:w-[280px] md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
@@ -98,7 +98,6 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
               <Rating rating={{ ...product?.rating }} />
             )}
           </div>
-
           {isButton && <AddToCartButton product={product} />}
         </div>
       </div>

@@ -7,6 +7,8 @@ import { memo } from "react";
 const PopularCategories = () => {
   const { categories, error, isError, isLoading, refetch } =
     useProduct().getCategories("/categories");
+  console.log(categories);
+
   if (isLoading) {
     return <ProductSkeleton style="h-[400px]" />;
   }

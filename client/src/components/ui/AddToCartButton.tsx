@@ -2,7 +2,6 @@ import { useState } from "react";
 import { IProduct } from "../../utils/Types/Product.types";
 import { useCart } from "../../hooks/useCart";
 import { Button } from "./Button";
-
 const AddToCartButton: React.FC<{ product: IProduct }> = ({ product }) => {
   const { addTocart, isAddingToCart } = useCart();
   const [showSuccess, setShowSuccess] = useState(false);
@@ -26,7 +25,7 @@ const AddToCartButton: React.FC<{ product: IProduct }> = ({ product }) => {
       type="button"
       onClick={handleAdd}
       disabled={isAddingToCart || product.stock === 0}
-      className={`${showSuccess && "bg-green-600! text-white!"} w-full`}
+      className={`${showSuccess && "bg-green-600! text-white!"} w-full flex-1`}
     >
       {isAddingToCart ? (
         <>
