@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Bell, ChevronDown, Menu, X, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
 import { Button } from "../components/ui/Button";
 import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
@@ -24,7 +24,6 @@ const VendorHeader = () => {
     { name: "Payments", icon: "💰", url: "/payments" },
     { name: "Reviews", icon: "⭐", url: "/reviews" },
   ];
-  const dispatch = useDispatch();
   return (
     <div className="w-full border">
       {/* Top Header */}
@@ -55,13 +54,13 @@ const VendorHeader = () => {
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-1 sm:gap-3 relative">
+        <div className="flex items-center gap-2 sm:gap-3 relative">
           {/* Notification Bell */}
           {user?.user?.email && (
             <>
               <Link
                 to=""
-                className="bg-gray-900 block text-[#febd2f] relative py-2 px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
+                className="bg-gray-900 hidden text-[#febd2f] relative py-2 px-4 rounded shadow-lg hover:bg-gray-800 transition z-40"
               >
                 <Bell size={20} />
                 {5 > 0 && (

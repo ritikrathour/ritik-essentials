@@ -128,7 +128,9 @@ const Header = () => {
                 to="/login"
                 className="text-[#febd2f] px-4 py-2 rounded hover:bg-gray-700 bg-gray-900"
               >
-                <User size={20} />
+                <i
+                  className={`fas text-[rgb(254,189,47)] text-[14px] fa-user`}
+                ></i>
               </Link>
             )}
           </div>

@@ -72,6 +72,7 @@ const CreateProduct = () => {
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
   const { errors, validate, setErrors } = useCreateProductValidation(formData);
+  const [category, setCategory] = useState("");
   // fetched category from server
   const handleInputChange = useCallback(
     (
@@ -81,7 +82,6 @@ const CreateProduct = () => {
     ) => {
       const { name, value, type } = e.target;
       const checked = (e.target as HTMLInputElement).checked;
-
       setFormData((prev) => ({
         ...prev,
         [name]: type === "checkbox" ? checked : value,
@@ -136,7 +136,7 @@ const CreateProduct = () => {
   // handle submit product
   const handleSubmit = useCallback(
     async (isDraft: boolean = false) => {
-      if (!validate().IsError) {
+      if (validate().IsError) {
         return;
       }
       if (images.length === 0) {
@@ -154,12 +154,14 @@ const CreateProduct = () => {
           vendor: user && user?._id,
           price: Number(formData.price),
           stock: Number(formData.stock),
+          category: category || formData.category,
           images: images.map((img) => ({
             image: img.file.name,
             isPrimary: img.isPrimary,
           })),
           status: isDraft ? "draft" : "published",
         };
+        setIsSubmitting(true);
         const response = await ProductApi.createProduct(
           "/product",
           productData
@@ -183,7 +185,7 @@ const CreateProduct = () => {
         setIsSubmitting(false);
       }
     },
-    [formData, images, validate]
+    [formData, images, validate, category]
   );
   const calculatedPrice = useMemo(() => {
     const price = parseFloat(formData.price) || 0;
@@ -328,17 +330,8 @@ const CreateProduct = () => {
                   error={errors.name}
                 />
               </div>
-              {/* <SelectField
-                label="Category"
-                name="category"
-                value={formData.category}
-                onChange={handleInputChange}
-                options={categories}
-                required
-                error={errors.category}
-              /> */}
               <SelectCategory
-                value={formData.category}
+                setCategory={setCategory}
                 onchange={handleInputChange}
               />
               <Input

@@ -1,29 +1,36 @@
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import Input from "../Input";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useProduct } from "../../hooks/useProduct";
 interface IProps {
-  value: string;
-  onchange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  setCategory: any;
+  onchange: any;
 }
-const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
+const SelectCategory: React.FC<IProps> = ({ setCategory, onchange }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, SetShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [deboucedValue, setDebouncedValue] = useState("");
   const { categories, isLoading } = useProduct().getCategories("/categories");
+  const { createCategory, isPending } = useProduct().CreateCategory();
   // debounced value
   useEffect(() => {
     let timerId = setTimeout(() => {
       setDebouncedValue(searchTerm);
     }, 500);
     return () => clearTimeout(timerId);
-  });
+  }, [searchTerm]);
 
-  // console.log(newOptions);
-  const handleFocus = () => {
+  const handleFocus = useCallback(() => {
     SetShowDropdown((prev) => !prev);
-  };
+  }, []);
   //   handleSelect
   const handleSelect = (value: string) => {
     setSearchTerm(value);
@@ -34,6 +41,7 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
     if (!searchTerm.trim()) {
       return categories?.category;
     }
+    SetShowDropdown(true);
     return categories?.category?.filter((category: any) => {
       return category?.name
         .toLowerCase()
@@ -56,7 +64,10 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
     };
   }, []);
   // handleCreateCategory
-  const handleCreateCategory = () => {};
+  const handleCreateCategory = () => {
+    createCategory(searchTerm);
+    SetShowDropdown(false);
+  };
   return (
     <div
       className="flex items-center justify-center relative "
@@ -66,7 +77,10 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
         label="Category"
         name="category"
         type="text"
-        onchange={(e) => setSearchTerm(e.target.value)}
+        onchange={(e) => {
+          setSearchTerm(e.target.value);
+          onchange(e);
+        }}
         required
         placeholder="Choose & search a category..."
         value={searchTerm}
@@ -75,7 +89,7 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
         onfocus={() => handleFocus()}
       />
       {showDropdown && (
-        <div className="z-50 absolute flex flex-col gap-1.5 top-full w-full bg-white p-2 rounded-md mt-2 border border-[#c4c4c4]">
+        <div className="z-30 absolute flex flex-col gap-1.5 top-full w-full bg-white p-2 rounded-md mt-2 border border-[#c4c4c4]">
           <ul className="flex flex-col max-h-[200px] overflow-y-scroll  ">
             {isLoading ? (
               "Loading categories..."
@@ -84,7 +98,10 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
                 return (
                   <li
                     key={option?.name}
-                    onClick={() => handleSelect(option?.name)}
+                    onClick={() => {
+                      handleSelect(option?.name);
+                      setCategory(option?.name);
+                    }}
                     className="hover:bg-yellow-100 p-1 rounded-sm transition-all duration-150 text-sm"
                   >
                     {option?.name}
@@ -99,10 +116,12 @@ const SelectCategory: React.FC<IProps> = ({ value, onchange }) => {
           </ul>
           {filteredCategories?.length === 0 && (
             <button
+              type="button"
+              disabled={isPending}
               onClick={() => handleCreateCategory()}
               className="mt-2 border-t border-[#c4c4c4] text-blue-700 flex items-center text-sm hover:bg-blue-100 w-full h-full py-2 rounded-sm transition-all duration-200 cursor-pointer"
             >
-              <Plus size={20} /> Create "Hello"
+              <Plus size={20} /> Create {searchTerm}
             </button>
           )}
         </div>

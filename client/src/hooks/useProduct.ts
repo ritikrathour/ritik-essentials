@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProductApi } from "../services/Product.service";
 import { productKeys } from "../TanstackQuery/Querykeys";
 
@@ -72,5 +72,30 @@ export const useProduct = () => {
     });
     return { brands, isLoading, isError, error, refetch };
   };
-  return { getProduct, getCategories, getProductById, getBrands };
+  const CreateCategory = () => {
+    const queryClient = useQueryClient();
+    const {
+      data,
+      isError,
+      error,
+      isPending,
+      mutate: createCategory,
+    } = useMutation({
+      mutationFn: (payload: string) => ProductApi.createCategory(payload),
+      retry: 0,
+      onSuccess: (data) => {
+        console.log(data, "data y");
+
+        queryClient.invalidateQueries({ queryKey: productKeys.Categories() });
+      },
+    });
+    return { data, isError, error, isPending, createCategory };
+  };
+  return {
+    getProduct,
+    getCategories,
+    getProductById,
+    getBrands,
+    CreateCategory,
+  };
 };

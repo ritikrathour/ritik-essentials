@@ -32,15 +32,17 @@ const Card = ({
             </p>
             <h1
               className="text-2xl py-2.5 text-[#febd2f] font-bold capitalize"
-              style={{ letterSpacing: "2px" }}
+              style={{ letterSpacing: "1px" }}
             >
-              {`${title?.slice(0, 22)}...`}
+              {`${title?.slice(0, 22)} ${title?.length > 22 && "..."}`}
             </h1>
             <p
               className="text-[14px] text-white"
               style={{ letterSpacing: "1px" }}
             >
-              {`${description.slice(0, 80)}...`}
+              {`${description.slice(0, 80)} ${
+                description?.length > 80 && "..."
+              }`}
             </p>
           </div>
           <Link to={to || ""}>

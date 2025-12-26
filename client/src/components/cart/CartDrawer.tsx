@@ -84,7 +84,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
           <div className="flex items-start gap-3">
             <div className="flex-1 min-w-0">
               {/* Text with smooth transition */}
-              <div className="relative h-6 overflow-hidden">
+              <div className="relative h-6">
                 <div
                   className={`absolute inset-0 transition-all duration-300 ease-in-out ${
                     shippingStatus.isEligible
@@ -104,7 +104,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                       : "opacity-0 translate-y-full"
                   }`}
                 >
-                  <p className="text-sm font-semibold text-gray-800 ">
+                  <p className="text-sm font-semibold text-gray-800">
                     Congrats! Add{" "}
                     <span className="text-orange-600 w-[60px] inline-block">
                       ₹{shippingStatus.amountNeeded.toFixed(2)}

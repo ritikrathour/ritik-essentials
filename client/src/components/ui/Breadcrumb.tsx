@@ -45,9 +45,9 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`flex items-center space-x-2 ${className} md:px-10 px-4 pb-2 md:pt-8 pt-16 lg:pt-22 flex-wrap`}
+      className={`flex items-center space-x-2 ${className} md:px-10 px-4 pb-2 md:pt-8 pt-16 lg:pt-22`}
     >
-      <ol className="flex items-center space-x-2">
+      <ol className="flex items-center space-x-2 flex-wrap">
         {displayItems.map((item, index) => {
           const isLast = index === displayItems.length - 1;
           const isCollapsed = item.label === "...";

@@ -8,11 +8,3 @@ declare global {
     }
   }
 }
-
-// category
-export interface ICategory {
-  name: string;
-  slug?: string;
-  parent?: mongoose.ObjectId;
-  image?: string;
-}

@@ -3,38 +3,24 @@ import { IProduct } from "../../utils/Types/Product.types";
 import React from "react";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
-import { Button } from "../ui/Button";
 import Rating from "../Rating";
-import { useDispatch } from "react-redux";
-import { addToCartLocal } from "../../redux-store/CartSlice";
 import AddToCartButton from "../ui/AddToCartButton";
 interface ProductProps {
   product: IProduct;
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
-  // const dispatch = useDispatch();
-  // handleAddToCart
-  // const handleAddToCart = () => {
-  //   dispatch(
-  //     addToCartLocal({
-  //       product,
-  //       productId: product._id.toString(),
-  //       quantity: 1,
-  //     })
-  //   );
-  // };
   return (
     <div>
       <div className="relative bg-white sm:w-[280px] md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
         <Link
           to={`/products/${product?._id}`}
-          className=" w-full h-[300px] block"
+          className=" w-full h-[300px] block "
         >
           <OptimizedImage
-            className="group-hover:scale-105 transition-transform duration-300"
+            className="group-hover:scale-105 transition-transform duration-300 w-[300px]!"
             alt={product?.name}
-            src={"../assets/cookies.png"}
+            src={"../assets/kirana.png"}
             // (product?.images && product?.images[0])
           />
           <button
@@ -84,12 +70,12 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
           </p>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-xl font-bold">₹{product.price}</span>
+              <span className="text-[20px] font-bold">₹{product.price}</span>
               <span className="text-sm text-gray-500 line-through">
                 ₹445
                 {/* {product.originalPrice} */}
               </span>
-              <span className="text-sm text-green-600 font-medium">
+              <span className="text-sm text-green-600 font-medium text-nowrap">
                 {/* {product.discount} */}
                 35% off
               </span>

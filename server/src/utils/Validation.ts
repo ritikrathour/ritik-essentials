@@ -88,7 +88,6 @@ export const validateCreateProduct = (data: any) => {
         "SKU can only contain letters, numbers, hyphens, and underscores",
     });
   }
-
   if (
     data.stock === undefined ||
     data.stock === null ||
@@ -330,21 +329,22 @@ export const parseProductFilters = (query: any) => {
 interface ICategoryValidate {
   name: string;
   parent: string | null;
-  image: string;
 }
 // category validation
-export const CategoryValidate = (category: ICategoryValidate) => {
-  let error = undefined;
+export const CategoryValidate = (
+  category: ICategoryValidate
+): { valid: boolean; errors: string[] } => {
+  const errors: string[] = [];
   if (!category.name) {
-    return (error = "Category Name is required");
+    errors.push("Category Name is required");
   } else if (category?.name.trim() === " ") {
-    return (error = "Category Name should not be Empty");
-  } else if (category.name.length > 14) {
-    return (error = "Category Name must not exceed 14 characters.");
+    errors.push("Category Name should not be Empty");
+  } else if (category.name.length > 24) {
+    errors.push("Category Name must not exceed 24 characters.");
   } else if (category.name.length < 4) {
-    return (error = "Category Name must atleast 5 characters.");
+    errors.push("Category Name must atleast 5 characters.");
   }
-  return { valid: error === undefined, error };
+  return { valid: errors.length === 0, errors };
 };
 
 // cart validation

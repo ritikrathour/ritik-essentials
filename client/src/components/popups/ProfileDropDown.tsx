@@ -1,4 +1,5 @@
 import {
+  Bell,
   Heart,
   LogOut,
   LucideGitPullRequestDraft,
@@ -100,6 +101,16 @@ const ProfileDropDown = ({
               ))
             ) : (
               <>
+                <Link
+                  to={"item?.url"}
+                  onClick={() => state(false)}
+                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-gray-700 transition"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Bell className="w-4 h-4" />
+                    <span className="text-sm">Notifications</span>
+                  </div>
+                </Link>
                 <Link
                   to={"item?.url"}
                   onClick={() => state(false)}

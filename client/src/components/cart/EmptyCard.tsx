@@ -40,9 +40,9 @@ const EmptyCart: React.FC<EmptyCartProps> = ({
       </p>
 
       {/* CTAs */}
-      <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div className="mt-6 flex gap-3">
         <Link to="/products" onClick={() => dispatch(CloseCartDrawer())}>
-          <Button type="button" className="rounded-full! text-sm flex-1">
+          <Button type="button" className="rounded-full! text-sm">
             Continue shopping
           </Button>
         </Link>
@@ -50,7 +50,7 @@ const EmptyCart: React.FC<EmptyCartProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="rounded-full! text-sm"
+            className="rounded-full! text-sm flex-1"
           >
             View orders
           </Button>

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { AxiosInstense } from "./AxiosInstance";
 
 export const ProductApi = {
@@ -11,6 +12,11 @@ export const ProductApi = {
   },
   getcategories: async (url: string) => {
     const { data } = await AxiosInstense.get(url);
+    return data?.data;
+  },
+  createCategory: async (payload: string) => {
+    const { data } = await AxiosInstense.post("/category", { name: payload });
+    toast.success(data?.message);
     return data?.data;
   },
   getProductByID: async (url: string) => {
