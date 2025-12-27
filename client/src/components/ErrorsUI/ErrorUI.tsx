@@ -9,8 +9,8 @@ const ErrorUI: React.FC<CarouselErrorProps> = ({ error, onRetry }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12 bg-red-50 rounded-xl">
       <AlertTriangle className="w-10 h-10 text-red-500 mb-3" />
-      <p className="text-red-600 text-sm font-medium">
-        {error?.response?.data?.message || error?.message || "Failed to load!"}
+      <p className="text-red-600 text-lg font-medium">
+        {error?.response?.data?.message || error?.message || "Failed to Load!"}
       </p>
       {onRetry && (
         <button

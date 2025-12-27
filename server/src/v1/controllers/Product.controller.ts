@@ -3,6 +3,7 @@ import AsyncHandler from "../../utils/AsyncHandler";
 import {
   parseProductFilters,
   validateCreateProduct,
+  validatePaginationQuery,
   ValidateUpdateProduct,
 } from "../../utils/Validation";
 import ApiError from "../../utils/ApiError";
@@ -10,6 +11,7 @@ import { ProductServices } from "../services/Product.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { isValidObjectId } from "mongoose";
 import UserModel from "../models/User.model";
+import { VendorProduct } from "../services/VendorProduct.service";
 // ----------------------------------- Authenticated (Vendor/Admin)-----------------------------------
 
 // create product
@@ -71,6 +73,22 @@ const UpdateProduct = AsyncHandler(async (req: Request, res: Response) => {
   }
   res.json(
     new ApiResponse(200, { updateProduct }, "Product updated successfully")
+  );
+});
+// get vendor products
+const VendorProducts = AsyncHandler(async (req: Request, res: Response) => {
+  const vendorId = req.user?._id;
+  // validation
+  const query = validatePaginationQuery(req.query);
+  const result = await VendorProduct.getProduct({
+    ...query,
+    vendorId: vendorId,
+  });
+  if (!result || result?.data.length === 0) {
+    throw new ApiError(404, "Product not found!", false);
+  }
+  res.json(
+    new ApiResponse(200, result, "Vendor Products retrieved successfully!")
   );
 });
 // ----------------------------------- Authenticated (Vendor/Admin)-----------------------------------
@@ -174,6 +192,7 @@ export {
   GetBrands,
   GetProductsByVendor,
   GetUserOrders,
+  VendorProducts,
 };
 
 //

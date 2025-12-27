@@ -1,20 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import {
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  EyeOff,
-  MoreVertical,
-  TrendingUp,
-  Package,
-  AlertCircle,
-} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Package } from "lucide-react";
 import Loader from "../../components/Loader";
 import { ProductRow } from "../../components/vendor/ProductRow";
 import { FilterBar } from "../../components/FilterBar";
+import ErrorUI from "../../components/ErrorsUI/ErrorUI";
+import { useProduct } from "../../hooks/useProduct";
+import { IPROD, IProduct } from "../../utils/Types/Product.types";
 
 // Mock API Service Layer
 const ProductService = {
@@ -200,61 +191,78 @@ const useProducts = (vendorId: any, filters: any) => {
     }
   }, [vendorId, filters]);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, [fetchProducts]);
 
   return { products, loading, error, refetch: fetchProducts };
 };
 
 // Main Component
 const VendorProducts = () => {
-  const vendorId = "vendor_123"; // In production, get from auth context
+  // const vendorId = "vendor_123"; // In production, get from auth context
   const [filters, setFilters] = useState({
     search: "",
     status: "all",
     category: "all",
   });
-
-  const { products, loading, error, refetch } = useProducts(vendorId, filters);
+  // const { products, loading, error, refetch } = useProducts(vendorId, filters);
+  const {
+    data: products,
+    error,
+    isError,
+    isLoading,
+    refetch,
+  } = useProduct().getVendorProduct("/products", true);
   // Event Handlers
   const handleStatusToggle = async (productId: any, newStatus: any) => {};
-
   const handleEdit = (productId: any) => {
     // Navigate to edit page or open modal
   };
-
   const handleDelete = async (productId: any) => {};
-
-  if (error) {
+  // filteredProducts
+  const filteredProducts: any = useMemo(() => {
+    return products?.result?.data?.filter((product: IPROD) => {
+      const matchesSearch =
+        (product?.name &&
+          product?.name
+            ?.toLowerCase()
+            ?.includes(filters?.search?.toLowerCase())) ||
+        (product?.sku &&
+          product?.sku
+            ?.toLowerCase()
+            ?.includes(filters?.search?.toLowerCase()));
+      const matchesStatus =
+        filters.status === "all" || product.status === filters.status;
+      const matchesCategory =
+        filters.category === "all" || product?.category === filters.category;
+      return matchesSearch && matchesStatus && matchesCategory;
+    });
+  }, [
+    products?.result?.data,
+    filters.category,
+    filters.search,
+    filters.status,
+  ]);
+  if (isError) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
-            Error Loading Products
-          </h2>
-          <p className="text-gray-600 text-center mb-4">{error}</p>
-          <button
-            onClick={refetch}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <>
+        <ErrorUI error={error} onRetry={refetch} />
+      </>
     );
   }
-
+  if (isLoading) {
+    return <Loader style="h-[80vh]" />;
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+        <div className="mb-8 px-3">
+          <h1 className="text-lg sm:text-3xl font-bold text-gray-900">
             Product Management
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-1 text-sm ">
             Manage your product catalog and inventory
           </p>
         </div>
@@ -263,15 +271,18 @@ const VendorProducts = () => {
 
         {/* Products Table */}
         <div className="bg-white rounded-lg shadow border border-gray-200">
-          {loading ? (
+          {isLoading ? (
             <div className="p-12 text-center">
               <Loader />
               <p className="mt-4 text-gray-600">Loading products...</p>
             </div>
-          ) : products.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <div className="p-12 text-center">
               <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">No products found</p>
+              <p className="text-[12px] text-gray-600">
+                Try adjusting your filters
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -302,15 +313,17 @@ const VendorProducts = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  {products.map((product: any) => (
-                    <ProductRow
-                      key={product.id}
-                      product={product}
-                      onStatusToggle={handleStatusToggle}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  ))}
+                  {filteredProducts?.map((product: any) => {
+                    return (
+                      <ProductRow
+                        key={product?._id}
+                        product={product}
+                        onStatusToggle={handleStatusToggle}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

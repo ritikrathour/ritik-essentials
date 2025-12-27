@@ -516,7 +516,6 @@ export class ProductController {
   static getAllProducts = asyncHandler(
     async (req: AuthRequest, res: Response) => {
       const query = ProductValidator.validatePaginationQuery(req.query);
-
       // Filter only active products for customers
       const result = await ProductService.getProducts({
         ...query,

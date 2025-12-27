@@ -1,5 +1,5 @@
 export interface IVendorProucts {
-  id: string;
+  _id: string;
   name: string;
   brand: string;
   price: number;

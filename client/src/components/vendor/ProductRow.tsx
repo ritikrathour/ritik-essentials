@@ -1,6 +1,8 @@
 import { Edit, Eye, EyeOff, MoreVertical, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 import { IVendorProucts } from "../../utils/Types/Vendor.types";
+import { OptimizedImage } from "../ui/OptimizedImage";
+import { Link } from "react-router-dom";
 interface IProductProps {
   product: IVendorProucts;
   onStatusToggle: (id: string, status: string) => void;
@@ -29,37 +31,37 @@ export const ProductRow: React.FC<IProductProps> = ({
     <tr className="border-b border-gray-200 hover:bg-gray-50">
       <td className="px-6 py-4">
         <div className="flex items-center">
-          <img
-            src={"../public/assets/cola.avif"}
-            alt={product.name}
-            className="w-[40px]! h-[40px]! rounded-lg "
-          />
+          <Link to={`/products/${product?._id}`}>
+            <OptimizedImage
+              className="w-[50px]! h-[55px]! rounded-lg border border-[#c4c4c4]"
+              alt={product.sku}
+              src="../public/assets/cola.avif"
+            />
+          </Link>
           <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900">
-              {product.name}
-            </div>
-            <div className="text-sm text-gray-500">{product.sku}</div>
+            <p className="text-sm font-medium text-gray-900">{product?.name}</p>
+            <p className="text-sm text-gray-500">{product?.sku}</p>
           </div>
         </div>
       </td>
       <td className="px-6 py-4">
-        <span className="text-sm text-gray-900">{product.category}</span>
+        <span className="text-sm text-gray-900">{product?.category}</span>
       </td>
       <td className="px-6 py-4">
         <span className="text-sm font-medium text-gray-900">
-          ${product.price.toFixed(2)}
+          ${product?.price?.toFixed(2)}
         </span>
       </td>
 
       <td className="px-6 py-4">
         <div>
           <span className="text-sm font-medium text-gray-900">
-            {product.stock}
+            {product?.stock}
           </span>
           <span
             className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${stockStatus.color}`}
           >
-            {stockStatus.label}
+            {stockStatus?.label}
           </span>
         </div>
       </td>
@@ -68,32 +70,32 @@ export const ProductRow: React.FC<IProductProps> = ({
         <button
           onClick={() =>
             onStatusToggle(
-              product.id,
+              product._id,
               product.status === "published" ? "draft" : "published"
             )
           }
           className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
-            product.status === "published"
+            product?.status === "published"
               ? "bg-green-100 text-green-800"
               : "bg-gray-100 text-gray-800"
           }`}
         >
-          {product.status === "published" ? (
+          {product?.status === "published" ? (
             <Eye className="w-3 h-3" />
           ) : (
             <EyeOff className="w-3 h-3" />
           )}
-          {product.status === "published" ? "Published" : "Draft"}
+          {product?.status === "published" ? "Published" : "Draft"}
         </button>
       </td>
 
       <td className="px-6 py-4">
         <div>
           <div className="text-sm font-medium text-gray-900">
-            {product.sales} units
+            {product?.sales} units
           </div>
           <div className="text-sm text-gray-500">
-            ${product.revenue.toFixed(2)}
+            ${product?.revenue?.toFixed(2)}
           </div>
         </div>
       </td>
@@ -111,7 +113,7 @@ export const ProductRow: React.FC<IProductProps> = ({
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
               <button
                 onClick={() => {
-                  onEdit(product.id);
+                  onEdit(product._id);
                   setShowMenu(false);
                 }}
                 className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
@@ -121,7 +123,7 @@ export const ProductRow: React.FC<IProductProps> = ({
               </button>
               <button
                 onClick={() => {
-                  onDelete(product.id);
+                  onDelete(product._id);
                   setShowMenu(false);
                 }}
                 className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"

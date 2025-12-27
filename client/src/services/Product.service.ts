@@ -34,8 +34,8 @@ export const ProductApi = {
   createFavProduct: async (url: string, id: string) => {
     const { data } = await AxiosInstense.post(url);
   },
-  getProductsByVendor: async (vendorId: string, url: string) => {
-    const { data } = await AxiosInstense.get(`${url}/${vendorId}`);
+  getProductsByVendor: async (url: string) => {
+    const { data } = await AxiosInstense.get(url);
     return data?.data;
   },
 };

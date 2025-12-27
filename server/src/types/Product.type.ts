@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+export interface IProdStatus {
+  status: "publised" | "draft" | "out_of_stock";
+}
 enum IProductUnit {
   KG = "kg",
   G = "g",
@@ -9,6 +12,14 @@ enum IProductUnit {
   PIECE = "piece",
   DOZEN = "dozen",
   PACK = "pack",
+}
+export interface PaginationQuery {
+  page: number;
+  limit: number;
+  sortOrder?: "asc" | "desc";
+  search?: string;
+  category?: string;
+  status?: IProdStatus;
 }
 export interface IProduct {
   vendor: mongoose.Types.ObjectId;
@@ -23,7 +34,7 @@ export interface IProduct {
   images: string[];
   sales?: number;
   tags: string[];
-  status: "publised" | "draft";
+  status: "publised" | "draft" | "out_of_stock";
   weight?: number;
   unit: IProductUnit;
   featured?: boolean;

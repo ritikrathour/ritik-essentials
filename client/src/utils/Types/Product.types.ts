@@ -19,10 +19,28 @@ export interface ICardProps {
   icon?: any;
   to?: string;
 }
-
+export type IProdStatus = "publised" | "draft" | "out_of_stock";
 export interface IProduct {
   _id: number;
   name: string;
+  brand: string;
+  stock: number;
+  price: number;
+  originalPrice: number;
+  category?: string;
+  image?: string;
+  images?: string[];
+  rating?: { avarage: number; count: number };
+  badge?: string;
+  sponsored: boolean;
+  discount?: number;
+  assured?: boolean;
+}
+export interface IPROD {
+  _id: number;
+  name: string;
+  sku: string;
+  status: IProdStatus;
   brand: string;
   stock: number;
   price: number;

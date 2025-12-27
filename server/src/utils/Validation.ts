@@ -2,6 +2,18 @@ import dns from "dns";
 import { IValidationError } from "../types/Auth.type";
 import { promisify } from "util";
 import { ICartItem } from "../types/Cart.type";
+import { IProdStatus } from "../types/Product.type";
+// validate product query
+export const validatePaginationQuery = (query: any) => {
+  return {
+    page: Math.max(1, parseInt(query.page) || 1),
+    limit: Math.min(100, Math.max(1, parseInt(query.limit) || 10)),
+    sortOrder: query.sortOrder === "asc" ? "asc" : "desc",
+    search: query.search?.trim(),
+    category: query.category?.trim(),
+    status: query.status as IProdStatus,
+  };
+};
 // validateCreateProduct
 export const validateCreateProduct = (data: any) => {
   const errors: IValidationError[] = [];
