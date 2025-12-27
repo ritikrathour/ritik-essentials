@@ -3,17 +3,20 @@ import React, { useState } from "react";
 import { IVendorProucts } from "../../utils/Types/Vendor.types";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
+import { IProdStatus } from "../../utils/Types/Product.types";
 interface IProductProps {
   product: IVendorProucts;
-  onStatusToggle: (id: string, status: string) => void;
+  onStatusToggle: (id: string, status: IProdStatus) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  isPending: boolean;
 }
 export const ProductRow: React.FC<IProductProps> = ({
   product,
   onStatusToggle,
   onEdit,
   onDelete,
+  isPending,
 }) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
 
@@ -71,7 +74,7 @@ export const ProductRow: React.FC<IProductProps> = ({
           onClick={() =>
             onStatusToggle(
               product._id,
-              product.status === "published" ? "draft" : "published"
+              product.status === "Draft" ? "publised" : "draft"
             )
           }
           className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
@@ -122,6 +125,7 @@ export const ProductRow: React.FC<IProductProps> = ({
                 Edit Product
               </button>
               <button
+                disabled={isPending}
                 onClick={() => {
                   onDelete(product._id);
                   setShowMenu(false);

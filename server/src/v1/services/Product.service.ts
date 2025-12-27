@@ -1,4 +1,4 @@
-import { FilterQuery } from "mongoose";
+import { FilterQuery, ObjectId } from "mongoose";
 import {
   brandsExpiry,
   getBrandsKey,
@@ -13,6 +13,7 @@ import {
 // import { redisClient } from "../../libs/RedisClient";
 import {
   IPaginationResult,
+  IProdStatus,
   IProduct,
   IProductFilters,
   IUpdateProduct,
@@ -89,9 +90,9 @@ export const ProductServices = {
     return product;
   },
   // delete product by id
-  async deleteProduct(id: string): Promise<boolean> {
+  async deleteProduct(productId: string): Promise<boolean> {
     // check in DB and delete
-    const product = await ProductModel.findByIdAndDelete(id);
+    const product = await ProductModel.findByIdAndDelete(productId);
     if (product) {
       // clear cache
       // await redisClient.del(getProductkey(id));
@@ -274,5 +275,19 @@ export const ProductServices = {
     //   JSON.stringify(products)
     // );
     return products;
+  },
+  // update product status
+  async updateProductStatus(prodId: string, status: IProdStatus) {
+    return ProductModel.findOneAndUpdate(
+      { _id: prodId },
+      {
+        $set: {
+          status: status,
+        },
+      },
+      {
+        new: true,
+      }
+    );
   },
 };

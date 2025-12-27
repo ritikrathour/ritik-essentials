@@ -12,6 +12,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { isValidObjectId } from "mongoose";
 import UserModel from "../models/User.model";
 import { VendorProduct } from "../services/VendorProduct.service";
+import { IProdStatus } from "../../types/Product.type";
 // ----------------------------------- Authenticated (Vendor/Admin)-----------------------------------
 
 // create product
@@ -36,15 +37,15 @@ const CreateProduct = AsyncHandler(async (req: Request, res: Response) => {
 });
 // delete product
 const DeleteProduct = AsyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (!id) {
+  const { productId } = req.params;
+  if (!productId) {
     throw new ApiError(404, "product Id is required!");
   }
-  if (!isValidObjectId(id)) {
+  if (!isValidObjectId(productId)) {
     throw new ApiError(400, "Invalid product id!", false);
   }
   // delete product from DB
-  const deleteProduct = await ProductServices.deleteProduct(id);
+  const deleteProduct = await ProductServices.deleteProduct(productId);
   if (!deleteProduct) {
     throw new ApiError(500, "Product not deleted!", false);
   }
@@ -91,6 +92,39 @@ const VendorProducts = AsyncHandler(async (req: Request, res: Response) => {
     new ApiResponse(200, result, "Vendor Products retrieved successfully!")
   );
 });
+// updata product's status (published or draft)
+const UpdateProductStatus = AsyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params;
+    if (!productId) {
+      throw new ApiError(404, "Product id is required!");
+    }
+    // validate id
+    if (!isValidObjectId(productId)) {
+      throw new ApiError(400, "Invalid product id!");
+    }
+    const status: IProdStatus = req.body;
+    if (!status) {
+      throw new ApiError(400, "Status is required!");
+    }
+    // find the product from id
+    const product = await ProductServices.getProductById(productId);
+    if (!product) {
+      throw new ApiError(404, `Product not found with this id ${productId}`);
+    }
+    // update status
+    const updateStatus = await ProductServices.updateProductStatus(
+      productId,
+      status
+    );
+    if (!updateStatus) {
+      throw new ApiError(500, "Product status not updated!");
+    }
+    res.json(
+      new ApiResponse(200, updateStatus, "Product Status updated successfully!")
+    );
+  }
+);
 // ----------------------------------- Authenticated (Vendor/Admin)-----------------------------------
 // ----------------------------------- Public Routes -----------------------------------
 // get product
@@ -193,6 +227,7 @@ export {
   GetProductsByVendor,
   GetUserOrders,
   VendorProducts,
+  UpdateProductStatus,
 };
 
 //

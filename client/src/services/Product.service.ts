@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import { AxiosInstense } from "./AxiosInstance";
+import { IProdStatus } from "../utils/Types/Product.types";
 
 export const ProductApi = {
   createProduct: async (url: string, formData: any) => {
@@ -37,5 +38,15 @@ export const ProductApi = {
   getProductsByVendor: async (url: string) => {
     const { data } = await AxiosInstense.get(url);
     return data?.data;
+  },
+  deleteVendorProduct: async (prodId: string) => {
+    const { data } = await AxiosInstense.delete(`/product/${prodId}`);
+    return data;
+  },
+  updateProductStatus: async (productId: string, status: IProdStatus) => {
+    const { data } = await AxiosInstense.patch(`/product/status/${productId}`, {
+      status,
+    });
+    return data;
   },
 };
