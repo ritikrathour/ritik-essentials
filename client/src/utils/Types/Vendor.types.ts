@@ -8,7 +8,7 @@ export interface IVendorProucts {
   image: string;
   stock: number;
   label: string;
-  status: "published" | "Draft";
+  status: "published" | "draft" | "out_of_stock";
   sales: number;
   revenue: number;
   sku: string;

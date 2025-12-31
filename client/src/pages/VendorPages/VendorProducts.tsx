@@ -20,9 +20,12 @@ const VendorProducts = () => {
     isError,
     isLoading,
     refetch,
-  } = useProduct().getVendorProduct("/products", true);
+  } = useProduct().getVendorProducts("/products", true);
+
   const { mutate, isPending } = useProduct().deleteVendorProduct();
-  const { mutate: updateStatus, data } = useProduct().updateProductStatus();
+  const { mutate: updateStatus, isPending: isUpdatingStatus } =
+    useProduct().updateProductStatus();
+
   // Event Handlers
   const handleStatusToggle = async (productId: string, status: IProdStatus) => {
     updateStatus({ productId, status });
@@ -135,6 +138,7 @@ const VendorProducts = () => {
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         isPending={isPending}
+                        isUpdatingStatus={isUpdatingStatus}
                       />
                     );
                   })}

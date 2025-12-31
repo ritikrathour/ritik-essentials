@@ -9,19 +9,19 @@ import {
   Check,
   IndianRupee,
 } from "lucide-react";
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGES } from "../utils/constant";
-import { IProductFormData } from "../utils/Types/Product.types";
-import { Button } from "../components/ui/Button";
-import Input from "../components/Input";
-import SelectField from "../components/SelectField";
-import { useImageUpload } from "../hooks/useImageUpload";
-import { useCreateProductValidation } from "../hooks/Validationhooks/useCreateProductValidation";
-import { ProductApi } from "../services/Product.service";
+import { ALLOWED_IMAGE_TYPES, MAX_IMAGES } from "../../utils/constant";
+import { IProductFormData } from "../../utils/Types/Product.types";
+import { Button } from "../../components/ui/Button";
+import Input from "../../components/Input";
+import SelectField from "../../components/SelectField";
+import { useImageUpload } from "../../hooks/useImageUpload";
+import { useCreateProductValidation } from "../../hooks/Validationhooks/useCreateProductValidation";
+import { ProductApi } from "../../services/Product.service";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { RootState } from "../redux-store/Store";
-import SelectCategory from "../components/ui/SelectCategory";
+import { RootState } from "../../redux-store/Store";
+import SelectCategory from "../../components/ui/SelectCategory";
 
 enum ProductUnit {
   KG = "kg",
@@ -72,6 +72,9 @@ const CreateProduct = () => {
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
   const { errors, validate, setErrors } = useCreateProductValidation(formData);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagError, setTagError] = useState<string | null>(null);
+  const [inputTag, setInputTag] = useState<string>("");
   const [category, setCategory] = useState("");
   // fetched category from server
   const handleInputChange = useCallback(
@@ -133,60 +136,84 @@ const CreateProduct = () => {
     },
     [handleFiles]
   );
+  // handle Add tags
+  const handleAddTag = (value: string) => {
+    if (value.trim() === "" || value?.trim() === " ") return;
+    if (tags?.length === 5) {
+      setTagError("Tags length not exceeded to 5 tag!");
+      setTimeout(() => {
+        setTagError("");
+      }, 2000);
+      setInputTag("");
+      return;
+    }
+    if (tags.find((val) => val === value)) {
+      setTagError("This tag already exist!");
+      setTimeout(() => {
+        setTagError("");
+      }, 2000);
+      setInputTag("");
+      return;
+    }
+    setTags((prev) => [...prev, value]);
+    setInputTag("");
+  };
+  // handleRemoveTag
+  const handleRemoveTag = (value: string) => {
+    const filterdTags = tags.filter((tag) => tag !== value);
+    setTags(filterdTags);
+  };
   // handle submit product
-  const handleSubmit = useCallback(
-    async (isDraft: boolean = false) => {
-      if (validate().IsError) {
-        return;
-      }
-      if (images.length === 0) {
-        setImageError("Please upload at least one product image");
-        return;
-      }
-      if (isDraft) {
-        setIsDraftting(true);
-      } else {
-        setSubmitSuccess(true);
-      }
-      try {
-        const productData = {
-          ...formData,
-          vendor: user && user?._id,
-          price: Number(formData.price),
-          stock: Number(formData.stock),
-          category: category || formData.category,
-          images: images.map((img) => ({
-            image: img.file.name,
-            isPrimary: img.isPrimary,
-          })),
-          status: isDraft ? "draft" : "published",
-        };
-        setIsSubmitting(true);
-        const response = await ProductApi.createProduct(
-          "/product",
-          productData
-        );
-        toast.success(
-          response?.data?.message || "Product Created Successfully!"
-        );
-        console.log(response);
-        setTimeout(() => {
-          setFormData(INITIAL_FORM_STATE);
-        }, 1000);
-      } catch (error) {
-        console.error("Error submitting product:", error);
-        toast.error(
-          axios.isAxiosError(error)
-            ? error?.response?.data?.message || error?.response?.data?.error
-            : "Product not Created!"
-        );
-      } finally {
-        setIsDraftting(false);
-        setIsSubmitting(false);
-      }
-    },
-    [formData, images, validate, category]
-  );
+  const handleSubmit = async (isDraft: boolean = false) => {
+    if (!validate().IsError) {
+      console.log(validate()?.errors);
+
+      console.log("fdssd");
+
+      return;
+    }
+    if (images.length === 0) {
+      setImageError("Please upload at least one product image");
+      return;
+    }
+    if (isDraft) {
+      setIsDraftting(true);
+    } else {
+      setSubmitSuccess(true);
+    }
+    try {
+      const productData = {
+        ...formData,
+        vendor: user && user?._id,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        category: category || formData.category,
+        images: images.map((img) => ({
+          image: img.file.name,
+          isPrimary: img.isPrimary,
+        })),
+        tags: tags,
+        status: isDraft ? "draft" : "published",
+      };
+      setIsSubmitting(true);
+      const response = await ProductApi.createProduct("/product", productData);
+      toast.success(response?.data?.message || "Product Created Successfully!");
+      setTimeout(() => {
+        setFormData(INITIAL_FORM_STATE);
+      }, 1000);
+    } catch (error) {
+      console.error("Error submitting product:", error);
+      toast.error(
+        axios.isAxiosError(error)
+          ? error?.response?.data?.message || error?.response?.data?.error
+          : "Product not Created!"
+      );
+    } finally {
+      setIsDraftting(false);
+      setIsSubmitting(false);
+    }
+  };
+  // calculate price
   const calculatedPrice = useMemo(() => {
     const price = parseFloat(formData.price) || 0;
     const discount = parseFloat(formData.discount) || 0;
@@ -333,6 +360,7 @@ const CreateProduct = () => {
               <SelectCategory
                 setCategory={setCategory}
                 onchange={handleInputChange}
+                error={errors?.category}
               />
               <Input
                 label="SKU"
@@ -473,6 +501,48 @@ const CreateProduct = () => {
                 error={errors.brand}
                 placeholder="e.g., Milk Made"
               />
+              <div className="space-y-2">
+                <h2 className="text-sm font-medium text-gray-900">Tags</h2>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={inputTag}
+                    onChange={(e) => setInputTag(e.target.value)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" &&
+                      (e.preventDefault(), handleAddTag(inputTag?.trim()))
+                    }
+                    placeholder="Add a tag"
+                    className="flex-1 px-3 py-2 disabled:cursor-not-allowed md:py-3 border border-gray-300  focus:outline-1 outline-[black] rounded-[5px]"
+                  />
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={() => handleAddTag(inputTag?.trim())}
+                  >
+                    Add Tag
+                  </Button>
+                </div>
+                <p className="text-red-600 text-sm">{tagError}</p>
+                <div className="flex flex-wrap gap-2">
+                  {tags?.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTag(tag)}
+                        className="hover:text-blue-900"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 

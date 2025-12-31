@@ -11,6 +11,7 @@ export const productKeys = {
   brands: () => [...productKeys.all, "brands"],
   favProduct: () => [...productKeys.all, "fav-product"],
   vendorProds: () => [...productKeys.all, "vendor"],
+  vendorProductById: (productId: string) => [...productKeys.all, productId],
 };
 export const userKeys = {
   all: ["users"] as const,

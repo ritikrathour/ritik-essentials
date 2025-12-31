@@ -31,9 +31,9 @@ export const useCreateProductValidation = (formData: IProductFormData) => {
     }
     // compare price
     if (!formData.originalPrice) {
-      newErrors.comparePrice = "Compare price required";
+      newErrors.originalPrice = "Compare price required";
     } else if (Number(formData.originalPrice) < Number(formData.price)) {
-      newErrors.comparePrice = "Compare price must be greater than price";
+      newErrors.originalPrice = "Compare price must be greater than price";
     }
     // product stock
     if (!formData.stock) {
@@ -54,7 +54,6 @@ export const useCreateProductValidation = (formData: IProductFormData) => {
       const expiryDate = new Date(formData.expiryDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-
       if (expiryDate < today) {
         newErrors.expiryDate = "Expiry date cannot be in the past";
       }

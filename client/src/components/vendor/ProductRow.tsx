@@ -1,15 +1,17 @@
 import { Edit, Eye, EyeOff, MoreVertical, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IVendorProucts } from "../../utils/Types/Vendor.types";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { IProdStatus } from "../../utils/Types/Product.types";
+import { OverlayBackdrop } from "../ui/OverlayBackdrop";
 interface IProductProps {
   product: IVendorProucts;
   onStatusToggle: (id: string, status: IProdStatus) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   isPending: boolean;
+  isUpdatingStatus: boolean;
 }
 export const ProductRow: React.FC<IProductProps> = ({
   product,
@@ -17,9 +19,19 @@ export const ProductRow: React.FC<IProductProps> = ({
   onEdit,
   onDelete,
   isPending,
+  isUpdatingStatus,
 }) => {
   const [showMenu, setShowMenu] = useState<boolean>(false);
-
+  const menuRef: any = useRef();
+  useEffect(() => {
+    const clickOutSide = (e: MouseEvent) => {
+      if (menuRef?.current && !menuRef?.current?.contains(e.target)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("click", clickOutSide);
+    return () => document.removeEventListener("click", clickOutSide);
+  }, []);
   const getStockStatus = (stock: number) => {
     if (stock === 0)
       return { label: "Out of Stock", color: "bg-red-100 text-red-800" };
@@ -71,13 +83,14 @@ export const ProductRow: React.FC<IProductProps> = ({
 
       <td className="px-6 py-4">
         <button
+          disabled={isUpdatingStatus}
           onClick={() =>
             onStatusToggle(
               product._id,
-              product.status === "Draft" ? "publised" : "draft"
+              product.status === "draft" ? "published" : "draft"
             )
           }
-          className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+          className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 cursor-pointer ${
             product?.status === "published"
               ? "bg-green-100 text-green-800"
               : "bg-gray-100 text-gray-800"
@@ -98,13 +111,13 @@ export const ProductRow: React.FC<IProductProps> = ({
             {product?.sales} units
           </div>
           <div className="text-sm text-gray-500">
-            ${product?.revenue?.toFixed(2)}
+            ${product?.revenue?.toFixed(2) || 0}
           </div>
         </div>
       </td>
 
       <td className="px-6 py-4">
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowMenu(!showMenu)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -119,10 +132,15 @@ export const ProductRow: React.FC<IProductProps> = ({
                   onEdit(product._id);
                   setShowMenu(false);
                 }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 "
               >
-                <Edit className="w-4 h-4" />
-                Edit Product
+                <Link
+                  to={`/update-product/${product._id}`}
+                  className="flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit Product
+                </Link>
               </button>
               <button
                 disabled={isPending}

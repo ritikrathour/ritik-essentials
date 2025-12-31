@@ -1,4 +1,4 @@
-import { FilterQuery, ObjectId } from "mongoose";
+import mongoose, { FilterQuery, ObjectId } from "mongoose";
 import {
   brandsExpiry,
   getBrandsKey,
@@ -19,6 +19,8 @@ import {
   IUpdateProduct,
 } from "../../types/Product.type";
 import ProductModel from "../models/Product.model";
+import ApiError from "../../utils/ApiError";
+import { IUser } from "../controllers/Dummy";
 
 export const ProductServices = {
   // create Product
@@ -278,16 +280,35 @@ export const ProductServices = {
   },
   // update product status
   async updateProductStatus(prodId: string, status: IProdStatus) {
-    return ProductModel.findOneAndUpdate(
+    return await ProductModel.findOneAndUpdate(
       { _id: prodId },
       {
-        $set: {
-          status: status,
-        },
+        $set: status,
       },
       {
         new: true,
       }
     );
+  },
+  async getVendorProductById(payload: { productId: string; vendorId: any }) {
+    // first get cache
+    // const cachedBrands = await redisClient.get(getBrandsKey());
+    // if (cachedBrands) {
+    //   return JSON.parse(cachedBrands);
+    // }
+    const VendorProduct = await ProductModel.findOne({
+      _id: payload.productId,
+      vendor: payload.vendorId,
+    });
+    if (!VendorProduct) {
+      throw new ApiError(404, "Product not found!", false);
+    }
+    // store brands in cached
+    // await redisClient.setEx(
+    //   getBrandsKey(),
+    //   brandsExpiry,
+    //   JSON.stringify(brands)
+    // );
+    return VendorProduct;
   },
 };

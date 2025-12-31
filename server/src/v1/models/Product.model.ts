@@ -101,7 +101,6 @@ const Product = new mongoose.Schema<IProduct>(
         type: String,
         trim: true,
         lowercase: true,
-        maxlength: 50,
       },
     ],
     status: {

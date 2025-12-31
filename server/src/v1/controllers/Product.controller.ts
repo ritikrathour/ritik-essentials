@@ -107,12 +107,7 @@ const UpdateProductStatus = AsyncHandler(
     if (!status) {
       throw new ApiError(400, "Status is required!");
     }
-    // find the product from id
-    const product = await ProductServices.getProductById(productId);
-    if (!product) {
-      throw new ApiError(404, `Product not found with this id ${productId}`);
-    }
-    // update status
+    // find the product from id & update status
     const updateStatus = await ProductServices.updateProductStatus(
       productId,
       status
@@ -122,6 +117,22 @@ const UpdateProductStatus = AsyncHandler(
     }
     res.json(
       new ApiResponse(200, updateStatus, "Product Status updated successfully!")
+    );
+  }
+);
+const FetchVendorProductById = AsyncHandler(
+  async (req: Request, res: Response) => {
+    const { productId } = req.params;
+    if (!productId) {
+      throw new ApiError(400, "Product Id is required!");
+    }
+    const vendorId = req.user._id;
+    const product = await ProductServices.getVendorProductById({
+      productId,
+      vendorId,
+    });
+    res.json(
+      new ApiResponse(200, product, "Vendor Product Fetched successfully!")
     );
   }
 );
@@ -228,6 +239,7 @@ export {
   GetUserOrders,
   VendorProducts,
   UpdateProductStatus,
+  FetchVendorProductById,
 };
 
 //

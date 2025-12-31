@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { AlertCircle, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import Input from "../Input";
 import React, {
   memo,
@@ -9,17 +9,19 @@ import React, {
   useState,
 } from "react";
 import { useProduct } from "../../hooks/useProduct";
+import { ProductApi } from "../../services/Product.service";
 interface IProps {
   setCategory: any;
   onchange: any;
+  error: any;
 }
-const SelectCategory: React.FC<IProps> = ({ setCategory, onchange }) => {
+
+const SelectCategory: React.FC<IProps> = ({ setCategory, onchange, error }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, SetShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [deboucedValue, setDebouncedValue] = useState("");
   const { categories, isLoading } = useProduct().getCategories("/categories");
-  const { createCategory, isPending } = useProduct().CreateCategory();
   // debounced value
   useEffect(() => {
     let timerId = setTimeout(() => {
@@ -64,8 +66,8 @@ const SelectCategory: React.FC<IProps> = ({ setCategory, onchange }) => {
     };
   }, []);
   // handleCreateCategory
-  const handleCreateCategory = () => {
-    createCategory(searchTerm);
+  const handleCreateCategory = async () => {
+    await ProductApi.createCategory(searchTerm);
     SetShowDropdown(false);
   };
   return (
@@ -87,6 +89,7 @@ const SelectCategory: React.FC<IProps> = ({ setCategory, onchange }) => {
         icon={showDropdown ? <ChevronDown /> : <ChevronRight />}
         iconPosition="right"
         onfocus={() => handleFocus()}
+        error={error}
       />
       {showDropdown && (
         <div className="z-30 absolute flex flex-col gap-1.5 top-full w-full bg-white p-2 rounded-md mt-2 border border-[#c4c4c4]">
@@ -117,7 +120,6 @@ const SelectCategory: React.FC<IProps> = ({ setCategory, onchange }) => {
           {filteredCategories?.length === 0 && (
             <button
               type="button"
-              disabled={isPending}
               onClick={() => handleCreateCategory()}
               className="mt-2 border-t border-[#c4c4c4] text-blue-700 flex items-center text-sm hover:bg-blue-100 w-full h-full py-2 rounded-sm transition-all duration-200 cursor-pointer"
             >

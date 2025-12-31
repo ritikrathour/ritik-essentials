@@ -1,6 +1,11 @@
 import toast from "react-hot-toast";
 import { AxiosInstense } from "./AxiosInstance";
-import { IProdStatus } from "../utils/Types/Product.types";
+import {
+  IProdStatus,
+  IProduct,
+  IProductFormData,
+} from "../utils/Types/Product.types";
+import axios from "axios";
 
 export const ProductApi = {
   createProduct: async (url: string, formData: any) => {
@@ -16,9 +21,16 @@ export const ProductApi = {
     return data?.data;
   },
   createCategory: async (payload: string) => {
-    const { data } = await AxiosInstense.post("/category", { name: payload });
-    toast.success(data?.message);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.post("/category", { name: payload });
+      toast.success(data?.message);
+      return data?.data;
+    } catch (error) {
+      toast.error(
+        (axios.isAxiosError(error) && error?.response?.data?.message) ||
+          "Somthing is wrong!"
+      );
+    }
   },
   getProductByID: async (url: string) => {
     const { data } = await AxiosInstense.get(url);
@@ -47,6 +59,13 @@ export const ProductApi = {
     const { data } = await AxiosInstense.patch(`/product/status/${productId}`, {
       status,
     });
+    toast.success(data?.message);
     return data;
+  },
+  getVendorProductById: async (
+    productId: string
+  ): Promise<IProductFormData> => {
+    const { data } = await AxiosInstense.get(`/product/${productId}`);
+    return data?.data;
   },
 };

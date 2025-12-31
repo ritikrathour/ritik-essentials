@@ -6,7 +6,11 @@ import {
 } from "@tanstack/react-query";
 import { ProductApi } from "../services/Product.service";
 import { productKeys } from "../TanstackQuery/Querykeys";
-import { IProdStatus } from "../utils/Types/Product.types";
+import {
+  IProdStatus,
+  IProduct,
+  IProductFormData,
+} from "../utils/Types/Product.types";
 type updateStatus = {
   productId: string;
   status: IProdStatus;
@@ -93,13 +97,13 @@ export const useProduct = () => {
     } = useMutation({
       mutationFn: (payload: string) => ProductApi.createCategory(payload),
       retry: 0,
-      onSuccess: (data) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: productKeys.Categories() });
       },
     });
     return { data, isError, error, isPending, createCategory };
   };
-  const getVendorProduct = (url: string, vendor: boolean) => {
+  const getVendorProducts = (url: string, vendor: boolean) => {
     const { data, error, isError, isLoading, refetch } = useQuery({
       queryKey: productKeys.vendorProds(),
       queryFn: () => ProductApi.getProductsByVendor(url),
@@ -165,6 +169,7 @@ export const useProduct = () => {
         queryClient.invalidateQueries({ queryKey: productKeys.vendorProds() });
       },
       onError: (_err, _vars, context) => {
+        console.log(_err);
         // 🔄 Rollback on failure
         // if (context?.previousData) {
         //   queryClient.setQueryData(
@@ -176,14 +181,31 @@ export const useProduct = () => {
     });
     return { data, mutate, isPending, error };
   };
+  const getVendorProduct = (productId: string) => {
+    const {
+      data: vendorProduct,
+      error,
+      isError,
+      isLoading,
+      refetch,
+    } = useQuery<IProductFormData>({
+      queryKey: productKeys.vendorProductById(productId),
+      queryFn: () => ProductApi.getVendorProductById(productId),
+      retry: 1,
+      enabled: true,
+      refetchOnWindowFocus: false,
+    });
+    return { vendorProduct, error, isError, isLoading, refetch };
+  };
   return {
     getProduct,
     getCategories,
     getProductById,
     getBrands,
     CreateCategory,
-    getVendorProduct,
+    getVendorProducts,
     deleteVendorProduct,
+    getVendorProduct,
     updateProductStatus,
   };
 };

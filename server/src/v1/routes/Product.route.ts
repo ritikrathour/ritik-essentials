@@ -1,6 +1,7 @@
 import {
   CreateProduct,
   DeleteProduct,
+  FetchVendorProductById,
   GetBrands,
   GetCategories,
   GetProductById,
@@ -25,6 +26,9 @@ productroute
 productroute
   .route("/product/status/:productId")
   .patch(Authenticate, isVendor, UpdateProductStatus);
+productroute
+  .route("/product/:productId")
+  .get(Authenticate, isVendor, FetchVendorProductById);
 // public
 productroute.route("/products").get(GetProducts);
 productroute.route("/productSKU/:sku").get(GetProductBySku);

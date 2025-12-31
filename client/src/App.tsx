@@ -17,12 +17,15 @@ import { RootState } from "./redux-store/Store";
 import { useCart } from "./hooks/useCart";
 import { initializeCartLocal } from "./redux-store/CartSlice";
 // lazy pages
+const VendorUpdateProduct = lazy(
+  () => import("./pages/VendorPages/VendorUpdateProduct")
+);
 const Login = lazy(() => import("./pages/Login"));
 const CartDrawer = lazy(() => import("./components/cart/CartDrawer"));
 const VendorProducts = lazy(() => import("./pages/VendorPages/VendorProducts"));
 const SignOutPopUp = lazy(() => import("./components/popups/SignOutPopup"));
 const Category = lazy(() => import("./pages/Category"));
-const CreateProduct = lazy(() => import("./pages/CreateProduct"));
+const CreateProduct = lazy(() => import("./pages/VendorPages/CreateProduct"));
 const ProductDetails = lazy(() => import("./pages/ProductDetails"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const Products = lazy(() => import("./pages/Products"));
@@ -235,6 +238,16 @@ function App() {
                   element={
                     <PageTransition variants="fade">
                       <CreateProduct />
+                    </PageTransition>
+                  }
+                ></Route>
+              </Route>
+              <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
+                <Route
+                  path="/update-product/:productId"
+                  element={
+                    <PageTransition variants="fade">
+                      <VendorUpdateProduct />
                     </PageTransition>
                   }
                 ></Route>

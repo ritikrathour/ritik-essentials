@@ -19,7 +19,7 @@ export interface ICardProps {
   icon?: any;
   to?: string;
 }
-export type IProdStatus = "publised" | "draft" | "out_of_stock";
+export type IProdStatus = "published" | "draft" | "out_of_stock";
 export interface IProduct {
   _id: number;
   name: string;
@@ -60,6 +60,7 @@ export interface IProductFormData {
   price: string;
   tags: String[];
   originalPrice: string;
+  images?: string[];
   brand: string;
   unit: string;
   stock: string;
