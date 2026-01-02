@@ -15,7 +15,7 @@ import { Button } from "../../components/ui/Button";
 import Input from "../../components/Input";
 import SelectField from "../../components/SelectField";
 import { useImageUpload } from "../../hooks/useImageUpload";
-import { useCreateProductValidation } from "../../hooks/Validationhooks/useCreateProductValidation";
+import { useProductValidation } from "../../hooks/Validationhooks/useCreateProductValidation";
 import { ProductApi } from "../../services/Product.service";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -71,7 +71,7 @@ const CreateProduct = () => {
   } = useImageUpload();
   const units = useMemo(() => Object.values(ProductUnit), []);
   const [imageError, setImageError] = useState<string>("");
-  const { errors, validate, setErrors } = useCreateProductValidation(formData);
+  const { errors, validate, setErrors } = useProductValidation(formData);
   const [tags, setTags] = useState<string[]>([]);
   const [tagError, setTagError] = useState<string | null>(null);
   const [inputTag, setInputTag] = useState<string>("");
@@ -166,10 +166,6 @@ const CreateProduct = () => {
   // handle submit product
   const handleSubmit = async (isDraft: boolean = false) => {
     if (!validate().IsError) {
-      console.log(validate()?.errors);
-
-      console.log("fdssd");
-
       return;
     }
     if (images.length === 0) {
@@ -358,6 +354,7 @@ const CreateProduct = () => {
                 />
               </div>
               <SelectCategory
+                category={category}
                 setCategory={setCategory}
                 onchange={handleInputChange}
                 error={errors?.category}

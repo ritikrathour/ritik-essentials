@@ -11,12 +11,18 @@ import React, {
 import { useProduct } from "../../hooks/useProduct";
 import { ProductApi } from "../../services/Product.service";
 interface IProps {
-  setCategory: any;
+  setCategory: (value: string) => void;
   onchange: any;
   error: any;
+  category: string;
 }
 
-const SelectCategory: React.FC<IProps> = ({ setCategory, onchange, error }) => {
+const SelectCategory: React.FC<IProps> = ({
+  setCategory,
+  onchange,
+  error,
+  category,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDropdown, SetShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -85,7 +91,7 @@ const SelectCategory: React.FC<IProps> = ({ setCategory, onchange, error }) => {
         }}
         required
         placeholder="Choose & search a category..."
-        value={searchTerm}
+        value={searchTerm || category}
         icon={showDropdown ? <ChevronDown /> : <ChevronRight />}
         iconPosition="right"
         onfocus={() => handleFocus()}

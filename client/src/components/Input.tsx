@@ -51,7 +51,7 @@ const Input: React.FC<InputProps> = ({
         <input
           id={name}
           type={inputType}
-          value={value}
+          value={value || ""}
           name={name}
           required={required}
           autoComplete="off"

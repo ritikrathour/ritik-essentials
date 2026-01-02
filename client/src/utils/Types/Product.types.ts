@@ -70,4 +70,5 @@ export interface IProductFormData {
   expiryDate: string;
   organic: boolean;
   featured: boolean;
+  status?: IProdStatus;
 }

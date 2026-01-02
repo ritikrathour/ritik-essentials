@@ -1,4 +1,4 @@
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 const SelectField: React.FC<{
   label: string;
@@ -22,7 +22,7 @@ const SelectField: React.FC<{
           error ? "border-red-500" : "border-gray-300"
         } rounded focus:outline-1 transition-all`}
       >
-        <option value="">Select {label.toLowerCase()}</option>
+        {!value && <option value="">Select {label.toLowerCase()}</option>}
         {options?.map?.((option) => (
           <option key={option} value={option}>
             {option}

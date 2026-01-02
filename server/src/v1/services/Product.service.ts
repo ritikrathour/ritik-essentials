@@ -20,7 +20,6 @@ import {
 } from "../../types/Product.type";
 import ProductModel from "../models/Product.model";
 import ApiError from "../../utils/ApiError";
-import { IUser } from "../controllers/Dummy";
 
 export const ProductServices = {
   // create Product

@@ -3,7 +3,7 @@ import { IProductFormData } from "../../utils/Types/Product.types";
 interface IValidationErrors {
   [key: string]: string;
 }
-export const useCreateProductValidation = (formData: IProductFormData) => {
+export const useProductValidation = (formData: IProductFormData) => {
   const [errors, setErrors] = useState<IValidationErrors>({});
   const newErrors: IValidationErrors = {};
   const validate = useCallback(() => {
