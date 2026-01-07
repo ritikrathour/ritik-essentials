@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import OrderModel from "../models/Order.model";
 
 export const OrderService = {

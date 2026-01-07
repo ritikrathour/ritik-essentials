@@ -165,6 +165,7 @@ export const useProduct = () => {
         });
         return previousData;
       },
+      retry: 0,
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: productKeys.vendorProds() });
       },
@@ -180,6 +181,41 @@ export const useProduct = () => {
       },
     });
     return { data, mutate, isPending, error };
+  };
+  const updateProduct = (id: string) => {
+    const queryClient = useQueryClient();
+    const { data, error, isError, isPending, mutate } = useMutation({
+      mutationFn: (productData: IProductFormData) =>
+        ProductApi.updateProduct(productData, id),
+      onMutate: async (data) => {
+        await queryClient.cancelQueries({
+          queryKey: productKeys.all,
+        });
+        const previousData = queryClient.getQueryData(productKeys.all);
+        // 🔥 Optimistic update
+        queryClient.setQueryData(productKeys.all, (oldData: any) => {
+          if (!oldData?.result?.data) return oldData;
+          return {
+            ...oldData,
+            result: {
+              ...oldData?.result,
+              data: oldData?.result?.data?.map((p: any) => {
+                return p?._id === id ? { ...p, data } : p;
+              }),
+            },
+          };
+        });
+        return previousData;
+      },
+      retry: 0,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: productKeys.all });
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+    return { data, error, isError, isPending, mutate };
   };
   const getVendorProduct = (productId: string) => {
     const {
@@ -197,6 +233,7 @@ export const useProduct = () => {
     });
     return { vendorProduct, error, isError, isLoading, refetch };
   };
+
   return {
     getProduct,
     getCategories,
@@ -207,5 +244,6 @@ export const useProduct = () => {
     deleteVendorProduct,
     getVendorProduct,
     updateProductStatus,
+    updateProduct,
   };
 };

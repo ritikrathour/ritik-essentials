@@ -62,6 +62,10 @@ export const ProductApi = {
     toast.success(data?.message);
     return data;
   },
+  updateProduct: async (product: IProductFormData, id: string) => {
+    const { data } = await AxiosInstense.patch(`/product/${id}`, product);
+    return data;
+  },
   getVendorProductById: async (
     productId: string
   ): Promise<IProductFormData> => {

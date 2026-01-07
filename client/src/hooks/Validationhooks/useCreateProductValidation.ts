@@ -15,6 +15,9 @@ export const useProductValidation = (formData: IProductFormData) => {
     }
     if (!formData.description.trim()) {
       newErrors.description = "Product Description is required";
+    } else if (formData.description.length < 10) {
+      newErrors.description =
+        "Product description min length should be 10 characters";
     } else if (formData.description.length > 200) {
       newErrors.description =
         "Product description cannot excieded 200 characters";

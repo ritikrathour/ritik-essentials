@@ -8,6 +8,7 @@ import {
   GetProductBySku,
   GetProducts,
   GetProductsByVendor,
+  UpdateProduct,
   UpdateProductStatus,
   VendorProducts,
 } from "../controllers/Product.controller";
@@ -26,6 +27,7 @@ productroute
 productroute
   .route("/product/status/:productId")
   .patch(Authenticate, isVendor, UpdateProductStatus);
+productroute.route("/product/:id").patch(Authenticate, isVendor, UpdateProduct);
 productroute
   .route("/product/:productId")
   .get(Authenticate, isVendor, FetchVendorProductById);

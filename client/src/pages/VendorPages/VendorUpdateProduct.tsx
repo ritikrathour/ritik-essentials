@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AlertCircle, Check, Loader2, Upload, X } from "lucide-react";
+import { AlertCircle, Check, Loader2, X } from "lucide-react";
 import Input from "../../components/Input";
 import SelectField from "../../components/SelectField";
 import { Button } from "../../components/ui/Button";
@@ -9,10 +9,6 @@ import ErrorUI from "../../components/ErrorsUI/ErrorUI";
 import { IProductFormData } from "../../utils/Types/Product.types";
 import SelectCategory from "../../components/ui/SelectCategory";
 import { useProductValidation } from "../../hooks/Validationhooks/useCreateProductValidation";
-
-interface FormErrors {
-  [key: string]: string;
-}
 
 // Main Component
 const VendorUpdateProduct: React.FC = () => {
@@ -34,8 +30,7 @@ const VendorUpdateProduct: React.FC = () => {
     featured: false,
     organic: false,
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [loading, setLoading] = useState(false);
+  // const [errors, setErrors] = useState<FormErrors>({});
 
   const [notification, setNotification] = useState<{
     type: "success" | "error";
@@ -45,7 +40,7 @@ const VendorUpdateProduct: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const { vendorProduct, error, isError, isLoading, refetch } =
     useProduct().getVendorProduct(productId!!);
-
+  const { isPending, mutate } = useProduct().updateProduct(productId!!);
   // populate form when loads the product
   useEffect(() => {
     if (vendorProduct) {
@@ -69,15 +64,12 @@ const VendorUpdateProduct: React.FC = () => {
       });
     }
   }, [vendorProduct]);
-  const [category, setCategory] = useState(formData?.category || "");
-  const {
-    errors: validationError,
-    setErrors: validataionSetError,
-    validate,
-  } = useProductValidation(formData);
+  const { errors, setErrors, validate } = useProductValidation(formData);
   const showNotification = (type: "success" | "error", message: string) => {
     setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
+    if (type === "error") {
+      setTimeout(() => setNotification(null), 5000);
+    }
   };
 
   const handleInputChange = (
@@ -126,19 +118,10 @@ const VendorUpdateProduct: React.FC = () => {
       showNotification("error", "Please fix all errors before submitting");
       return;
     }
+    // update product
+    mutate(formData);
 
-    console.log(formData);
-
-    // try {
-    //   setLoading(true);
-    //   // Mock API call
-    //   await new Promise((resolve) => setTimeout(resolve, 1500));
-    //   showNotification("success", "Product updated successfully!");
-    // } catch (error) {
-    //   showNotification("error", "Failed to update product");
-    // } finally {
-    //   setLoading(false);
-    // }
+    showNotification("success", "Product Updated successfull!");
   };
 
   if (isLoading) {
@@ -155,29 +138,6 @@ const VendorUpdateProduct: React.FC = () => {
   return (
     <div className="min-h-screen px-4 md:px-10 p-2">
       <div className="max-w-7xl mx-auto">
-        {notification && (
-          <div
-            className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
-              notification.type === "success"
-                ? "bg-green-50 text-green-800"
-                : "bg-red-50 text-red-800"
-            }`}
-          >
-            {notification.type === "success" ? (
-              <Check className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            ) : (
-              <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
-            )}
-            <span className="flex-1">{notification.message}</span>
-            <button
-              onClick={() => setNotification(null)}
-              className="flex-shrink-0"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        )}
-
         <div className="bg-white rounded-lg shadow-sm">
           <div className="border-b border-gray-200 px-6 py-4">
             <h1 className="text-2xl font-semibold text-gray-900">
@@ -244,18 +204,8 @@ const VendorUpdateProduct: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* <Input
-                  name="category"
-                  label="Category"
-                  required
-                  type="text"
-                  onchange={handleInputChange}
-                  value={formData?.category}
-                  error={errors?.category}
-                /> */}
                 <SelectCategory
-                  category={category}
-                  setCategory={setCategory}
+                  category={formData?.category}
                   onchange={handleInputChange}
                   error={errors?.category}
                 />
@@ -321,7 +271,6 @@ const VendorUpdateProduct: React.FC = () => {
                 <Input
                   name="expiryDate"
                   label="Expiry Discount"
-                  required
                   type="date"
                   onchange={handleInputChange}
                   value={formData?.expiryDate}
@@ -430,8 +379,8 @@ const VendorUpdateProduct: React.FC = () => {
 
             {/* Submit Buttons */}
             <div className="flex gap-4 pt-6 border-t border-gray-200">
-              <Button type="submit" className="flex-1">
-                {loading ? (
+              <Button disabled={isPending} type="submit" className="flex-1">
+                {isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Updating...
@@ -446,6 +395,28 @@ const VendorUpdateProduct: React.FC = () => {
             </div>
           </form>
         </div>
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
+              notification.type === "success"
+                ? "bg-green-50 text-green-800"
+                : "bg-red-50 text-red-800"
+            }`}
+          >
+            {notification.type === "success" ? (
+              <Check className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            ) : (
+              <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            )}
+            <span className="flex-1">{notification.message}</span>
+            <button
+              onClick={() => setNotification(null)}
+              className="flex-shrink-0"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

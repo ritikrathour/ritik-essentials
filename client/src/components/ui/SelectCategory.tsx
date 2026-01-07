@@ -11,7 +11,7 @@ import React, {
 import { useProduct } from "../../hooks/useProduct";
 import { ProductApi } from "../../services/Product.service";
 interface IProps {
-  setCategory: (value: string) => void;
+  setCategory?: (value: string) => void;
   onchange: any;
   error: any;
   category: string;
@@ -109,7 +109,7 @@ const SelectCategory: React.FC<IProps> = ({
                     key={option?.name}
                     onClick={() => {
                       handleSelect(option?.name);
-                      setCategory(option?.name);
+                      setCategory && setCategory(option?.name);
                     }}
                     className="hover:bg-yellow-100 p-1 rounded-sm transition-all duration-150 text-sm"
                   >

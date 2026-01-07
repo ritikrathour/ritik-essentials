@@ -60,7 +60,7 @@ const UpdateProduct = AsyncHandler(async (req: Request, res: Response) => {
   // validate req body
   const validation = ValidateUpdateProduct(req.body);
   if (!validation.isValid) {
-    throw new ApiError(400, "Validation failed", false);
+    throw new ApiError(400, "Validation failed", false, validation.errors);
   }
   // find the product in cache and db
   const product = await ProductServices.getProductById(id);

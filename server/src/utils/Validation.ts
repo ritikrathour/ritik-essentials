@@ -237,18 +237,8 @@ export const ValidateUpdateProduct = (data: any) => {
   }
   // images filed
   if (data.images !== undefined) {
-    if (!Array.isArray(data.emages)) {
+    if (!Array.isArray(data.images)) {
       errors.push({ field: "images", message: "Images must be an array" });
-    } else if (
-      data.images.some(
-        (image: string) => typeof image !== "string" || image.length > 500
-      )
-    ) {
-      errors.push({
-        field: "images",
-        message:
-          "Each image URL must be a string and not exceed 500 characters",
-      });
     }
   }
   // tags field

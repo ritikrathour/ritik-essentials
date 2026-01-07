@@ -87,8 +87,8 @@ const ProductDetails = () => {
               {products?.category}
             </p>
             <div className="my-2">
-              <p className="text-[14px] font-light">Quantity:</p>
-              <div className="px-2 border mt-0.5 w-[100px] flex items-center justify-center rounded-xl h-[40px]">
+              {/* <p className="text-[14px] font-light">Quantity:</p> */}
+              {/* <div className="px-2 border mt-0.5 w-[100px] flex items-center justify-center rounded-xl h-[40px]">
                 <button className="cursor-pointer">
                   <Minus size={16} />
                 </button>
@@ -101,7 +101,7 @@ const ProductDetails = () => {
                 <button className="cursor-pointer">
                   <Plus size={16} />
                 </button>
-              </div>
+              </div> */}
             </div>
             <div className="flex gap-3.5">
               <h3 className="text-2xl font-extrabold">₹{products?.price}</h3>
