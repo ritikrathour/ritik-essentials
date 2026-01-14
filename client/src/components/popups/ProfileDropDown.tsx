@@ -11,8 +11,9 @@ import { IUser } from "../../utils/Types/Auth.types";
 import { Link } from "react-router-dom";
 import useOverlayManager from "../../hooks/useOverLay";
 import { OverlayBackdrop } from "../ui/OverlayBackdrop";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openSignOutPopup } from "../../redux-store/UISlice";
+import { RootState } from "../../redux-store/Store";
 
 const ProfileDropDown = ({
   state,
@@ -26,23 +27,10 @@ const ProfileDropDown = ({
   open?: boolean;
 }) => {
   const dispatch = useDispatch();
-  const menuItems = [
-    {
-      icon: Package,
-      label: "Orders",
-      value: "orders",
-      url: "/profile",
-    },
-    {
-      icon: Heart,
-      label: "Wishlist",
-      value: "wishlist",
-      badge: "12",
-      url: "/wishlist",
-    },
-  ];
+
   // prevent scrolling
   const { closeOnOutsideClick } = useOverlayManager(open, () => state(false));
+  const { totalItems } = useSelector((state: RootState) => state.whisList);
   return (
     <>
       <OverlayBackdrop
@@ -81,24 +69,40 @@ const ProfileDropDown = ({
           </Link>
           <div className="py-2">
             {user?.role === "customer" ? (
-              menuItems.map((item) => (
+              <>
                 <Link
-                  to={item?.url}
-                  key={item.value}
+                  to="/wishlist"
+                  key="wishlist"
                   onClick={() => state(false)}
                   className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-gray-700 transition"
                 >
                   <div className="flex items-center space-x-3">
-                    <item.icon className="w-4 h-4" />
-                    <span className="text-sm">{item.label}</span>
+                    <Heart className="w-4 h-4" />
+                    <span className="text-sm">Wishlist</span>
                   </div>
-                  {item.badge && (
+                  {totalItems && (
                     <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
-                      {item.badge}
+                      {totalItems}
                     </span>
                   )}
                 </Link>
-              ))
+                <Link
+                  to="/profile"
+                  key="order"
+                  onClick={() => state(false)}
+                  className="w-full flex items-center justify-between px-4 py-2 hover:bg-gray-50 text-gray-700 transition"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Package className="w-4 h-4" />
+                    <span className="text-sm">Orders</span>
+                  </div>
+                  {false && (
+                    <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">
+                      {20}
+                    </span>
+                  )}
+                </Link>
+              </>
             ) : (
               <>
                 <Link

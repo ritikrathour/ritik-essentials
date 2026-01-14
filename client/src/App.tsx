@@ -16,6 +16,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
 import { useCart } from "./hooks/useCart";
 import { initializeCartLocal } from "./redux-store/CartSlice";
+import { useQuery } from "@tanstack/react-query";
+import { productKeys } from "./TanstackQuery/Querykeys";
+import { ProductApi } from "./services/Product.service";
+import { initializeWishList, setWhisList } from "./redux-store/WishListSlice";
+import { WISHLIST_KEY } from "./utils/constant";
 // lazy pages
 const VendorUpdateProduct = lazy(
   () => import("./pages/VendorPages/VendorUpdateProduct")
@@ -43,7 +48,6 @@ function App() {
   // call the current user
   const { data } = useAuth().currentUser(true);
   const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
-
   const { isCartDrawerOpen, Cart, isLoading } = useCart();
   const location = useLocation();
   // header show and hide on top scroll
@@ -191,6 +195,14 @@ function App() {
                 }
               />
               <Route
+                path="/wishlist"
+                element={
+                  <PageTransition variants="fade">
+                    <Wishlist />
+                  </PageTransition>
+                }
+              />
+              <Route
                 path="/forget-password-otp-verify/:email"
                 element={
                   <PageTransition variants="fade">
@@ -259,16 +271,6 @@ function App() {
                   element={
                     <PageTransition variants="fade">
                       <UserProfile />
-                    </PageTransition>
-                  }
-                />
-              </Route>
-              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
-                <Route
-                  path="/wishlist"
-                  element={
-                    <PageTransition variants="fade">
-                      <Wishlist />
                     </PageTransition>
                   }
                 />

@@ -1,6 +1,5 @@
 import { ChevronDown } from "lucide-react";
 import React from "react";
-import FilterChildProduct from "./FilterChildProduct";
 interface IProductFilterItem {
   filter: {
     id: string;

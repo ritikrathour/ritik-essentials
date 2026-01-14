@@ -1,4 +1,6 @@
 export const CART_KEY = "ecommerce_guest_cart";
+export const WISHLIST_KEY = "ecommerce_guest_WishList";
+
 export const DropDownMenuList = [
   {
     id: 2,

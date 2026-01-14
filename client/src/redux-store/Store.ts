@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { userSlice } from "./User.slice";
 import { UISlice } from "./UISlice";
 import { CartSlice } from "./CartSlice";
+import { WishListSlice } from "./WishListSlice";
 export const store = configureStore({
   reducer: {
     user: userSlice.reducer,
     ui: UISlice.reducer,
     cart: CartSlice.reducer,
+    whisList: WishListSlice.reducer,
   },
 });
 // 👇 Export typed hooks

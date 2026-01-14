@@ -1,15 +1,29 @@
 import { Heart } from "lucide-react";
-import { IProduct } from "../../utils/Types/Product.types";
-import React from "react";
+import { IPROD, IProduct } from "../../utils/Types/Product.types";
+import React, { useState } from "react";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import Rating from "../Rating";
 import AddToCartButton from "../ui/AddToCartButton";
+import { useWishList } from "../../hooks/useWishList";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux-store/Store";
+import { removeFromWishListLocal } from "../../redux-store/WishListSlice";
 interface ProductProps {
-  product: IProduct;
+  product: IPROD;
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
+  const {
+    addTowishList,
+    isAddingToWishList,
+    removeToWishList,
+    isRemovingToWishList,
+  } = useWishList();
+  const { wishList, isAuthenticate } = useSelector(
+    (state: RootState) => state.whisList
+  );
+  const [isFill, setIsFill] = useState(false);
   return (
     <div>
       <div className="relative bg-white sm:w-[280px] md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
@@ -24,17 +38,30 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
             // (product?.images && product?.images[0])
           />
           <button
-            //   onClick={() => toggleFavorite(product.id)}
-            onClick={(e) => e.preventDefault()}
-            className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform"
+            type="button"
+            disabled={isAddingToWishList || isRemovingToWishList}
+            onClick={(e) => {
+              e.preventDefault();
+              wishList?.find((item: any) => item?.product?._id === product?._id)
+                ? isAuthenticate
+                  ? removeToWishList(product._id)
+                  : removeFromWishListLocal({ prodId: product?._id })
+                : addTowishList(product);
+            }}
+            className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer"
           >
             <Heart
-              className={`w-5 h-5`}
-              //  ${
-              //           favorites.has(product.id)
-              //             ? "fill-red-500 text-red-500"
-              //             : "text-gray-400"
-              //         }
+              onClick={() => setIsFill((prev) => !prev)}
+              className={`w-5 h-5 
+                 ${
+                   isFill ||
+                   wishList?.find(
+                     (item: any) => item?.product?._id === product?._id
+                   )
+                     ? "fill-red-500 text-red-500"
+                     : "text-gray-400"
+                 }  
+              `}
             />
           </button>
           {product.sponsored && (

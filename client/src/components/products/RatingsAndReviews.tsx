@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ThumbsUp, ThumbsDown, MoreVertical, Star } from "lucide-react";
 
 // Dummy API call simulation

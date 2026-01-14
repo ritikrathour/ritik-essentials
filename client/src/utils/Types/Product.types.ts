@@ -21,7 +21,7 @@ export interface ICardProps {
 }
 export type IProdStatus = "published" | "draft" | "out_of_stock";
 export interface IProduct {
-  _id: number;
+  _id: number | string;
   name: string;
   brand: string;
   stock: number;
@@ -37,7 +37,7 @@ export interface IProduct {
   assured?: boolean;
 }
 export interface IPROD {
-  _id: number;
+  _id: string;
   name: string;
   sku: string;
   status: IProdStatus;
@@ -51,6 +51,7 @@ export interface IPROD {
   rating?: { avarage: number; count: number };
   badge?: string;
   sponsored: boolean;
+  description?: string;
   discount?: number;
   assured?: boolean;
 }

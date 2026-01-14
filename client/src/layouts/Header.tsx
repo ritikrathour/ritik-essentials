@@ -1,4 +1,11 @@
-import { MenuIcon, MenuSquare, Search, Sidebar, User } from "lucide-react";
+import {
+  Heart,
+  MenuIcon,
+  MenuSquare,
+  Search,
+  Sidebar,
+  User,
+} from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -92,8 +99,8 @@ const Header = () => {
             </li>
 
             <li className="hover:text-[#febd2f] rounded-[4px] cursor-pointer  transition-all text-[14px]">
-              <Link className="w-full" to="/">
-                Support
+              <Link className="w-full" to="/wishlist">
+                WishList
               </Link>
             </li>
           </ul>

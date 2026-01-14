@@ -11,6 +11,6 @@ favProductsRouter.route("/fav-product").post(Authenticate, AddFavProducts);
 favProductsRouter
   .route("/fav-product/:productId")
   .delete(Authenticate, RemoveFavProduct);
-favProductsRouter.route("fav-prodcut").get(Authenticate, GetFavProducts);
+favProductsRouter.route("/fav-prodcuts").get(Authenticate, GetFavProducts);
 
 export { favProductsRouter };

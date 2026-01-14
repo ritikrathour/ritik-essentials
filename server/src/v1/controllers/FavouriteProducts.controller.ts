@@ -5,10 +5,6 @@ import FavProductModel from "../models/FavouriteProd.model";
 import { ApiResponse } from "../../utils/ApiResponse";
 
 const GetFavProducts = AsyncHandler(async (req: Request, res: Response) => {
-  const productId = req.body?.productId;
-  if (!productId) {
-    throw new ApiError(400, "Product id is required");
-  }
   const userId = req.user?._id;
   const page = parseInt(req.query?.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -16,16 +12,16 @@ const GetFavProducts = AsyncHandler(async (req: Request, res: Response) => {
   const sortOrder = (req.query.sortOrder as "asc" | "desc") || "desc";
   const sortObj: any = {};
   sortObj[sortby] = sortOrder === "asc" ? 1 : -1;
-  const skip = page - 1 * limit;
+  const skip = (page - 1) * limit;
   const [favProducts, total] = await Promise.all([
     await FavProductModel.find({
       user: userId,
-      product: productId,
     })
       .sort(sortObj)
       .skip(skip)
-      .lean(),
-    await FavProductModel.countDocuments({ user: userId, product: productId }),
+      .lean()
+      .populate("product"),
+    await FavProductModel.countDocuments({ user: userId }),
   ]);
   const totalPages = Math.ceil(total / limit);
   const result = {
@@ -59,7 +55,10 @@ const AddFavProducts = AsyncHandler(async (req: Request, res: Response) => {
   if (!favorite) {
     throw new ApiError(500, "Favorite Product not added!");
   }
-  res.json(new ApiResponse(201, favorite, "Fav Product Created successfully!"));
+  const populatedFavorite = await favorite.populate("product");
+  res.json(
+    new ApiResponse(201, populatedFavorite, "Fav Product Created successfully!")
+  );
 });
 const RemoveFavProduct = AsyncHandler(async (req: Request, res: Response) => {
   const { productId } = req.params;
@@ -67,22 +66,13 @@ const RemoveFavProduct = AsyncHandler(async (req: Request, res: Response) => {
   if (!productId) {
     throw new ApiError(400, "Product id is required!", false);
   }
-  const isFavProduct = await FavProductModel.countDocuments({
-    user: userId,
-    product: productId,
-  });
-  if (isFavProduct === 0) {
-    throw new ApiError(404, "Product Not found", false);
-  }
-  // remove favProduct
   const removedFavProduct = await FavProductModel.deleteOne({
     user: userId,
     product: productId,
   });
-  console.log(removedFavProduct);
-  // if (removedFavProduct?.deletedCount > 0) {
-  //   throw new ApiError(404, "FavProduct not found!", false);
-  // }
-  res.json(new ApiResponse(200, {}, "Product removed Successfully"));
+  if (!removedFavProduct) {
+    throw new ApiError(404, "FavProduct not found!", false);
+  }
+  res.json(new ApiResponse(200, { productId }, "Product removed Successfully"));
 });
 export { GetFavProducts, AddFavProducts, RemoveFavProduct };

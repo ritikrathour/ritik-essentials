@@ -33,3 +33,6 @@ export interface IUpdateCartItemPayload {
   quantity: number;
   productId?: string;
 }
+export interface IAddToWishPayload {
+  productId: string;
+}

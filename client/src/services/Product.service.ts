@@ -1,24 +1,39 @@
 import toast from "react-hot-toast";
 import { AxiosInstense } from "./AxiosInstance";
 import {
+  IPROD,
   IProdStatus,
-  IProduct,
   IProductFormData,
 } from "../utils/Types/Product.types";
-import axios from "axios";
+import axios, { Axios } from "axios";
 
 export const ProductApi = {
   createProduct: async (url: string, formData: any) => {
-    const { data } = await AxiosInstense.post(url, formData);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.post(url, formData);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getProducts: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getcategories: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   createCategory: async (payload: string) => {
     try {
@@ -30,46 +45,117 @@ export const ProductApi = {
         (axios.isAxiosError(error) && error?.response?.data?.message) ||
           "Somthing is wrong!"
       );
+      console.log(error);
+      throw error;
     }
   },
   getProductByID: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getProductByCategory: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getBrands: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
-  },
-  createFavProduct: async (url: string, id: string) => {
-    const { data } = await AxiosInstense.post(url);
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getProductsByVendor: async (url: string) => {
-    const { data } = await AxiosInstense.get(url);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(url);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   deleteVendorProduct: async (prodId: string) => {
-    const { data } = await AxiosInstense.delete(`/product/${prodId}`);
-    return data;
+    try {
+      const { data } = await AxiosInstense.delete(`/product/${prodId}`);
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   updateProductStatus: async (productId: string, status: IProdStatus) => {
-    const { data } = await AxiosInstense.patch(`/product/status/${productId}`, {
-      status,
-    });
-    toast.success(data?.message);
-    return data;
+    try {
+      const { data } = await AxiosInstense.patch(
+        `/product/status/${productId}`,
+        {
+          status,
+        }
+      );
+      toast.success(data?.message);
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   updateProduct: async (product: IProductFormData, id: string) => {
-    const { data } = await AxiosInstense.patch(`/product/${id}`, product);
-    return data;
+    try {
+      const { data } = await AxiosInstense.patch(`/product/${id}`, product);
+      return data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
   getVendorProductById: async (
     productId: string
   ): Promise<IProductFormData> => {
-    const { data } = await AxiosInstense.get(`/product/${productId}`);
-    return data?.data;
+    try {
+      const { data } = await AxiosInstense.get(`/product/${productId}`);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  getWishlistProducts: async () => {
+    try {
+      const { data } = await AxiosInstense.get("/fav-prodcuts");
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  removeFromWishList: async (prodId: string) => {
+    try {
+      const { data } = await AxiosInstense.delete(`/fav-product/${prodId}`, {});
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  addToWishList: async (payload: IPROD) => {
+    try {
+      const { data } = await AxiosInstense.post(`/fav-product`, {
+        productId: payload._id,
+      });
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   },
 };
