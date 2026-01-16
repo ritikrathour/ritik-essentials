@@ -44,7 +44,6 @@ export const WishListSlice = createSlice({
         }
       } else {
         state.wishList.push(action.payload);
-        state.totalItems += 1;
         if (!state.isAuthenticate) {
           localStorage.setItem(WISHLIST_KEY, JSON.stringify(state.wishList));
         }

@@ -28,7 +28,7 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
     <div>
       <div className="relative bg-white sm:w-[280px] md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
         <Link
-          to={`/products/${product?._id}`}
+          to={`/product-details/${product?._id}`}
           className=" w-full h-[300px] block "
         >
           <OptimizedImage
@@ -99,12 +99,11 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[20px] font-bold">₹{product.price}</span>
               <span className="text-sm text-gray-500 line-through">
-                ₹445
-                {/* {product.originalPrice} */}
+                {product.originalPrice}.00
               </span>
               <span className="text-sm text-green-600 font-medium text-nowrap">
-                {/* {product.discount} */}
-                35% off
+                {product.discount}% off
+                {/* 35% off */}
               </span>
             </div>
             {product?.rating && product?.rating?.count > 0 && (

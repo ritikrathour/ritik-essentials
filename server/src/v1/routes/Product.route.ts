@@ -35,6 +35,6 @@ productroute
 productroute.route("/products").get(GetProducts);
 productroute.route("/productSKU/:sku").get(GetProductBySku);
 productroute.route("/brands").get(GetBrands);
-productroute.route("/product/:id").get(GetProductById);
+productroute.route("/product-details/:id").get(GetProductById);
 productroute.route("/categories").get(GetCategories);
 productroute.route("/vendor-products/:vendorId").get(GetProductsByVendor);

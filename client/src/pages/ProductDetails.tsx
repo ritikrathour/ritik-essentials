@@ -1,22 +1,11 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  HeartIcon,
-  Minus,
-  Plus,
-} from "lucide-react";
-import { lazy, memo, useCallback, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight, HeartIcon } from "lucide-react";
+import { lazy, memo, useCallback, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { useParams } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import Loader from "../components/Loader";
 import ErrorUI from "../components/ErrorsUI/ErrorUI";
 import Rating from "../components/Rating";
-import { useQuery } from "@tanstack/react-query";
-import { productKeys } from "../TanstackQuery/Querykeys";
-import { ProductApi } from "../services/Product.service";
-import { UseFavProduct } from "../hooks/useFavProduct";
-import { AxiosInstense } from "../services/AxiosInstance";
 import ProductDetailsAccordion from "../components/products/ProductAcordianDetails";
 import { LazySection } from "../components/LazySection";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
@@ -29,16 +18,11 @@ const SimilarProducts = lazy(
 );
 
 const ProductDetails = () => {
-  const [isFav, setIsFav] = useState<boolean>(false);
   const { id } = useParams();
-  const handleAddToWishList = async (productId: string) => {
-    setIsFav((prev) => !prev);
-    const res = await AxiosInstense.post("/fav-product", { id });
-  };
   const [imageIndex, setImageIndex] = useState<number>(0);
-
   const { products, error, isError, isLoading, refetch } =
-    useProduct().getProductById(id, `/product/${id}`);
+    useProduct().getProductById(id, `/product-details/${id}`);
+  const [isFill, setIsFill] = useState(false);
   // handleClickPrev
   const handleClickPrev = useCallback(() => {
     if (imageIndex === 0) return;
@@ -49,6 +33,7 @@ const ProductDetails = () => {
     if (imageIndex === products?.images.length) return;
     setImageIndex((prev) => prev + 1);
   }, [imageIndex]);
+
   if (isLoading) {
     return <Loader style="h-screen" />;
   }
@@ -62,13 +47,15 @@ const ProductDetails = () => {
           {/* add to wishlist */}
           <button
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => handleAddToWishList(products?._id)}
+            onClick={() => {
+              setIsFill((prev) => !prev);
+            }}
           >
             <p className="font-light">Add to wishlist</p>
             <HeartIcon
-              fill={isFav ? "red" : "transparent"}
+              fill={isFill ? "red" : "transparent"}
               className={`${
-                isFav && "text-red-600"
+                isFill && "text-red-600"
               } cursor-pointer hover:text-red-600 transition-all duration-200 ease-in-out`}
             />
           </button>
@@ -87,25 +74,14 @@ const ProductDetails = () => {
               {products?.category}
             </p>
             <div className="my-2">
-              {/* <p className="text-[14px] font-light">Quantity:</p> */}
-              {/* <div className="px-2 border mt-0.5 w-[100px] flex items-center justify-center rounded-xl h-[40px]">
-                <button className="cursor-pointer">
-                  <Minus size={16} />
-                </button>
-                <input
-                  className="w-full outline-0 border-0 text-center"
-                  type="number"
-                  name=""
-                  id=""
-                />
-                <button className="cursor-pointer">
-                  <Plus size={16} />
-                </button>
-              </div> */}
+              <p className="text-[14px] font-light">Quantity:</p>
+              <div className="px-2 border mt-0.5 w-[50px] flex items-center justify-center rounded-xl h-[40px]">
+                <button type="button">1</button>
+              </div>
             </div>
             <div className="flex gap-3.5">
-              <h3 className="text-2xl font-extrabold">₹{products?.price}</h3>
-              <h4 className="line-through">₹225.00</h4>
+              <h3 className="text-2xl font-extrabold">₹{products?.price}.00</h3>
+              <h4 className="line-through">₹{products?.originalPrice}.00</h4>
             </div>
             <div className="flex gap-3 items-center mt-4">
               <AddToCartButton product={products}></AddToCartButton>

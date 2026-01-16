@@ -219,7 +219,7 @@ function App() {
                 }
               />
               <Route
-                path="/products/:id"
+                path="/product-details/:id"
                 element={
                   <PageTransition variants="fade">
                     <ProductDetails />

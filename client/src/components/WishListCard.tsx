@@ -3,6 +3,7 @@ import { IPROD } from "../utils/Types/Product.types";
 import Rating from "./Rating";
 import { Button } from "./ui/Button";
 import { Link } from "react-router-dom";
+import AddToCartButton from "./ui/AddToCartButton";
 interface IItem {
   product: IPROD;
   user?: any;
@@ -15,7 +16,10 @@ interface IItem {
 const WishlistCard: React.FC<IItem> = ({ product, onRemove, state }) => {
   return (
     <div className="bg-white shadow-sm border border-[#c4c4c4] rounded-xl overflow-hidden flex flex-col">
-      <Link to={`/products/${product?._id}`} className="w-full h-52 block">
+      <Link
+        to={`/product-details/${product?._id}`}
+        className="w-full h-52 block"
+      >
         <img
           src="../public/assets/girl.png"
           alt="image"
@@ -46,9 +50,7 @@ const WishlistCard: React.FC<IItem> = ({ product, onRemove, state }) => {
           >
             Remove
           </Button>
-          <Button type="button" className="w-1/2  ">
-            Add to Cart
-          </Button>
+          <AddToCartButton product={product} />
         </div>
       </div>
     </div>
