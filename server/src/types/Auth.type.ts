@@ -53,6 +53,7 @@ export interface IOrder {
   totalAmount: number;
   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   paymentMethod: "COD" | "Online";
+  isPaid: boolean;
 }
 // validation error
 export interface IValidationError {

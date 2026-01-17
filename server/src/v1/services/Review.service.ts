@@ -3,6 +3,8 @@ import {
   CreateReviewDTO,
   IReview,
   PaginationOptions,
+  ReviewInteractionDTO,
+  UpdateReviewDTO,
 } from "../../types/Review.type";
 import { ReviewModel } from "../models/Review.model";
 import ApiError from "../../utils/ApiError";
@@ -167,5 +169,68 @@ export const ReviewService = {
     if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
     if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
     return "Just now";
+  },
+  async updateProductReview(
+    reviewId: string,
+    data: UpdateReviewDTO,
+    userId: mongoose.Types.ObjectId
+  ): Promise<IReview> {
+    const review = await ReviewModel.findById(reviewId);
+    if (!review) {
+      throw new ApiError(404, `Review Not found with this id ${reviewId}`);
+    }
+    if (review?.userId! === userId) {
+      throw new ApiError(400, "Not authorized to update this review");
+    }
+    // Update fields
+    if (data?.text !== undefined) review.text = data.text;
+    if (data?.rating !== undefined) review.rating = data?.rating;
+    if (data?.image !== undefined) review.image = data?.image;
+    await review.save();
+    return review;
+  },
+  async deleteProductReview(
+    reviewId: string,
+    userId: mongoose.Types.ObjectId
+  ): Promise<void> {
+    const review = await ReviewModel.findById(reviewId);
+    if (!review) {
+      throw new ApiError(404, `Review not found with this id ${reviewId}`);
+    }
+    if (review.userId !== userId) {
+      throw new ApiError(400, "Not authorized to delete this review");
+    }
+    await ReviewModel.findByIdAndDelete(reviewId);
+  },
+  async interactWithReview(
+    reviewId: string,
+    userId: mongoose.Types.ObjectId,
+    action: "like" | "dislike"
+  ): Promise<{ likes: number; dislike: number }> {
+    const review = await ReviewModel.findById(reviewId);
+    if (!review) {
+      throw new ApiError(404, `Review not found with this id ${reviewId}`);
+    }
+    const hasLiked = review.likedBy.includes(userId);
+    const hasDisliked = review.dislikedBy.includes(userId);
+    // remove previous interaction
+    if (hasLiked) {
+      review.likedBy = review.likedBy.filter((id) => id !== userId);
+      review.likes = Math.max(0, review.likes - 1);
+    }
+    if (hasDisliked) {
+      review.dislikedBy = review.dislikedBy.filter((id) => id !== userId);
+      review.dislikes = Math.max(0, review.dislikes - 1);
+    }
+    // Add new interaction if different from previous
+    if (action === "like" && !hasLiked) {
+      review.likedBy.push(userId);
+      review.likes += 1;
+    } else if (action === "dislike" && !hasDisliked) {
+      review.dislikedBy.push(userId);
+      review.dislikes += 1;
+    }
+    await review.save();
+    return { likes: review.likes, dislike: review.dislikes };
   },
 };

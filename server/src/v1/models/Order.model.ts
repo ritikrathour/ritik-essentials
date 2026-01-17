@@ -40,6 +40,10 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       enum: ["COD", "Online"],
       default: "COD",
     },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
