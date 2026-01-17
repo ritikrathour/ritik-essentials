@@ -20,12 +20,12 @@ export interface IReview extends Document {
 }
 
 export interface IProductFeature extends Document {
-  productId: string;
+  productId: mongoose.Types.ObjectId;
   features: Map<string, number>;
 }
 
 export interface CreateReviewDTO {
-  productId: string;
+  productId: mongoose.Types.ObjectId;
   rating: number;
   text: string;
   image?: string;
