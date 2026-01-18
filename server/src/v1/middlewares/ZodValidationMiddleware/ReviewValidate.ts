@@ -1,0 +1,27 @@
+import { NextFunction, Request, Response } from "express";
+import { success, ZodError, ZodObject } from "zod";
+export const ReviewValidate = (schema: ZodObject) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await schema.parseAsync({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+      });
+      next();
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        const errors = error?.issues.map((err) => ({
+          field: err.path.join(""),
+          message: err.message,
+        }));
+        res.status(400).json({
+          success: false,
+          message: "Validation Failed",
+          errors,
+        });
+      }
+      next(error);
+    }
+  };
+};

@@ -13,6 +13,7 @@ import { orderRouter } from "./v1/routes/Order.route";
 import { favProductsRouter } from "./v1/routes/FavProducts.route";
 import { categoryRouter } from "./v1/routes/Category.route";
 import { cartRouter } from "./v1/routes/Cart.route";
+import { reviewRouter } from "./v1/routes/Review.route";
 dotenv.config();
 
 const app = express();
@@ -51,6 +52,7 @@ app.use("/api/v1", orderRouter);
 app.use("/api/v1", favProductsRouter);
 app.use("/api/v1", categoryRouter);
 app.use("/api/v1", cartRouter);
+app.use("/api/v1", reviewRouter);
 // ⛔ Global Error Handler
 app.use(ErrorHandler);
 
