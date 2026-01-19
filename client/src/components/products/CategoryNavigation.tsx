@@ -1,10 +1,17 @@
 import { memo } from "react";
 import { useProduct } from "../../hooks/useProduct";
+import CategoryNavigationSkeleton from "../SkeletonUI/CategoryNavigationSkeleton";
 
 const CategoryNavigation = () => {
   //  get category
-  const { categories, error, isError, isLoading, refetch } =
+  const { categories, isError, isLoading } =
     useProduct().getCategories("/categories");
+  if (isError) {
+    return;
+  }
+  if (isLoading) {
+    return <CategoryNavigationSkeleton />;
+  }
   return (
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center gap-6 py-3 overflow-x-auto">

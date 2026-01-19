@@ -1,5 +1,5 @@
 import WishlistCard from "../components/WishListCard";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { productKeys } from "../TanstackQuery/Querykeys";
 import { ProductApi } from "../services/Product.service";
 import Loader from "../components/Loader";
@@ -17,7 +17,7 @@ const Wishlist = () => {
   const dispatch = useDispatch();
   // get wish list from store
   const { wishList, totalItems } = useSelector(
-    (state: RootState) => state.whisList
+    (state: RootState) => state.whisList,
   );
   // get wishList from api
   const { data, error, isError, isLoading, refetch } = useQuery({
@@ -41,15 +41,13 @@ const Wishlist = () => {
           totalItems: data?.pagination?.total,
           isAuthenticate: currentUser ? true : false,
           wishList: data?.data,
-        })
+        }),
       );
     }
   }, [data]);
   // removeFromWishlist
   const removeFromWishlist = (prodId: string) => {
-    if (currentUser) {
-      removeToWishList(prodId);
-    }
+    removeToWishList(prodId);
   };
   if (isError) {
     return <ErrorUI error={error} onRetry={refetch} />;

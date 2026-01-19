@@ -21,6 +21,7 @@ const ProductFeatureSchema = new mongoose.Schema<IProductFeature>(
   }
 );
 export const ProductFeatureModel = mongoose.model<IProductFeature>(
-  "Model",
+  "ProductFeature",
   ProductFeatureSchema
 );
+// export default ProductFeatureModel

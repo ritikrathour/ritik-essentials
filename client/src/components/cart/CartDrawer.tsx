@@ -24,8 +24,6 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
   // prevent scrolling
   useOverlayManager(cartDrawerProps.isCartDrawerOpen, CloseCartDrawer);
   const { clearCart, error, isError, refetch } = useCart();
-
-  // const { clearCart,isUpdating } = useCart();
   const subTotal = cartDrawerProps.Cart.totalPrice;
   const FREE_SHIPPING_THRESHOLD = 500;
   const shippingStatus = useMemo(() => {
@@ -159,7 +157,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                 <span className="text-sm font-semibold text-[#173334]">
                   Subtotal
                 </span>
-                <span className="text-sm font-bold text-[#173334]  w-[58px] inline-block">
+                <span className="text-sm font-bold text-[#173334] w-[58px] inline-block">
                   ₹{subTotal?.toFixed(2)}
                 </span>
               </div>

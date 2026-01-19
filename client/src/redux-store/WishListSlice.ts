@@ -34,7 +34,7 @@ export const WishListSlice = createSlice({
     },
     addToWishListLocal: (state, action: PayloadAction<IPROD>) => {
       const isProduct = state.wishList?.find(
-        (item) => item?._id === action.payload?._id
+        (item) => item?._id === action.payload?._id,
       );
       if (isProduct) {
         state.wishList.filter((item) => item._id !== action.payload._id);
@@ -51,13 +51,14 @@ export const WishListSlice = createSlice({
     },
     removeFromWishListLocal: (
       state,
-      action: PayloadAction<{ prodId: string | number }>
+      action: PayloadAction<{ prodId: string | number }>,
     ) => {
       const filteredProds = state.wishList.filter(
-        (item) => item._id !== action.payload.prodId
+        (item) => item._id !== action.payload.prodId,
       );
       state.totalItems -= 1;
       state.wishList = filteredProds;
+      console.log(action.payload.prodId, "fsadfsd");
       if (!state.isAuthenticate) {
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(state));
       }

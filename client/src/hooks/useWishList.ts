@@ -8,10 +8,9 @@ import {
   setWhisList,
 } from "../redux-store/WishListSlice";
 import { RootState } from "../redux-store/Store";
-
 export const useWishList = () => {
   const { isAuthenticate, wishList, totalItems } = useSelector(
-    (state: RootState) => state.whisList
+    (state: RootState) => state.whisList,
   );
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
@@ -31,7 +30,7 @@ export const useWishList = () => {
             isAuthenticate: isAuthenticate,
             wishList: [...wishList, data?.product],
             totalItems: totalItems + 1,
-          })
+          }),
         );
         queryClient.invalidateQueries({ queryKey: productKeys.favProduct() });
       }
@@ -45,6 +44,8 @@ export const useWishList = () => {
         : Promise.resolve(null),
     onMutate: (prodId) => dispatch(removeFromWishListLocal({ prodId })),
     onSuccess: (data) => {
+      console.log("hello");
+
       if (data) {
         queryClient.invalidateQueries({ queryKey: productKeys.favProduct() });
       }

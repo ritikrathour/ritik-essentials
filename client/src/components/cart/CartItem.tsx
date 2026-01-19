@@ -22,7 +22,7 @@ const CartItem: React.FC<IItem> = ({ item }) => {
         {/* Product Image */}
         <div className="flex-shrink-0 flex flex-col gap-2 items-center">
           <Link
-            to={`/products/${item?.productId}`}
+            to={`/product-details/${item?.productId}`}
             onClick={() => dispatch(CloseCartDrawer())}
           >
             <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-4xl border border-[#c4c4c4]">
@@ -41,7 +41,7 @@ const CartItem: React.FC<IItem> = ({ item }) => {
         <div className="flex-1">
           <div className="flex justify-between items-start mb-2">
             <Link
-              to={`/products/${item?.productId}`}
+              to={`/product-details/${item?.productId}`}
               onClick={() => dispatch(CloseCartDrawer())}
             >
               <h3 className="text-sm font-medium text-gray-900 mb-1 capitalize">
