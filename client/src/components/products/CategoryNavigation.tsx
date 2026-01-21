@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useProduct } from "../../hooks/useProduct";
 import CategoryNavigationSkeleton from "../SkeletonUI/CategoryNavigationSkeleton";
+import { Link } from "react-router-dom";
 
 const CategoryNavigation = () => {
   //  get category
@@ -16,12 +17,13 @@ const CategoryNavigation = () => {
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center gap-6 py-3 overflow-x-auto">
         {categories?.category?.map((item: any) => (
-          <button
+          <Link
+            to={`/products?category=${item?.name}`}
             key={item?.name}
-            className="whitespace-nowrap text-sm font-medium text-gray-700 hover:text-[#febd2f] transition"
+            className="whitespace-nowrap text-sm font-medium text-gray-700 hover:text-[#febd2f] transition cursor-pointer"
           >
             {item?.name}
-          </button>
+          </Link>
         ))}
       </div>
     </div>

@@ -23,7 +23,7 @@ import { initializeWishList, setWhisList } from "./redux-store/WishListSlice";
 import { WISHLIST_KEY } from "./utils/constant";
 // lazy pages
 const VendorUpdateProduct = lazy(
-  () => import("./pages/VendorPages/VendorUpdateProduct")
+  () => import("./pages/VendorPages/VendorUpdateProduct"),
 );
 const Login = lazy(() => import("./pages/Login"));
 const CartDrawer = lazy(() => import("./components/cart/CartDrawer"));
@@ -275,6 +275,7 @@ function App() {
                   }
                 />
               </Route>
+              {/* <Route path="*" element={<Home />} /> */}
             </Routes>
           </Suspense>
         </AnimatePresence>

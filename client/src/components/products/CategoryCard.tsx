@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { OptimizedImage } from "../ui/OptimizedImage";
 
 const CategoryCard = ({ name, image }: { name: string; image: string }) => {
+  let caetgoryName = name ? decodeURIComponent(name) : "";
   return (
     <Link to={`/products?category=${name}`}>
       <div className="border border-[#c4c4c4] h-[400px] flex flex-col gap-5 items-center justify-center p-4">

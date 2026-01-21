@@ -24,13 +24,15 @@ export const useProduct = () => {
       error,
       isError,
       refetch,
+      isFetching,
     } = useQuery({
       queryKey: [...productKeys.all, QKey],
       queryFn: () => ProductApi.getProducts(url),
       retry: 1,
       refetchOnWindowFocus: false,
+      placeholderData: (prev) => prev,
     });
-    return { products, isLoading, error, isError, refetch };
+    return { products, isLoading, error, isError, refetch, isFetching };
   };
   const getCategories = (url: string) => {
     const {
@@ -126,7 +128,7 @@ export const useProduct = () => {
             result: {
               ...oldData.result,
               data: oldData?.result?.data?.filter(
-                (p: any) => p?._id !== productId
+                (p: any) => p?._id !== productId,
               ),
             },
           };
@@ -148,7 +150,7 @@ export const useProduct = () => {
           queryKey: productKeys.vendorProds(),
         });
         const previousData = queryClient.getQueryData(
-          productKeys.vendorProds()
+          productKeys.vendorProds(),
         );
         // 🔥 Optimistic update
         queryClient.setQueryData(productKeys.vendorProds(), (oldData: any) => {
@@ -158,7 +160,7 @@ export const useProduct = () => {
             result: {
               ...oldData?.result,
               data: oldData?.result?.data?.map((p: any) =>
-                p?._id === productId ? { ...p, status } : p
+                p?._id === productId ? { ...p, status } : p,
               ),
             },
           };

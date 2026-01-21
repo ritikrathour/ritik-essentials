@@ -63,19 +63,20 @@ const Wishlist = () => {
 
       {totalItems !== 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {wishList?.map((item: any) => {
-            return (
-              <WishlistCard
-                key={item?.product?._id || item?._id}
-                product={item?.product || item}
-                onRemove={removeFromWishlist}
-                state={{
-                  isPending: isRemovingToWishList,
-                  removeError: isRemovingToWishListError,
-                }}
-              />
-            );
-          })}
+          {wishList &&
+            wishList?.map((item: any) => {
+              return (
+                <WishlistCard
+                  key={item?.product?._id || item?._id}
+                  product={item?.product || item}
+                  onRemove={removeFromWishlist}
+                  state={{
+                    isPending: isRemovingToWishList,
+                    removeError: isRemovingToWishListError,
+                  }}
+                />
+              );
+            })}
         </div>
       ) : (
         <p className="text-lg text-center">Your wishlist is empty 😔</p>

@@ -18,16 +18,9 @@ interface FilterOption {
   value: string;
   count: number;
 }
-
-interface AccordionSection {
-  id: string;
-  title: string;
-  defaultOpen?: boolean;
-}
-
 interface PriceRange {
-  min: string;
-  max: string;
+  min: number;
+  max: number;
 }
 
 interface FilterState {
@@ -38,6 +31,8 @@ interface FilterState {
 }
 
 interface FilterAccordionProps {
+  filters: FilterState;
+  setFilters: any;
   availabilityOptions?: FilterOption[];
   maxPrice?: number;
   onFilterChange?: (filters: FilterState) => void;
@@ -53,7 +48,7 @@ interface FilterAccordionProps {
 
 const debounce = <T extends (...args: any[]) => void>(
   func: T,
-  wait: number
+  wait: number,
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout;
   return (...args: Parameters<T>) => {
@@ -89,8 +84,8 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({
   children,
   testId,
 }) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  // const contentRef = useRef<HTMLDivElement>(null);
+  // const buttonRef = useRef<HTMLButtonElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -98,14 +93,13 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({
       onToggle();
     }
   };
-
   return (
     <div
       className="border-b border-gray-200 last:border-b-0"
       data-testid={testId}
     >
       <button
-        ref={buttonRef}
+        // ref={buttonRef}
         onClick={onToggle}
         onKeyDown={handleKeyDown}
         aria-expanded={isOpen}
@@ -125,7 +119,7 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({
       </button>
 
       <div
-        ref={contentRef}
+        // ref={contentRef}
         id={`accordion-content-${id}`}
         role="region"
         aria-labelledby={`accordion-button-${id}`}
@@ -151,7 +145,7 @@ interface CheckboxFilterProps {
   ariaLabel?: string;
 }
 
-const CheckboxFilter: React.FC<any> = ({
+const CheckboxFilter: React.FC<CheckboxFilterProps> = ({
   options,
   selected,
   onChange,
@@ -184,7 +178,7 @@ const CheckboxFilter: React.FC<any> = ({
       >
         {options?.map((option: any) => {
           const isChecked = selected.includes(
-            option?.name || option?.brand || option?.value
+            option?.name || option?.brand || option?.value,
           );
           const checkboxId = `checkbox-${
             option?.name || option?.brand || option?.value
@@ -205,16 +199,10 @@ const CheckboxFilter: React.FC<any> = ({
                   }
                   className="w-5 h-5 border-gray-300 rounded  flex-shrink-0"
                 />
-                <span className="ml-3 text-gray-700 group-hover:text-gray-900 truncate">
-                  {option?.name || option?.brand}
+                <span className="ml-3 text-gray-700 group-hover:text-gray-900 truncate capitalize">
+                  {option?.name || option?.brand || option?.value}
                 </span>
               </div>
-              <span
-                className="text-gray-400 text-sm ml-2 flex-shrink-0"
-                aria-hidden="true"
-              >
-                20
-              </span>
             </label>
           );
         })}
@@ -238,8 +226,8 @@ const CheckboxFilter: React.FC<any> = ({
 // ============================================================================
 
 interface PriceRangeFilterProps {
-  minPrice: string;
-  maxPrice: string;
+  minPrice: number;
+  maxPrice: number;
   onMinChange: (value: string) => void;
   onMaxChange: (value: string) => void;
   onReset: () => void;
@@ -307,7 +295,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
             placeholder="0"
             min="0"
             step="10"
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+            className={`w-full px-4 py-2 border rounded-lg ${
               minError ? "border-red-500" : "border-gray-300"
             }`}
             aria-invalid={!!minError}
@@ -338,7 +326,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
             placeholder={maxPriceLimit.toString()}
             min="0"
             step="10"
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+            className={`w-full px-4 py-2 border rounded-lg ${
               maxError ? "border-red-500" : "border-gray-300"
             }`}
             aria-invalid={!!maxError}
@@ -365,12 +353,13 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
 
 const DEFAULT_AVAILABILITY_OPTIONS: FilterOption[] = [
   { label: "In stock", value: "in-stock", count: 25 },
-  { label: "Out of stock", value: "out-of-stock", count: 8 },
 ];
 
 export default function FilterAccordion({
+  filters,
+  setFilters,
   availabilityOptions = DEFAULT_AVAILABILITY_OPTIONS,
-  maxPrice = 780,
+  maxPrice = 1000,
   onFilterChange,
   initialFilters = {},
   className = "",
@@ -388,18 +377,16 @@ export default function FilterAccordion({
   const { brands } = useProduct().getBrands("/brands");
   // get category / type product
   const { categories } = useProduct().getCategories("/categories");
-  const [filters, setFilters] = useState<FilterState>({
-    availability: initialFilters.availability || [],
-    productTypes: initialFilters.productTypes || [],
-    brands: initialFilters.brands || [],
-    priceRange: initialFilters.priceRange || { min: "", max: "" },
-  });
-  console.log(filters);
-
+  // const [filters, setFilters] = useState<FilterState>({
+  //   availability: initialFilters.availability || [],
+  //   productTypes: initialFilters.productTypes || [],
+  //   brands: initialFilters.brands || [],
+  //   priceRange: initialFilters.priceRange || { min: "", max: "" },
+  // });
   // Debounced filter change callback
   const debouncedOnFilterChange = useMemo(
     () => (onFilterChange ? debounce(onFilterChange, 300) : null),
-    [onFilterChange]
+    [onFilterChange],
   );
 
   // Effect to call onFilterChange when filters update
@@ -416,63 +403,63 @@ export default function FilterAccordion({
 
   // Availability handlers
   const handleAvailabilityChange = useCallback((value: string) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       availability: prev.availability.includes(value)
-        ? prev.availability.filter((v) => v !== value)
+        ? prev.availability.filter((v: any) => v !== value)
         : [...prev.availability, value],
     }));
   }, []);
 
   const resetAvailability = useCallback(() => {
-    setFilters((prev) => ({ ...prev, availability: [] }));
+    setFilters((prev: any) => ({ ...prev, availability: [] }));
   }, []);
 
   // Product type handlers
   const handleProductTypeChange = useCallback((value: string) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       productTypes: prev.productTypes.includes(value)
-        ? prev.productTypes.filter((v) => v !== value)
+        ? prev.productTypes.filter((v: any) => v !== value)
         : [...prev.productTypes, value],
     }));
   }, []);
 
   const resetProductTypes = useCallback(() => {
-    setFilters((prev) => ({ ...prev, productTypes: [] }));
+    setFilters((prev: any) => ({ ...prev, productTypes: [] }));
   }, []);
 
   // Brand handlers
   const handleBrandChange = useCallback((value: string) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       brands: prev.brands.includes(value)
-        ? prev.brands.filter((v) => v !== value)
+        ? prev.brands.filter((v: any) => v !== value)
         : [...prev.brands, value],
     }));
   }, []);
 
   const resetBrands = useCallback(() => {
-    setFilters((prev) => ({ ...prev, brands: [] }));
+    setFilters((prev: any) => ({ ...prev, brands: [] }));
   }, []);
 
   // Price handlers
   const handleMinPriceChange = useCallback((value: string) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       priceRange: { ...prev.priceRange, min: value },
     }));
   }, []);
 
   const handleMaxPriceChange = useCallback((value: string) => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       priceRange: { ...prev.priceRange, max: value },
     }));
   }, []);
 
   const resetPrice = useCallback(() => {
-    setFilters((prev) => ({
+    setFilters((prev: any) => ({
       ...prev,
       priceRange: { min: "", max: "" },
     }));
@@ -481,7 +468,7 @@ export default function FilterAccordion({
   return (
     <div
       className={`${
-        mobileFiltersOpen ? "fixed inset-0 z-50 bg-white" : "hidden"
+        mobileFiltersOpen ? "fixed inset-0 z-50 bg-white" : "hidden "
       } lg:block w-full md:w-[330px] mx-auto h-full lg:min-h-screen overflow-scroll px-2 ${className}`}
     >
       <div className="flex items-center justify-between lg:hidden ">

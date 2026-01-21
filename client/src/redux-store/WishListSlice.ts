@@ -14,7 +14,6 @@ const initialState: IWishListState = {
 export const WishListSlice = createSlice({
   name: "WishListSlice",
   initialState: initialState,
-
   reducers: {
     setWhisList: (state, action: PayloadAction<IWishListState>) => {
       state.isAuthenticate = action.payload.isAuthenticate;
@@ -28,7 +27,7 @@ export const WishListSlice = createSlice({
         if (iswishList) {
           let parsedProds = JSON.parse(iswishList);
           state.totalItems = parsedProds?.length;
-          state.wishList = JSON.parse(iswishList) || initialState;
+          state.wishList = JSON.parse(iswishList);
         }
       }
     },
@@ -58,9 +57,8 @@ export const WishListSlice = createSlice({
       );
       state.totalItems -= 1;
       state.wishList = filteredProds;
-      console.log(action.payload.prodId, "fsadfsd");
       if (!state.isAuthenticate) {
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(state));
+        localStorage.setItem(WISHLIST_KEY, JSON.stringify(state.wishList));
       }
     },
   },

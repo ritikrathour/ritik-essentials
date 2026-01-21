@@ -21,7 +21,7 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
     isRemovingToWishList,
   } = useWishList();
   const { wishList, isAuthenticate } = useSelector(
-    (state: RootState) => state.whisList
+    (state: RootState) => state.whisList,
   );
   const [isFill, setIsFill] = useState(false);
   return (
@@ -56,7 +56,7 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
                  ${
                    isFill ||
                    wishList?.find(
-                     (item: any) => item?.product?._id === product?._id
+                     (item: any) => item?.product?._id === product?._id,
                    )
                      ? "fill-red-500 text-red-500"
                      : "text-gray-400"
@@ -75,8 +75,8 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
                 product.badge === "Hot Deal"
                   ? "bg-green-100 text-green-700"
                   : product.badge === "Only few left"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-blue-100 text-blue-700"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-blue-100 text-blue-700"
               }`}
             >
               {product.badge}
@@ -85,14 +85,16 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
         </Link>
         <div className="p-3">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-gray-900">{product.brand}</h3>
+            <h3 className="font-medium text-gray-900 capitalize">
+              {product.brand}
+            </h3>
             {product.assured && (
               <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">
                 ✓ Assured
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+          <p className="text-sm text-gray-600 mb-2 line-clamp-2 capitalize">
             {product.name}
           </p>
           <div className="flex justify-between items-center">
