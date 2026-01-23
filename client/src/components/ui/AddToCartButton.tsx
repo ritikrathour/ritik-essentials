@@ -7,7 +7,7 @@ const AddToCartButton: React.FC<{ product: IProduct }> = ({ product }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   let cartItemPayload = {
     productId: product._id.toString(),
-    quantity: 1,
+    quantity: product?.quantity || 1,
     price: product.price,
     name: product.name,
     imageUrl: product.image || "image url add karo",

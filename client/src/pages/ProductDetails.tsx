@@ -1,4 +1,10 @@
-import { ChevronLeft, ChevronRight, HeartIcon } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  HeartIcon,
+  Minus,
+  Plus,
+} from "lucide-react";
 import { lazy, memo, useCallback, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { useParams } from "react-router-dom";
@@ -11,14 +17,15 @@ import { LazySection } from "../components/LazySection";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
 import AddToCartButton from "../components/ui/AddToCartButton";
 const RatingsAndReviews = lazy(
-  () => import("../components/products/RatingsAndReviews")
+  () => import("../components/products/RatingsAndReviews"),
 );
 const SimilarProducts = lazy(
-  () => import("../components/products/SimilarProducts")
+  () => import("../components/products/SimilarProducts"),
 );
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const [quantity, setQuantity] = useState(1);
   const [imageIndex, setImageIndex] = useState<number>(0);
   const { products, error, isError, isLoading, refetch } =
     useProduct().getProductById(id, `/product-details/${id}`);
@@ -28,6 +35,7 @@ const ProductDetails = () => {
     if (imageIndex === 0) return;
     setImageIndex((prev) => prev - 1);
   }, [imageIndex]);
+
   // handleClickNext
   const handleClickNext = useCallback(() => {
     if (imageIndex === products?.images.length) return;
@@ -75,8 +83,37 @@ const ProductDetails = () => {
             </p>
             <div className="my-2">
               <p className="text-[14px] font-light">Quantity:</p>
-              <div className="px-2 border mt-0.5 w-[50px] flex items-center justify-center rounded-xl h-[40px]">
-                <button type="button">1</button>
+              <div className="px-2 border mt-0.5 flex items-center justify-center gap-2 h-[40px] w-[100px] rounded">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setQuantity((prev) => {
+                      return prev > 1 ? prev - 1 : 1;
+                    })
+                  }
+                  className="w-[60px] h-[20px] bg-gray-200 hover:bg-gray-300 transition-all duration-100 flex justify-center items-center rounded-xs cursor-pointer"
+                >
+                  <Minus size={15} />
+                </button>
+                <input
+                  type="text"
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="text-center w-[20px] outline-none"
+                  value={quantity}
+                  max={99}
+                  min={1}
+                />
+                <button
+                  onClick={() =>
+                    setQuantity((prev) => {
+                      return prev + 1;
+                    })
+                  }
+                  type="button"
+                  className="w-[60px] h-[20px] bg-gray-200 hover:bg-gray-300 transition-all duration-100 flex justify-center items-center rounded-xs cursor-pointer"
+                >
+                  <Plus size={15} />
+                </button>
               </div>
             </div>
             <div className="flex gap-3.5">
@@ -84,8 +121,8 @@ const ProductDetails = () => {
               <h4 className="line-through">₹{products?.originalPrice}.00</h4>
             </div>
             <div className="flex gap-3 items-center mt-4">
-              <AddToCartButton product={products}></AddToCartButton>
               {/* Add to Cart <ChevronRight /> */}
+              <AddToCartButton product={{ ...products, quantity }} />
               <Button
                 variant="dark"
                 type="button"

@@ -35,6 +35,7 @@ export interface IProduct {
   sponsored: boolean;
   discount?: number;
   assured?: boolean;
+  quantity?: number;
 }
 export interface IPROD {
   _id: string;

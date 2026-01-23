@@ -16,12 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
 import { useCart } from "./hooks/useCart";
 import { initializeCartLocal } from "./redux-store/CartSlice";
-import { useQuery } from "@tanstack/react-query";
-import { productKeys } from "./TanstackQuery/Querykeys";
-import { ProductApi } from "./services/Product.service";
-import { initializeWishList, setWhisList } from "./redux-store/WishListSlice";
-import { WISHLIST_KEY } from "./utils/constant";
 // lazy pages
+const CheckoutPage = lazy(() => import("./pages/CheckOut"));
 const VendorUpdateProduct = lazy(
   () => import("./pages/VendorPages/VendorUpdateProduct"),
 );
@@ -265,6 +261,8 @@ function App() {
                 ></Route>
               </Route>
               {/* --------------------- only vedor -------------------------  */}
+              {/* Protected routes */}
+              {/* --------------------- Customer -------------------------  */}
               <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
                 <Route
                   path="/profile"
@@ -275,7 +273,17 @@ function App() {
                   }
                 />
               </Route>
-              {/* <Route path="*" element={<Home />} /> */}
+              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+                <Route
+                  path="/checkout"
+                  element={
+                    <PageTransition variants="fade">
+                      <CheckoutPage />
+                    </PageTransition>
+                  }
+                />
+              </Route>
+              <Route path="*" element={<Home />} />
             </Routes>
           </Suspense>
         </AnimatePresence>

@@ -26,7 +26,7 @@ const Products = () => {
   const { products, isLoading, error, isError, refetch, isFetching } =
     useProduct().getProduct(
       location.search ? location.search : `products ${paginationPage}`,
-      `/products${location.search}?limit=${5}&page=${paginationPage}`,
+      `/products${location.search}`,
     );
   const [filters, setFilters] = useState<FilterState>({
     availability: [],
@@ -229,7 +229,7 @@ const Products = () => {
               )}
             </div>
             {/* Pagination */}
-            {total < 20 && (
+            {total > 20 && (
               <Pagination
                 pages={products?.result && products?.result?.pagination?.pages}
                 page={paginationPage}

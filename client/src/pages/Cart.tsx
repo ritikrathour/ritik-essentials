@@ -36,7 +36,7 @@ const CartPage: React.FC = () => {
 
   const applyPromoCode = () => {
     const promo = VALID_PROMO_CODES.find(
-      (p) => p.code.toLowerCase() === promoCode.toLowerCase()
+      (p) => p.code.toLowerCase() === promoCode.toLowerCase(),
     );
 
     if (promo) {
@@ -59,10 +59,8 @@ const CartPage: React.FC = () => {
     const discount = appliedPromo ? subtotal * appliedPromo.discount : 0;
     const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
     const total = subtotal - discount + shipping;
-
     return { subtotal, discount, shipping, total };
   }, [Cart.items, appliedPromo]);
-
   if (Cart.items.length === 0) {
     return (
       <div className="min-h-[90vh] bg-gray-50 flex items-center justify-center p-4">
@@ -81,7 +79,6 @@ const CartPage: React.FC = () => {
       </div>
     );
   }
-
   return (
     <section className="md:px-10 px-2 w-full">
       <div className="mx-auto">
@@ -95,7 +92,7 @@ const CartPage: React.FC = () => {
                 key={item._id}
                 className="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4"
               >
-                <Link to={`/products/${item?.productId}`}>
+                <Link to={`/product-details/${item?.productId}`}>
                   <OptimizedImage
                     alt={item.name}
                     src={item.image}
@@ -222,7 +219,13 @@ const CartPage: React.FC = () => {
               <div className="space-y-3 mb-6 pb-6 border-b border-gray-200">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>₹{subtotal?.toFixed(2)}</span>
+                  <span>
+                    {isUpdating ? (
+                      <span className="w-[78px] inline-block h-[18px] animate-pulse bg-gray-300 rounded-md"></span>
+                    ) : (
+                      `₹${subtotal?.toFixed(2)}`
+                    )}
+                  </span>
                 </div>
 
                 {appliedPromo && (
@@ -242,15 +245,24 @@ const CartPage: React.FC = () => {
                     <span className="text-green-600 font-medium">FREE</span>
                   ) : (
                     <span className="w-[58px] inline-block">
-                      ₹{shipping?.toFixed(2)}
+                      {isUpdating ? (
+                        <span className="w-[78px] inline-block h-[18px] animate-pulse bg-gray-300 rounded-md"></span>
+                      ) : (
+                        `₹${shipping?.toFixed(2)}`
+                      )}
                     </span>
                   )}
                 </div>
 
                 {subtotal < SHIPPING_THRESHOLD && (
                   <p className="text-xs text-gray-500">
-                    Add ₹{(SHIPPING_THRESHOLD - subtotal)?.toFixed(2)} more for
-                    free shipping
+                    Add{" "}
+                    {isUpdating ? (
+                      <span className="w-[78px] inline-block h-[18px] animate-pulse bg-gray-300 rounded-md"></span>
+                    ) : (
+                      `₹${(SHIPPING_THRESHOLD - subtotal)?.toFixed(2)}`
+                    )}{" "}
+                    more for free shipping
                   </p>
                 )}
               </div>
@@ -258,7 +270,11 @@ const CartPage: React.FC = () => {
               <div className="flex justify-between text-lg font-semibold text-gray-900 mb-6">
                 <span>Total</span>
                 <span className="w-[58px] inline-block">
-                  ₹{total?.toFixed(2)}
+                  {isUpdating ? (
+                    <span className="w-[78px] inline-block h-[18px] animate-pulse bg-gray-300 rounded-md"></span>
+                  ) : (
+                    ` ₹${total}`
+                  )}
                 </span>
               </div>
               <Link to="/" className="w-full mt-2 block">

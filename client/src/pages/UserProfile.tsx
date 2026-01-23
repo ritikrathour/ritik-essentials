@@ -2,7 +2,6 @@ import React, { lazy, Suspense, useState } from "react";
 import {
   Package,
   MapPin,
-  Heart,
   CreditCard,
   Bell,
   Settings,
@@ -12,15 +11,12 @@ import { useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import { RootState } from "../redux-store/Store";
 const Setting = lazy(
-  () => import("../components/customerProfileCompo/Setting")
+  () => import("../components/customerProfileCompo/Setting"),
 );
 const Addresse = lazy(
-  () => import("../components/customerProfileCompo/Addresse")
+  () => import("../components/customerProfileCompo/Addresse"),
 );
 const Orders = lazy(() => import("../components/customerProfileCompo/Orders"));
-const WishlistCompo = lazy(
-  () => import("../components/customerProfileCompo/WishListComp")
-);
 
 interface Order {
   id: string;
@@ -95,7 +91,6 @@ const UserProfile: React.FC = () => {
 
   const menuItems = [
     { icon: Package, label: "My Orders", value: "orders", badge: "3" },
-    { icon: Heart, label: "Wishlist", value: "wishlist", badge: "12" },
     { icon: MapPin, label: "Addresses", value: "addresses", badge: null },
     {
       icon: CreditCard,
@@ -184,12 +179,6 @@ const UserProfile: React.FC = () => {
               </Suspense>
             )}
 
-            {activeTab === "wishlist" && (
-              <Suspense fallback={<Loader style="h-full" />}>
-                <WishlistCompo />
-              </Suspense>
-            )}
-
             {activeTab === "addresses" && (
               <Suspense fallback={<Loader style="h-full" />}>
                 <Addresse address={addresses} />
@@ -203,7 +192,7 @@ const UserProfile: React.FC = () => {
             )}
 
             {!["orders", "addresses", "wishlist", "settings"].includes(
-              activeTab
+              activeTab,
             ) && (
               <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                 <div className="text-gray-400 mb-4">

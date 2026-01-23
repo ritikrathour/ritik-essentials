@@ -4,6 +4,13 @@ import ProductSkeleton from "../SkeletonUI/ProductSkeleton";
 import ErrorUI from "../ErrorsUI/ErrorUI";
 import { useProduct } from "../../hooks/useProduct";
 
+interface ICategory {
+  images: string;
+  _id: string;
+  name: string;
+  description: string;
+  category: string;
+}
 const HomeProducts = () => {
   const { products, error, isError, isLoading, refetch } =
     useProduct().getProduct("", `products?limit=4`);
@@ -12,12 +19,6 @@ const HomeProducts = () => {
   }
   if (isError) {
     return <ErrorUI error={error} onRetry={refetch} />;
-  }
-  interface ICategory {
-    images: string;
-    _id: string;
-    name: string;
-    description: string;
   }
   return (
     <>
@@ -32,7 +33,7 @@ const HomeProducts = () => {
               btnText="Shop Now"
               style="h-[250px] w-full md:w-[300px] shadow shadow-slate-400"
               icon={<i className="fas fa-shopping-cart" />}
-              to={`products?category=${item.name}`}
+              to={`products?category=${item.category}`}
             />
           );
         })}
