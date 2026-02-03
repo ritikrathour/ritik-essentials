@@ -7,8 +7,12 @@ import {
   InteractWithReview,
   UpdateProductReview,
 } from "../controllers/Review.controller";
+import { ReviewValidate } from "../middlewares/ZodValidationMiddleware/ReviewValidate";
+import { createReviewValidation } from "../../utils/zodValidation/ReviewValidatain";
 export const reviewRouter = express.Router();
-reviewRouter.route("/review").post(Authenticate, CreateReview);
+reviewRouter
+  .route("/review")
+  .post(Authenticate, ReviewValidate(createReviewValidation), CreateReview);
 reviewRouter
   .route("/review/:productId")
   .post(Authenticate, UpdateProductReview);

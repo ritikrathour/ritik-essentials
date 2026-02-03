@@ -58,7 +58,7 @@ export const useProduct = () => {
   };
   const getProductById = (id: any, url: string) => {
     const {
-      data: products,
+      data: product,
       error,
       isError,
       isLoading,
@@ -70,7 +70,7 @@ export const useProduct = () => {
       enabled: true,
       refetchOnWindowFocus: false,
     });
-    return { products, error, isError, isLoading, refetch };
+    return { product, error, isError, isLoading, refetch };
   };
   const getBrands = (url: string) => {
     const {

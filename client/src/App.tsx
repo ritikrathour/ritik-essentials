@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./redux-store/Store";
 import { useCart } from "./hooks/useCart";
 import { initializeCartLocal } from "./redux-store/CartSlice";
+import VendorDashboard from "./pages/VendorPages/VendorDashboard";
 // lazy pages
 const CheckoutPage = lazy(() => import("./pages/CheckOut"));
 const VendorUpdateProduct = lazy(
@@ -240,7 +241,11 @@ function App() {
               />
               {/* Protected routes */}
               {/* --------------------- only vedor -------------------------  */}
-              <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
+              <Route
+                element={
+                  <ProtectedRoute allowedRoles={["vendor", "customer"]} />
+                }
+              >
                 <Route
                   path="/create-product"
                   element={
@@ -260,6 +265,16 @@ function App() {
                   }
                 ></Route>
               </Route>
+              <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PageTransition variants="fade">
+                      <VendorDashboard />
+                    </PageTransition>
+                  }
+                ></Route>
+              </Route>
               {/* --------------------- only vedor -------------------------  */}
               {/* Protected routes */}
               {/* --------------------- Customer -------------------------  */}
@@ -273,7 +288,11 @@ function App() {
                   }
                 />
               </Route>
-              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+              <Route
+                element={
+                  <ProtectedRoute allowedRoles={["customer", "vendor"]} />
+                }
+              >
                 <Route
                   path="/checkout"
                   element={

@@ -73,7 +73,7 @@ const UpdateProduct = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(500, "Product not updated");
   }
   res.json(
-    new ApiResponse(200, { updateProduct }, "Product updated successfully")
+    new ApiResponse(200, { updateProduct }, "Product updated successfully"),
   );
 });
 // get vendor products
@@ -89,7 +89,7 @@ const VendorProducts = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "Product not found!", false);
   }
   res.json(
-    new ApiResponse(200, result, "Vendor Products retrieved successfully!")
+    new ApiResponse(200, result, "Vendor Products retrieved successfully!"),
   );
 });
 // updata product's status (published or draft)
@@ -110,15 +110,19 @@ const UpdateProductStatus = AsyncHandler(
     // find the product from id & update status
     const updateStatus = await ProductServices.updateProductStatus(
       productId,
-      status
+      status,
     );
     if (!updateStatus) {
       throw new ApiError(500, "Product status not updated!");
     }
     res.json(
-      new ApiResponse(200, updateStatus, "Product Status updated successfully!")
+      new ApiResponse(
+        200,
+        updateStatus,
+        "Product Status updated successfully!",
+      ),
     );
-  }
+  },
 );
 const FetchVendorProductById = AsyncHandler(
   async (req: Request, res: Response) => {
@@ -132,9 +136,9 @@ const FetchVendorProductById = AsyncHandler(
       vendorId,
     });
     res.json(
-      new ApiResponse(200, product, "Vendor Product Fetched successfully!")
+      new ApiResponse(200, product, "Vendor Product Fetched successfully!"),
     );
-  }
+  },
 );
 // ----------------------------------- Authenticated (Vendor/Admin)-----------------------------------
 // ----------------------------------- Public Routes -----------------------------------
@@ -171,10 +175,10 @@ const GetProductsByVendor = AsyncHandler(
           productsCount: products.length,
           vendor: { vedorName: vendor[0].name, vendorEmail: vendor[0].email },
         },
-        "Vendor's Products fetched successfully"
-      )
+        "Vendor's Products fetched successfully",
+      ),
     );
-  }
+  },
 );
 // get product by id
 const GetProductById = AsyncHandler(async (req: Request, res: Response) => {
@@ -212,7 +216,7 @@ const GetCategories = AsyncHandler(async (_, res: Response) => {
     throw new ApiError(404, "No categories found", false);
   }
   res.json(
-    new ApiResponse(200, { category }, "Categories retrieved successfully")
+    new ApiResponse(200, { category }, "Categories retrieved successfully"),
   );
 });
 // get brands
@@ -223,8 +227,6 @@ const GetBrands = AsyncHandler(async (_, res: Response) => {
   }
   res.json(new ApiResponse(200, brands, "Brands retrieved successfully"));
 });
-// get user orders
-const GetUserOrders = AsyncHandler(async (req: Request, res: Response) => {});
 // ----------------------------------- Public Routes -----------------------------------
 export {
   CreateProduct,
@@ -236,7 +238,6 @@ export {
   GetCategories,
   GetBrands,
   GetProductsByVendor,
-  GetUserOrders,
   VendorProducts,
   UpdateProductStatus,
   FetchVendorProductById,

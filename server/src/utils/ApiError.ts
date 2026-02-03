@@ -8,8 +8,8 @@ class ApiError extends Error {
     statusCode: number,
     message: string = "something went wrong",
     success: Boolean = false,
-    errors?: IValidationError[],
-    stack: string = ""
+    errors?: any,
+    stack: string = "",
   ) {
     super(message);
     this.statusCode = statusCode;

@@ -1,16 +1,19 @@
 import { useState, useEffect, ChangeEvent } from "react";
-import { CreditCard, Truck, ShoppingBag, CheckCircle } from "lucide-react";
+import {
+  CreditCard,
+  Truck,
+  ShoppingBag,
+  CheckCircle,
+  Trash,
+  Trash2,
+} from "lucide-react";
 import Input from "../components/Input";
 import { Button } from "../components/ui/Button";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-}
+import { useCart } from "../hooks/useCart";
+import Loader from "../components/Loader";
+import { validEmail } from "../utils/validation";
+import { Link } from "react-router-dom";
 
 interface FormData {
   fullName: string;
@@ -47,7 +50,6 @@ interface OrderData {
 
 export default function CheckoutPage() {
   const [step, setStep] = useState<number>(1);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     email: "",
@@ -57,45 +59,14 @@ export default function CheckoutPage() {
     pinCode: "",
     paymentMethod: "cod",
   });
-
-  useEffect(() => {
-    // Simulated cart items - replace with your actual cart data from API
-    // Example API call:
-    // const fetchCart = async () => {
-    //   const response = await fetch('/api/cart', {
-    //     headers: { 'Authorization': `Bearer ${token}` }
-    //   });
-    //   const data = await response.json();
-    //   setCartItems(data.items);
-    // };
-    // fetchCart();
-
-    setCartItems([
-      {
-        id: 1,
-        name: "Wireless Headphones",
-        price: 79.99,
-        quantity: 1,
-        image:
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
-      },
-      {
-        id: 2,
-        name: "Smart Watch",
-        price: 199.99,
-        quantity: 1,
-        image:
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
-      },
-    ]);
-  }, []);
-
-  const subtotal: number = cartItems.reduce(
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { Cart, isLoading, isRemoving, removeCartItem } = useCart();
+  const subtotal: number = Cart.items?.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const shipping: number = 10.0;
-  const tax: number = subtotal * 0.1;
+  const shipping: number = 5.0;
+  const tax: number = subtotal * 0.01;
   const total: number = subtotal + shipping + tax;
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
@@ -104,32 +75,95 @@ export default function CheckoutPage() {
       ...formData,
       [name]: value,
     });
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = prev;
+        delete errors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = async (): Promise<void> => {
     if (step === 1) {
+      // validation
+      if (formData.fullName?.trim() === "") {
+        setErrors((prev) => ({ ...prev, fullName: "FullName is required" }));
+        return;
+      }
+      if (formData.email.trim() === "") {
+        setErrors((prev) => ({ ...prev, email: "Email is required" }));
+        return;
+      }
+      if (!validEmail(formData.email)) {
+        setErrors((prev) => ({
+          ...prev,
+          email: "Please enter a valid email address",
+        }));
+        return;
+      }
+      if (formData.phone.trim() === "") {
+        setErrors((prev) => ({
+          ...prev,
+          phone: "Phone Number is required",
+        }));
+        return;
+      }
+      if (formData.phone?.length !== 10) {
+        setErrors((prev) => ({
+          ...prev,
+          phone: "Phone Number must be 10 digit",
+        }));
+        return;
+      }
+      if (formData.address?.trim() === "") {
+        setErrors((prev) => ({ ...prev, address: "Address is required" }));
+        return;
+      }
+      if (formData.address?.length < 5) {
+        setErrors((prev) => ({
+          ...prev,
+          address: "Addresh must be greate 5 charecter",
+        }));
+        return;
+      } else if (formData.address?.length > 150) {
+        setErrors((prev) => ({
+          ...prev,
+          address: "Address cannot be greater 150 charecter",
+        }));
+        return;
+      }
+      if (formData.pinCode?.trim() === "") {
+        setErrors((prev) => ({ ...prev, pinCode: "pinCode is required" }));
+        return;
+      }
+      if (formData.city?.trim() === "") {
+        setErrors((prev) => ({ ...prev, city: "City is required" }));
+        return;
+      }
       setStep(2);
     } else if (step === 2) {
       // Process payment and create order
       try {
-        const orderData: OrderData = {
-          items: cartItems.map((item) => ({
-            product: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-          shippingAddress: {
-            fullName: formData.fullName,
-            address: formData.address,
-            city: formData.city,
-            postalCode: formData.pinCode,
-            country: "",
-            phone: formData.phone,
-          },
-          paymentMethod: formData.paymentMethod,
-          totalAmount: total,
-        };
+        // const orderData: OrderData = {
+        //   items: cartItems.map((item) => ({
+        //     product: item.id,
+        //     name: item.name,
+        //     quantity: item.quantity,
+        //     price: item.price,
+        //   })),
+        //   shippingAddress: {
+        //     fullName: formData.fullName,
+        //     address: formData.address,
+        //     city: formData.city,
+        //     postalCode: formData.pinCode,
+        //     country: "",
+        //     phone: formData.phone,
+        //   },
+        //   paymentMethod: formData.paymentMethod,
+        //   totalAmount: total,
+        // };
 
         // Replace with your actual API call
         // const response = await fetch('/api/checkout/create-order', {
@@ -145,7 +179,7 @@ export default function CheckoutPage() {
         //   setStep(3);
         // }
 
-        console.log("Order Data:", orderData);
+        console.log("Order Data:");
         setStep(3);
       } catch (error) {
         console.error("Order creation failed:", error);
@@ -154,14 +188,14 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="md:px-10 px-2 bg-gray-50 py-4">
+    <div className="md:px-10 px-2 bg-gray-50">
       <div className="mx-auto">
         {/* Progress Steps */}
-        <div className="mb-8 w-[600px] m-auto">
+        <div className="mb-8 md:w-[600px] m-auto">
           <div className="flex items-center justify-center">
             <div className="flex items-center">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 1 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
+                className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full ${step >= 1 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
               >
                 <ShoppingBag size={20} />
               </div>
@@ -171,7 +205,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex items-center">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 2 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
+                className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full ${step >= 2 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
               >
                 <CreditCard size={20} />
               </div>
@@ -180,31 +214,19 @@ export default function CheckoutPage() {
               ></div>
             </div>
             <div
-              className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 3 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
+              className={`flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full ${step >= 3 ? "bg-[#febd2f] text-white" : "bg-gray-300"}`}
             >
               <CheckCircle size={20} />
             </div>
           </div>
-          <div className="flex justify-center gap-20 mt-2 text-sm">
-            <span
-              className={
-                step >= 1 ? "text-[173334] font-medium" : "text-gray-500"
-              }
-            >
+          <div className="flex justify-center gap-16 md:gap-20 mt-2 text-sm">
+            <span className={step >= 1 ? "text-[173334]" : "text-gray-500"}>
               Shipping
             </span>
-            <span
-              className={
-                step >= 2 ? "text-[173334] font-medium" : "text-gray-500"
-              }
-            >
+            <span className={step >= 2 ? "text-[173334]" : "text-gray-500"}>
               Payment
             </span>
-            <span
-              className={
-                step >= 3 ? "text-[173334] font-medium" : "text-gray-500"
-              }
-            >
+            <span className={step >= 3 ? "text-[173334] " : "text-gray-500"}>
               Complete
             </span>
           </div>
@@ -222,7 +244,9 @@ export default function CheckoutPage() {
               Thank you for your purchase. We'll send you a confirmation email
               shortly.
             </p>
-            <Button type="button">View Order Details</Button>
+            <Link to="/orders">
+              <Button type="button">View Order Details</Button>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -246,6 +270,7 @@ export default function CheckoutPage() {
                           required
                           placeholder="Full Name"
                           label="Full Name"
+                          error={errors.fullName}
                         />
                         <Input
                           name="email"
@@ -254,6 +279,7 @@ export default function CheckoutPage() {
                           value={formData.email}
                           placeholder="example@example.com"
                           label="Email"
+                          error={errors.email}
                         />
                       </div>
                       <Input
@@ -264,6 +290,7 @@ export default function CheckoutPage() {
                         required
                         placeholder="0123456789"
                         label="Phone Number"
+                        error={errors.phone}
                       />
                       <Input
                         name="address"
@@ -273,6 +300,7 @@ export default function CheckoutPage() {
                         required
                         placeholder="Full Address"
                         label="Address"
+                        error={errors.address}
                       />
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,6 +312,7 @@ export default function CheckoutPage() {
                           required
                           placeholder="City"
                           label="City"
+                          error={errors.city}
                         />
                         <Input
                           name="pinCode"
@@ -293,6 +322,7 @@ export default function CheckoutPage() {
                           required
                           placeholder="226104"
                           label="Pin Code"
+                          error={errors.pinCode}
                         />
                       </div>
                     </div>
@@ -404,26 +434,39 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
                 <h3 className="text-lg font-bold mb-4">Order Summary</h3>
 
-                <div className="space-y-3 mb-4">
-                  {cartItems.map((item: CartItem) => (
-                    <div key={item.id} className="flex gap-3">
-                      {/* <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded border"
-                      /> */}
-                      <div className="w-[100px] h-[80px]">
-                        <OptimizedImage alt={item.image} src={item.image} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{item.name}</p>
-                        <p className="text-sm text-gray-600">
-                          Qty: {item.quantity}
-                        </p>
-                      </div>
-                      <p className="font-medium">₹{item.price.toFixed(2)}</p>
-                    </div>
-                  ))}
+                <div className="space-y-3 mb-4 max-h-[400px] overflow-y-scroll">
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    Cart.items?.map((item) => {
+                      return (
+                        <div key={item._id} className="flex gap-3 relative">
+                          <div className="w-[100px] h-[80px]">
+                            <OptimizedImage alt={item.name} src={item.image} />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{item.name}</p>
+                            <p className="text-sm text-gray-600">
+                              Qty: {item.quantity}
+                            </p>
+                          </div>
+                          <p className="font-medium text-sm">
+                            ₹{item.price.toFixed(2)}
+                          </p>
+                          <button
+                            onClick={() =>
+                              removeCartItem({ itemId: item?._id })
+                            }
+                            className="text-gray-400 hover:text-red-500 transition-colors absolute bottom-2 right-2 cursor-pointer"
+                            disabled={isRemoving}
+                            aria-label="Remove item"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
 
                 <div className="border-t pt-4 space-y-2">

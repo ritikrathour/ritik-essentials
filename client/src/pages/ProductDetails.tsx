@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { lazy, memo, useCallback, useState } from "react";
 import { Button } from "../components/ui/Button";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useProduct } from "../hooks/useProduct";
 import Loader from "../components/Loader";
 import ErrorUI from "../components/ErrorsUI/ErrorUI";
@@ -16,6 +16,7 @@ import ProductDetailsAccordion from "../components/products/ProductAcordianDetai
 import { LazySection } from "../components/LazySection";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
 import AddToCartButton from "../components/ui/AddToCartButton";
+import { useCart } from "../hooks/useCart";
 const RatingsAndReviews = lazy(
   () => import("../components/products/RatingsAndReviews"),
 );
@@ -27,7 +28,8 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [imageIndex, setImageIndex] = useState<number>(0);
-  const { products, error, isError, isLoading, refetch } =
+  const { addTocart, isAddingToCart } = useCart();
+  const { product, error, isError, isLoading, refetch } =
     useProduct().getProductById(id, `/product-details/${id}`);
   const [isFill, setIsFill] = useState(false);
   // handleClickPrev
@@ -35,10 +37,20 @@ const ProductDetails = () => {
     if (imageIndex === 0) return;
     setImageIndex((prev) => prev - 1);
   }, [imageIndex]);
-
+  // add to cart and navigate to checkout page
+  let cartItemPayload = {
+    productId: product?._id.toString(),
+    quantity: product?.quantity || 1,
+    price: product?.price,
+    name: product?.name,
+    imageUrl: product?.image || "image url add karo",
+  };
+  const handleAdd = () => {
+    addTocart(cartItemPayload);
+  };
   // handleClickNext
   const handleClickNext = useCallback(() => {
-    if (imageIndex === products?.images.length) return;
+    if (imageIndex === product?.images.length) return;
     setImageIndex((prev) => prev + 1);
   }, [imageIndex]);
 
@@ -71,15 +83,15 @@ const ProductDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center gap-2 h-full">
           {/* text    */}
           <div className="order-2 md:order-1">
-            <p className="font-semibold text-[14px]">{products?.brand}</p>
+            <p className="font-semibold text-[14px]">{product?.brand}</p>
             <h2 className="my-2 font-bold text-[20px] capitalize font-serif">
-              {products?.name}
+              {product?.name}
             </h2>
             <p
               className="font-semibold text-[14px]"
               style={{ letterSpacing: "1px" }}
             >
-              {products?.category}
+              {product?.category}
             </p>
             <div className="my-2">
               <p className="text-[14px] font-light">Quantity:</p>
@@ -117,19 +129,22 @@ const ProductDetails = () => {
               </div>
             </div>
             <div className="flex gap-3.5">
-              <h3 className="text-2xl font-extrabold">₹{products?.price}.00</h3>
-              <h4 className="line-through">₹{products?.originalPrice}.00</h4>
+              <h3 className="text-2xl font-extrabold">₹{product?.price}.00</h3>
+              <h4 className="line-through">₹{product?.originalPrice}.00</h4>
             </div>
             <div className="flex gap-3 items-center mt-4">
               {/* Add to Cart <ChevronRight /> */}
-              <AddToCartButton product={{ ...products, quantity }} />
-              <Button
-                variant="dark"
-                type="button"
-                className="w-[150px] flex-1  "
-              >
-                Buy it now
-              </Button>
+              <AddToCartButton product={{ ...product, quantity }} />
+              <Link to="/checkout" onClick={handleAdd}>
+                <Button
+                  disabled={isAddingToCart}
+                  variant="dark"
+                  type="button"
+                  className="w-[150px] flex-1  "
+                >
+                  Buy it now
+                </Button>
+              </Link>
             </div>
           </div>
           {/* images   */}
@@ -137,7 +152,7 @@ const ProductDetails = () => {
             <div className="h-[300px] m-auto rounded">
               <OptimizedImage
                 src={
-                  (products?.images && products?.images[imageIndex]) ||
+                  (product?.images && product?.images[imageIndex]) ||
                   "../public/assets/cola.avif"
                 }
                 alt={imageIndex.toString()}
@@ -146,8 +161,8 @@ const ProductDetails = () => {
             </div>
             <div className="flex items-center flex-wrap justify-center mt-4 gap-4">
               <div className="flex justify-start items-center gap-2 w-[250px] overflow-scroll">
-                {products?.images?.length > 1 &&
-                  products?.images.map((image: string, index: number) => {
+                {product?.images?.length > 1 &&
+                  product?.images.map((image: string, index: number) => {
                     return (
                       <div
                         onClick={() => setImageIndex(index)}
@@ -165,7 +180,7 @@ const ProductDetails = () => {
                     );
                   })}
               </div>
-              {products?.images?.length > 1 && (
+              {product?.images?.length > 1 && (
                 <div className="flex gap-2">
                   <Button
                     disabled={imageIndex === 0}
@@ -176,7 +191,7 @@ const ProductDetails = () => {
                     <ChevronLeft />
                   </Button>
                   <Button
-                    disabled={imageIndex === products?.images?.length - 1}
+                    disabled={imageIndex === product?.images?.length - 1}
                     onClick={() => handleClickNext()}
                     type="button"
                     className="w-[40px] h-[40px] cursor-pointer rounded-full bg-yellow-500 flex justify-center items-center"
@@ -190,26 +205,26 @@ const ProductDetails = () => {
           {/* description and product details   */}
           <div className="flex flex-col gap-1 order-3">
             <div className="flex justify-start md:justify-end">
-              <Rating rating={{ ...products?.rating }} />
+              <Rating rating={{ ...product?.rating }} />
             </div>
             <h2 className="text-start md:text-end text-[20px] font-semibold">
               Description:
             </h2>
             <p className="text-start md:text-end text-[14px] leading-5">
-              {products?.description}
+              {product?.description}
             </p>
             <h2 className="text-start md:text-end text-[20px] font-semibold">
               About product
             </h2>
             <div className="text-start md:text-end">
               <h5 className="font-semibold text-[14px]">
-                SKU:<span className="font-light pl-0.5">{products?.sku}</span>
+                SKU:<span className="font-light pl-0.5">{product?.sku}</span>
               </h5>
             </div>
             <div className="text-start md:text-end">
               <h5 className="font-semibold text-[14px]">
                 Category:
-                <span className="font- pl-0.5">{products?.category}</span>
+                <span className="font- pl-0.5">{product?.category}</span>
               </h5>
             </div>
           </div>
@@ -217,7 +232,7 @@ const ProductDetails = () => {
       </section>
       {/* product details  */}
       <section className="md:px-10 p-2">
-        <ProductDetailsAccordion details={products} />
+        <ProductDetailsAccordion details={product} />
       </section>
       {/* RatingsAndReviews */}
       <section className="md:px-10 p-2">
@@ -228,7 +243,7 @@ const ProductDetails = () => {
       {/* similar product */}
       <section className="md:px-10 p-2">
         <LazySection>
-          <SimilarProducts category={{ ...products?.category }} />
+          <SimilarProducts category={{ ...product?.category }} />
         </LazySection>
       </section>
     </>

@@ -7,11 +7,11 @@ import { Button } from "../components/ui/Button";
 import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
 const MobileMenu = lazy(() => import("./MobileLayouts/MobileMenu"));
 const ProfileDropDown = lazy(
-  () => import("../components/popups/ProfileDropDown")
+  () => import("../components/popups/ProfileDropDown"),
 );
 
 const VendorHeader = () => {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState("");
   const [showDropDownProfile, setShowDropDownProfile] =
     useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

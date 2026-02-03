@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 // redis auth keys
 const getUserKey = (email: string) => `user:${email}`;
 const getOTPkey = (email: string, type: string) => `otp:${type}:${email}`;
@@ -28,7 +30,17 @@ const getVendorProductskey = (vendorId: string) =>
   `vendor:products:${vendorId}`;
 const categoriesKey = () => "Categories";
 const categoriesExpiry = 3600;
+// checkout keys
+const InventoryReservation = (userId: mongoose.Types.ObjectId) =>
+  `ReserveInventry-${userId}`;
+// order keys
+const getOrderkey = (orderId: mongoose.Types.ObjectId | string) =>
+  `order:${orderId}`;
+const getOrderskey = `orders:All`;
+const vendorOrders = (vendorId: mongoose.Types.ObjectId) =>
+  `vendorOrder:${vendorId}`;
 export {
+  getOrderkey,
   categoriesExpiry,
   categoriesKey,
   getUserKey,
@@ -51,4 +63,7 @@ export {
   getBrandsKey,
   brandsExpiry,
   getVendorProductskey,
+  InventoryReservation,
+  vendorOrders,
+  getOrderskey,
 };

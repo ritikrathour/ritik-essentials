@@ -3,7 +3,6 @@ import {
   CreateReviewDTO,
   IReview,
   PaginationOptions,
-  ReviewInteractionDTO,
   UpdateReviewDTO,
 } from "../../types/Review.type";
 import { ReviewModel } from "../models/Review.model";
@@ -13,7 +12,7 @@ import { ProductFeatureModel } from "../models/ProductFeature.model";
 export const ReviewService = {
   async createReview(
     userId: mongoose.Types.ObjectId,
-    data: CreateReviewDTO
+    data: CreateReviewDTO,
   ): Promise<IReview> {
     // Check if user has already reviewed this product
     const existingReview = await ReviewModel.findOne({
@@ -45,7 +44,7 @@ export const ReviewService = {
   },
   async updateProductFeature(
     productId: mongoose.Types.ObjectId,
-    features: string[]
+    features: string[],
   ) {
     let productFeature = await ProductFeatureModel.findOne({
       productId,
@@ -173,7 +172,7 @@ export const ReviewService = {
   async updateProductReview(
     reviewId: string,
     data: UpdateReviewDTO,
-    userId: mongoose.Types.ObjectId
+    userId: mongoose.Types.ObjectId,
   ): Promise<IReview> {
     const review = await ReviewModel.findById(reviewId);
     if (!review) {
@@ -191,7 +190,7 @@ export const ReviewService = {
   },
   async deleteProductReview(
     reviewId: string,
-    userId: mongoose.Types.ObjectId
+    userId: mongoose.Types.ObjectId,
   ): Promise<void> {
     const review = await ReviewModel.findById(reviewId);
     if (!review) {
@@ -205,7 +204,7 @@ export const ReviewService = {
   async interactWithReview(
     reviewId: string,
     userId: mongoose.Types.ObjectId,
-    action: "like" | "dislike"
+    action: "like" | "dislike",
   ): Promise<{ likes: number; dislike: number }> {
     const review = await ReviewModel.findById(reviewId);
     if (!review) {

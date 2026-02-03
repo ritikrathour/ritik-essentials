@@ -1,11 +1,4 @@
-import {
-  Heart,
-  MenuIcon,
-  MenuSquare,
-  Search,
-  Sidebar,
-  User,
-} from "lucide-react";
+import { Search } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -14,7 +7,7 @@ import { RootState } from "../redux-store/Store";
 import useOverlayManager from "../hooks/useOverLay";
 import ShoppingCartCompo from "../components/cart/ShoppingCartCompo";
 const ProfileDropDown = lazy(
-  () => import("../components/popups/ProfileDropDown")
+  () => import("../components/popups/ProfileDropDown"),
 );
 
 const Header = () => {
@@ -35,7 +28,7 @@ const Header = () => {
   // stop scrolling
   useOverlayManager(
     headerMenu || showSearchBar,
-    HideHeaderMenu || handleShowSearchBar
+    HideHeaderMenu || handleShowSearchBar,
   );
   return (
     <>

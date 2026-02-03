@@ -3,10 +3,17 @@ import { IOrder } from "../../types/Auth.type";
 
 const OrderSchema = new mongoose.Schema<IOrder>(
   {
+    orderNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "User",
       required: [true, "User is required"],
+      index: true,
     },
     items: [
       {
@@ -14,6 +21,12 @@ const OrderSchema = new mongoose.Schema<IOrder>(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: [true, "product is required"],
+        },
+        vendorId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: [true, "Vendor Id is required"],
+          index: true,
         },
         quantity: {
           type: Number,
@@ -26,14 +39,46 @@ const OrderSchema = new mongoose.Schema<IOrder>(
         },
       },
     ],
+    shippingAddress: {
+      fullName: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        required: true,
+      },
+      fullAddress: {
+        type: String,
+        required: true,
+      },
+      city: { type: String, required: true },
+      pinCode: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+    },
     totalAmount: {
       type: Number,
       required: true,
+      min: 0,
     },
+    discount: { type: Number, default: 0, min: 0 },
+    tax: { type: Number, default: 0, min: 0 },
+    shippingCharges: { type: Number, default: 0, min: 0 },
     status: {
       type: String,
       enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
+      index: true,
     },
     paymentMethod: {
       type: String,
@@ -44,8 +89,16 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       type: Boolean,
       default: false,
     },
+    coupon: {
+      type: String,
+      discountAmount: { type: Number, min: 0 },
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
+// indexes for performance
+OrderSchema.index({ user: 1, createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ vendorId: 1, createdAt: -1 });
 const OrderModel: Model<IOrder> = mongoose.model("Model", OrderSchema);
 export default OrderModel;

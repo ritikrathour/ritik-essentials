@@ -47,13 +47,36 @@ interface IOrderItems {
   quantity: number;
   price: number;
 }
+export interface IShippingAddress {
+  fullName: string;
+  phone: string;
+  email: string;
+  fullAddress: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pinCode: string;
+}
+export type OrderStatus =
+  | "Pending"
+  | "Processing"
+  | "Shipped"
+  | "Delivered"
+  | "Cancelled";
+
 export interface IOrder {
+  shippingAddress: IShippingAddress;
+  orderNumber: string;
   user: mongoose.ObjectId;
   items: IOrderItems[];
   totalAmount: number;
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  tax: Number;
+  shippingCharges: Number;
+  status: OrderStatus;
   paymentMethod: "COD" | "Online";
   isPaid: boolean;
+  discount: number;
+  coupon: String;
 }
 // validation error
 export interface IValidationError {
