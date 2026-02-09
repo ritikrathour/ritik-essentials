@@ -24,7 +24,7 @@ const calculateTotals = (items: ICartItem[]) => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   return { totalItems, totalPrice };
 };
@@ -53,7 +53,7 @@ export const CartSlice = createSlice({
     },
     addToCartLocal: (state, action: PayloadAction<IAddToCartPayload>) => {
       const existItem = state.Cart?.items?.find(
-        (item: ICartItem) => item?.productId === action.payload.productId
+        (item: ICartItem) => item?.productId === action.payload.productId,
       );
       if (existItem) {
         existItem.quantity += action.payload.quantity;
@@ -61,6 +61,7 @@ export const CartSlice = createSlice({
         state.Cart.items.push({
           _id: Date.now().toString(),
           productId: action.payload.productId,
+          vendorId: action.payload.vendorId,
           quantity: action.payload.quantity,
           image: action.payload.imageUrl || "",
           name: action.payload.name,
@@ -76,7 +77,7 @@ export const CartSlice = createSlice({
     },
     updateCartItemLocal: (
       state,
-      action: PayloadAction<IUpdateCartItemPayload>
+      action: PayloadAction<IUpdateCartItemPayload>,
     ) => {
       const { cartItemId, quantity } = action.payload;
       if (quantity > 0) {
@@ -91,7 +92,7 @@ export const CartSlice = createSlice({
     },
     removeCartItemLocal: (state, action: PayloadAction<{ itemId: string }>) => {
       const items = state.Cart.items.filter(
-        (item) => item._id !== action.payload.itemId
+        (item) => item._id !== action.payload.itemId,
       );
       state.Cart.items = items;
       const { totalItems, totalPrice } = calculateTotals(items);

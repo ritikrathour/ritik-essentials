@@ -22,6 +22,7 @@ export interface ICardProps {
 export type IProdStatus = "published" | "draft" | "out_of_stock";
 export interface IProduct {
   _id: number | string;
+  vendor: string;
   name: string;
   brand: string;
   stock: number;

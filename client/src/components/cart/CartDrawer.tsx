@@ -165,7 +165,7 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
           )}
         {/* Checkout Buttons */}
         <div className="px-4 py-2 border-t border-[#c4c4c4]  bg-gray-50">
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Link className="flex-1" to="/cart">
               <Button
                 onClick={() => dispatch(CloseCartDrawer())}
@@ -176,17 +176,20 @@ const CartDrawer: React.FC<ICartDrawerOpenProps> = ({ cartDrawerProps }) => {
                 View Cart
               </Button>
             </Link>
-            <Button
-              type="button"
-              variant="primary"
-              className="flex-1 py-3"
-              disabled={
-                cartDrawerProps.Cart?.items &&
-                cartDrawerProps?.Cart?.items?.length < 1
-              }
-            >
-              Checkout
-            </Button>
+            <Link className="flex-1" to="/checkout">
+              <Button
+                onClick={() => dispatch(CloseCartDrawer())}
+                type="button"
+                variant="primary"
+                className="py-3 w-full"
+                disabled={
+                  cartDrawerProps.Cart?.items &&
+                  cartDrawerProps?.Cart?.items?.length < 1
+                }
+              >
+                Checkout
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

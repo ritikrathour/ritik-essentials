@@ -43,6 +43,7 @@ const ProductDetails = () => {
     quantity: product?.quantity || 1,
     price: product?.price,
     name: product?.name,
+    vendorId: product?.vendor,
     imageUrl: product?.image || "image url add karo",
   };
   const handleAdd = () => {

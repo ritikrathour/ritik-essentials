@@ -5,7 +5,7 @@ import {
   IProdStatus,
   IProductFormData,
 } from "../utils/Types/Product.types";
-import axios, { Axios } from "axios";
+import axios from "axios";
 
 export const ProductApi = {
   createProduct: async (url: string, formData: any) => {
@@ -43,7 +43,7 @@ export const ProductApi = {
     } catch (error) {
       toast.error(
         (axios.isAxiosError(error) && error?.response?.data?.message) ||
-          "Somthing is wrong!"
+          "Somthing is wrong!",
       );
       console.log(error);
       throw error;
@@ -100,7 +100,7 @@ export const ProductApi = {
         `/product/status/${productId}`,
         {
           status,
-        }
+        },
       );
       toast.success(data?.message);
       return data;
@@ -119,7 +119,7 @@ export const ProductApi = {
     }
   },
   getVendorProductById: async (
-    productId: string
+    productId: string,
   ): Promise<IProductFormData> => {
     try {
       const { data } = await AxiosInstense.get(`/product/${productId}`);

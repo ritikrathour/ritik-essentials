@@ -20,14 +20,14 @@ export const CartApi = {
   updateCartItem: async (payload: IUpdateCartItemPayload) => {
     const { data } = await AxiosInstense.patch(
       `/cart/item/update-quantity/${payload?.cartItemId}`,
-      payload
+      payload,
     );
     return data?.data;
   },
   removeItemFromCart: async (payload: { itemId: string }) => {
     const { data } = await AxiosInstense.delete(
       `/cart/item/${payload.itemId}`,
-      {}
+      {},
     );
     return data?.data;
   },

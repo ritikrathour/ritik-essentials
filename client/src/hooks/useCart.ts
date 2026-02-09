@@ -20,7 +20,7 @@ export const useCart = () => {
   const dispatch = useDispatch();
   const qClient = useQueryClient();
   const { Cart, isAuthenticate, isCartDrawerOpen, isLoading } = useSelector(
-    (state: RootState) => state.cart
+    (state: RootState) => state.cart,
   );
   const { data, isError, error, refetch } = useQuery({
     queryKey: Cartkeys.cart,
@@ -35,7 +35,7 @@ export const useCart = () => {
           items: data?.items,
           totalItems: data?.totalItems,
           totalPrice: data?.totalAmount,
-        })
+        }),
       );
     }
   }, [data, dispatch]);

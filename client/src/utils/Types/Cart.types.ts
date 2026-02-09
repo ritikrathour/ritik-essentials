@@ -2,6 +2,7 @@ export interface ICartItem {
   _id: string;
   name: string;
   productId: string;
+  vendorId: string;
   quantity: number;
   image: string;
   price: number;
@@ -24,6 +25,7 @@ export interface ICartState {
 export interface IAddToCartPayload {
   productId: string;
   quantity: number;
+  vendorId: string;
   price: number;
   name: string;
   imageUrl: string | undefined;

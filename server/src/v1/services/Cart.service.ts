@@ -22,7 +22,7 @@ class CartService {
   };
   updateCart = async (
     userId: mongoose.Types.ObjectId,
-    cart: Partial<ICart>
+    cart: Partial<ICart>,
   ) => {
     // find and update cart by userID
     const result = await CartModel.findOneAndUpdate(
@@ -36,20 +36,20 @@ class CartService {
       },
       {
         returnDocument: "after",
-      }
+      },
     );
     return result;
   };
   updateCartItem = async (
     userId: mongoose.Types.ObjectId,
     itemId: string,
-    quantity: number
+    quantity: number,
   ) => {
     // get cart
     const cart = this.getOrCreateCart(userId);
     // find item in the cart
     const Item = (await cart).items.find(
-      (item) => item._id.toString() === itemId
+      (item) => item._id.toString() === itemId,
     );
     if (!Item) {
       throw new ApiError(400, "Item not found in cart");
@@ -81,7 +81,7 @@ class CartService {
   calculateCartTotals = async (items: ICartItem[]) => {
     const totalAmount = items.reduce(
       (sum, item) => (sum + item.price) * item.quantity,
-      0
+      0,
     );
     const totalItems = items?.reduce((sum, item) => sum + item.quantity, 0);
     return { totalAmount, totalItems };
@@ -99,7 +99,7 @@ class CartService {
     const cart = this.getOrCreateCart(userId);
     //check existingItemIndex
     const existingItemIndex = (await cart)?.items?.findIndex(
-      (i) => i.productId === item.productId
+      (i) => i.productId === item.productId,
     );
     // if present then increase qty or not sotre in cart
     if (existingItemIndex > -1) {
@@ -114,12 +114,14 @@ class CartService {
       totalAmount: (await totals).totalAmount,
       totalItems: (await totals).totalItems,
     });
+    // console.log(await updateCart, "hello");
+
     return updateCart;
   };
   removeItemFromCart = async (userId: mongoose.Types.ObjectId, itemId: any) => {
     const cart = this.getOrCreateCart(userId);
     const itemIndex = (await cart).items.findIndex(
-      (item) => item._id.toString() === itemId
+      (item) => item._id.toString() === itemId,
     );
     if (itemIndex === -1) {
       throw new ApiError(404, "item not found in cart!");

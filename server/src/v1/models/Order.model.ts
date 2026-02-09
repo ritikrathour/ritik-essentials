@@ -25,7 +25,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
         vendorId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
-          required: [true, "Vendor Id is required"],
+          required: [true, "Vendor Id is required!"],
           index: true,
         },
         quantity: {
@@ -50,18 +50,13 @@ const OrderSchema = new mongoose.Schema<IOrder>(
       },
       email: {
         type: String,
-        required: true,
       },
-      fullAddress: {
+      address: {
         type: String,
         required: true,
       },
       city: { type: String, required: true },
       pinCode: {
-        type: String,
-        required: true,
-      },
-      state: {
         type: String,
         required: true,
       },
@@ -82,7 +77,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
     },
     paymentMethod: {
       type: String,
-      enum: ["COD", "Online"],
+      enum: ["COD", "CARD"],
       default: "COD",
     },
     isPaid: {
@@ -100,5 +95,5 @@ const OrderSchema = new mongoose.Schema<IOrder>(
 OrderSchema.index({ user: 1, createdAt: -1 });
 OrderSchema.index({ status: 1, createdAt: -1 });
 OrderSchema.index({ vendorId: 1, createdAt: -1 });
-const OrderModel: Model<IOrder> = mongoose.model("Model", OrderSchema);
+const OrderModel: Model<IOrder> = mongoose.model("Order", OrderSchema);
 export default OrderModel;

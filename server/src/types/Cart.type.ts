@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface ICartItem {
   _id: mongoose.ObjectId;
   productId: mongoose.ObjectId;
+  vendorId: mongoose.ObjectId;
   quantity: number;
   price: number;
   name: string;

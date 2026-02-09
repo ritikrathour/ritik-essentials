@@ -3,8 +3,8 @@ import OrderModel from "../models/Order.model";
 import { ICheckoutItem, ICheckoutRequest } from "../../types/Checkout.type";
 import ProductModel from "../models/Product.model";
 import ApiError from "../../utils/ApiError";
-import { redisClient } from "../../libs/RedisClient";
-import { InventoryReservation } from "../../libs/Redis_keys";
+// import { redisClient } from "../../libs/RedisClient";
+// import { InventoryReservation } from "../../libs/Redis_keys";
 
 export const CheckoutService = {
   getOrders: async (userId: {}, limit: number) => {
@@ -28,7 +28,7 @@ export const CheckoutService = {
     // 2. Check inventory availability
     for (const item of validatedItems) {
       const hasStock = await ProductModel.findById(item.product._id);
-      if (!hasStock || hasStock.stock >= item.quantity) {
+      if (!hasStock || hasStock.stock < item.quantity) {
         throw new ApiError(
           400,
           `Insufficient stock for ${item.product?.name}. Available: ${item.product.stock}`,
@@ -51,27 +51,27 @@ export const CheckoutService = {
       totalAmount: pricing.subTotal,
       discount: pricing.discout,
       coupon: pricing.coupon,
-      isPaid: "pending",
       paymentMethod: checkoutData.paymentMethod,
       shippingCharges: pricing.shippingCarges,
       status: "Pending",
+      isPaid: false,
     });
     // 6. Reserve inventory
     // Create inventory reservations with TTL (30 minutes)
-    for (const item of validatedItems) {
-      await redisClient.setEx(
-        InventoryReservation(userId),
-        30 * 60 * 1000,
-        JSON.stringify(item.quantity),
-      );
-    }
+    // for (const item of validatedItems) {
+    //   await redisClient.setEx(
+    //     InventoryReservation(userId),
+    //     30 * 60 * 1000,
+    //     JSON.stringify(item.quantity),
+    //   );
+    // }
     return order;
   },
   validateAndFetchItems: async (items: ICheckoutItem[]) => {
     const productIds = items.map((item) => item.productId);
     const products = await ProductModel.find({
       _id: { $in: productIds },
-      status: "publised",
+      // status: "publised",
     });
     if (products?.length !== items?.length) {
       throw new ApiError(400, "Some products are not available");
@@ -86,6 +86,7 @@ export const CheckoutService = {
       return {
         product,
         quantity: item.quantity,
+        vendorId: item.vendorId,
         price: product?.price,
         sku: product?.sku,
         discount: product.discount,
@@ -106,7 +107,7 @@ const PricingService = {
     }
     // Apply coupon if provided
     let discout = 0;
-    let coupon = null;
+    let coupon = "";
     if (couponCode) {
       // validate and apply coupon TODO
       // const couponResult = await

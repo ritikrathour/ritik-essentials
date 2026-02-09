@@ -18,7 +18,7 @@ const InitiateCheckout = AsyncHandler(async (req: Request, res: Response) => {
   // validation
   const { data, success, error } = CheckoutValidatation.safeParse(req.body);
   if (!success) {
-    throw new ApiError(400, "validation error", false, error);
+    throw new ApiError(400, "validation error", false, error.message);
   }
   const userId = req.user._id;
   const order = await CheckoutService.initiateCheckout(userId, data as any);

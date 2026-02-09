@@ -1,10 +1,9 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import {
   CreditCard,
   Truck,
   ShoppingBag,
   CheckCircle,
-  Trash,
   Trash2,
 } from "lucide-react";
 import Input from "../components/Input";
@@ -14,6 +13,11 @@ import { useCart } from "../hooks/useCart";
 import Loader from "../components/Loader";
 import { validEmail } from "../utils/validation";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { CheckOutAPIService } from "../services/Checkout.service";
+import toast from "react-hot-toast";
+import ErrorUI from "../components/ErrorsUI/ErrorUI";
+import { CartApi } from "../services/Cart.serveice";
 
 interface FormData {
   fullName: string;
@@ -22,30 +26,21 @@ interface FormData {
   address: string;
   city: string;
   pinCode: string;
-  paymentMethod: "card" | "cod";
+  paymentMethod: "CARD" | "COD";
 }
 
 interface OrderItem {
-  product: number;
+  productId: string;
   name: string;
-  quantity: number;
   price: number;
-}
-
-interface ShippingAddress {
-  fullName: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  phone: string;
+  quantity: number;
 }
 
 interface OrderData {
   items: OrderItem[];
-  shippingAddress: ShippingAddress;
-  paymentMethod: string;
-  totalAmount: number;
+  shippingAddress: FormData;
+  // paymentMethod: string;
+  // totalAmount: number;
 }
 
 export default function CheckoutPage() {
@@ -57,10 +52,10 @@ export default function CheckoutPage() {
     address: "",
     city: "",
     pinCode: "",
-    paymentMethod: "cod",
+    paymentMethod: "COD",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const { Cart, isLoading, isRemoving, removeCartItem } = useCart();
+  const { Cart, isLoading, isRemoving, removeCartItem, clearCart } = useCart();
   const subtotal: number = Cart.items?.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -85,6 +80,28 @@ export default function CheckoutPage() {
     }
   };
 
+  const orderData = {
+    items: Cart.items,
+    shippingAddress: formData,
+  };
+  // create order hook
+  const { error, isPending, mutate, isError, isSuccess } = useMutation({
+    mutationFn: (payload: OrderData) => CheckOutAPIService.createOrder(payload),
+    onSuccess: () => {
+      toast.success("Order Created Successfully");
+    },
+    retry: 1,
+  });
+  const ClearCart = async () => {
+    clearCart();
+    await CartApi.clearCart();
+  };
+  useEffect(() => {
+    if (isSuccess) {
+      setStep(3);
+      ClearCart();
+    }
+  }, [isSuccess]);
   const handleSubmit = async (): Promise<void> => {
     if (step === 1) {
       // validation
@@ -92,16 +109,14 @@ export default function CheckoutPage() {
         setErrors((prev) => ({ ...prev, fullName: "FullName is required" }));
         return;
       }
-      if (formData.email.trim() === "") {
-        setErrors((prev) => ({ ...prev, email: "Email is required" }));
-        return;
-      }
-      if (!validEmail(formData.email)) {
-        setErrors((prev) => ({
-          ...prev,
-          email: "Please enter a valid email address",
-        }));
-        return;
+      if (formData.email.trim() !== "") {
+        if (!validEmail(formData.email)) {
+          setErrors((prev) => ({
+            ...prev,
+            email: "Please enter a valid email address",
+          }));
+          return;
+        }
       }
       if (formData.phone.trim() === "") {
         setErrors((prev) => ({
@@ -144,49 +159,16 @@ export default function CheckoutPage() {
       }
       setStep(2);
     } else if (step === 2) {
-      // Process payment and create order
-      try {
-        // const orderData: OrderData = {
-        //   items: cartItems.map((item) => ({
-        //     product: item.id,
-        //     name: item.name,
-        //     quantity: item.quantity,
-        //     price: item.price,
-        //   })),
-        //   shippingAddress: {
-        //     fullName: formData.fullName,
-        //     address: formData.address,
-        //     city: formData.city,
-        //     postalCode: formData.pinCode,
-        //     country: "",
-        //     phone: formData.phone,
-        //   },
-        //   paymentMethod: formData.paymentMethod,
-        //   totalAmount: total,
-        // };
-
-        // Replace with your actual API call
-        // const response = await fetch('/api/checkout/create-order', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     'Authorization': `Bearer ${token}`
-        //   },
-        //   body: JSON.stringify(orderData)
-        // });
-        // const data = await response.json();
-        // if (data.success) {
-        //   setStep(3);
-        // }
-
-        console.log("Order Data:");
-        setStep(3);
-      } catch (error) {
-        console.error("Order creation failed:", error);
+      if (Cart.items.length <= 0) {
+        toast.error("Please buy atleast One product!");
+        return;
       }
+      mutate(orderData);
     }
   };
-
+  if (isError) {
+    return <ErrorUI error={error} />;
+  }
   return (
     <div className="md:px-10 px-2 bg-gray-50">
       <div className="mx-auto">
@@ -339,7 +321,7 @@ export default function CheckoutPage() {
                     <div className="space-y-4">
                       <div
                         onClick={() =>
-                          setFormData({ ...formData, paymentMethod: "cod" })
+                          setFormData({ ...formData, paymentMethod: "COD" })
                         }
                         className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-blue-500"
                       >
@@ -347,7 +329,7 @@ export default function CheckoutPage() {
                           type="radio"
                           name="paymentMethod"
                           value="cod"
-                          checked={formData.paymentMethod === "cod"}
+                          checked={formData.paymentMethod === "COD"}
                           onChange={handleInputChange}
                           className="mr-3"
                         />
@@ -356,7 +338,7 @@ export default function CheckoutPage() {
                       </div>
                       <div
                         onClick={() =>
-                          setFormData({ ...formData, paymentMethod: "card" })
+                          setFormData({ ...formData, paymentMethod: "CARD" })
                         }
                         className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-blue-500"
                       >
@@ -364,14 +346,14 @@ export default function CheckoutPage() {
                           type="radio"
                           name="paymentMethod"
                           value="card"
-                          checked={formData.paymentMethod === "card"}
+                          checked={formData.paymentMethod === "CARD"}
                           onChange={handleInputChange}
                           className="mr-3"
                         />
                         <CreditCard className="mr-2" size={20} />
                         <label>UPI/GooglePay/PayTM/PhonePay</label>
                       </div>
-                      {formData.paymentMethod === "card" && (
+                      {formData.paymentMethod === "CARD" && (
                         <div className="mt-4 space-y-4 p-4 bg-gray-50 rounded-lg">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -422,7 +404,11 @@ export default function CheckoutPage() {
                       Back
                     </Button>
                   )}
-                  <Button type="button" onClick={handleSubmit}>
+                  <Button
+                    disabled={isPending}
+                    type="button"
+                    onClick={handleSubmit}
+                  >
                     {step === 1 ? "Continue to Payment" : "Place Order"}
                   </Button>
                 </div>
@@ -433,7 +419,6 @@ export default function CheckoutPage() {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
                 <h3 className="text-lg font-bold mb-4">Order Summary</h3>
-
                 <div className="space-y-3 mb-4 max-h-[400px] overflow-y-scroll">
                   {isLoading ? (
                     <Loader />

@@ -12,6 +12,11 @@ const CartItemSchema = new mongoose.Schema<ICartItem>(
       type: String,
       required: [true, "Name is required"],
     },
+    vendorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Vendor Id is required"],
+    },
     price: {
       type: Number,
       required: [true, "Price is required"],
@@ -25,7 +30,7 @@ const CartItemSchema = new mongoose.Schema<ICartItem>(
       required: [true, "Image is required"],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 const CartSchema = new mongoose.Schema<ICart>(
   {
@@ -44,7 +49,7 @@ const CartSchema = new mongoose.Schema<ICart>(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CartModel = mongoose.model<ICart>("Cart", CartSchema);

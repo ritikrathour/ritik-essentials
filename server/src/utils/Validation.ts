@@ -121,7 +121,7 @@ export const validateCreateProduct = (data: any) => {
   } else if (
     data.images &&
     data.images.some(
-      (img: any) => typeof img?.image !== "string" || img?.image.length > 500
+      (img: any) => typeof img?.image !== "string" || img?.image.length > 500,
     )
   ) {
     errors.push({
@@ -334,7 +334,7 @@ interface ICategoryValidate {
 }
 // category validation
 export const CategoryValidate = (
-  category: ICategoryValidate
+  category: ICategoryValidate,
 ): { valid: boolean; errors: string[] } => {
   const errors: string[] = [];
   if (!category.name) {
@@ -351,11 +351,14 @@ export const CategoryValidate = (
 
 // cart validation
 export const validateAddToCart = (
-  body: ICartItem
+  body: ICartItem,
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   if (!body.productId) {
     errors.push("Product ID is required!");
+  }
+  if (!body.vendorId) {
+    errors.push("Vendor ID is required!");
   }
   if (
     !body?.quantity ||
