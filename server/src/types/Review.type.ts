@@ -29,7 +29,7 @@ export interface CreateReviewDTO {
   rating: number;
   text: string;
   image?: string;
-  location: string;
+  location?: string;
   features?: string[];
 }
 

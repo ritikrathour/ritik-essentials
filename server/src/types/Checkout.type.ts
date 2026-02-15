@@ -2,6 +2,7 @@ export interface ICheckoutItem {
   productId: string;
   vendorId?: string;
   quantity: number;
+  name: string;
 }
 export interface IShippingAddress {
   fullName: string;

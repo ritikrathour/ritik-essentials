@@ -38,7 +38,6 @@ const ReviewSchema = new mongoose.Schema<IReview>(
     },
     location: {
       type: String,
-      required: [true, "Location is required"],
       trim: true,
     },
     certified: {
@@ -70,7 +69,7 @@ const ReviewSchema = new mongoose.Schema<IReview>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 // Indexes for performance
 ReviewSchema.index({ productId: 1, createdAt: -1 });

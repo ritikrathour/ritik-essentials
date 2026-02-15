@@ -45,7 +45,9 @@ export interface CustomJwtPayload extends IJwtPayload {
 interface IOrderItems {
   product: mongoose.ObjectId;
   quantity: number;
+  name: string;
   price: number;
+  isReviewd: boolean;
 }
 export interface IShippingAddress {
   fullName: string;
@@ -58,11 +60,12 @@ export interface IShippingAddress {
   pinCode: string;
 }
 export type OrderStatus =
-  | "Pending"
-  | "Processing"
-  | "Shipped"
-  | "Delivered"
-  | "Cancelled";
+  | "PLACED"
+  | "CONFIRMED"
+  | "SHIPPED"
+  | "OUT_FOR_DELIVERY"
+  | "DELIVERED"
+  | "CANCELLED";
 
 export interface IOrder {
   shippingAddress: IShippingAddress;

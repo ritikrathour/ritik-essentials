@@ -16,6 +16,12 @@ const CategoryNavigation = () => {
   return (
     <div className="max-w-7xl mx-auto px-4">
       <div className="flex items-center gap-6 py-3 overflow-x-auto">
+        <Link
+          to={`/products`}
+          className="whitespace-nowrap text-sm font-medium text-gray-700 hover:text-[#febd2f] transition cursor-pointer"
+        >
+          All
+        </Link>
         {categories?.category?.map((item: any) => (
           <Link
             to={`/products?category=${item?.name}`}

@@ -26,7 +26,7 @@ export const createReviewValidation = z.object({
       .max(2000, "Review text cannot exceed 2000 characters")
       .regex(
         /^[a-zA-Z0-9\s.,!?'"()\-]+$/,
-        "Review text contains invalid characters"
+        "Review text contains invalid characters",
       ),
     image: z
       .url({
@@ -36,14 +36,6 @@ export const createReviewValidation = z.object({
         error: "URL must end with a valid image extension (jpg, png, etc.)",
       })
       .optional(),
-    location: z
-      .string({
-        error: "Location is required",
-      })
-      .trim()
-      .min(4, "Location must be at least 4 characters")
-      .max(100, "Location cannot exceed 100 characters")
-      .regex(/^[a-zA-Z\s,.-]+$/, "Location contains invalid characters"),
     features: z
       .array(
         z
@@ -53,8 +45,8 @@ export const createReviewValidation = z.object({
           .max(20, "Each feature cannot exceed 20 characters")
           .regex(
             /^[a-zA-Z\s]+$/,
-            "Features must contain only letters and spaces"
-          )
+            "Features must contain only letters and spaces",
+          ),
       )
       .max(5, "Cannot have more than 5 Features")
       .optional(),

@@ -1,7 +1,6 @@
 import React, { lazy, Suspense, useState } from "react";
 import {
   Package,
-  MapPin,
   CreditCard,
   Bell,
   Settings,
@@ -13,97 +12,24 @@ import { RootState } from "../redux-store/Store";
 const Setting = lazy(
   () => import("../components/customerProfileCompo/Setting"),
 );
-const Addresse = lazy(
-  () => import("../components/customerProfileCompo/Addresse"),
-);
 const Orders = lazy(() => import("../components/customerProfileCompo/Orders"));
-
-interface Order {
-  id: string;
-  name: string;
-  image: string;
-  date: string;
-  status: string;
-  price: number;
-}
-
-interface Address {
-  id: string;
-  type: string;
-  name: string;
-  address: string;
-  phone: string;
-  isDefault: boolean;
-}
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("orders");
   const { user: data } = useSelector((state: RootState) => state.user);
 
-  const orders: Order[] = [
-    {
-      id: "1",
-      name: "Wireless Headphones - Premium Sound",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
-      date: "Oct 15, 2025",
-      status: "Delivered",
-      price: 2999,
-    },
-    {
-      id: "2",
-      name: "Running Shoes - Sport Edition",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop",
-      date: "Oct 20, 2025",
-      status: "In Transit",
-      price: 4599,
-    },
-    {
-      id: "3",
-      name: "Smart Watch - Fitness Tracker",
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
-      date: "Oct 25, 2025",
-      status: "Processing",
-      price: 8999,
-    },
-  ];
-
-  const addresses: Address[] = [
-    {
-      id: "1",
-      type: "Home",
-      name: "John Doe",
-      address: "123 Main Street, Apartment 4B, New York, NY 10001",
-      phone: "+1 234 567 8900",
-      isDefault: true,
-    },
-    {
-      id: "2",
-      type: "Work",
-      name: "John Doe",
-      address: "456 Business Ave, Suite 200, New York, NY 10002",
-      phone: "+1 234 567 8900",
-      isDefault: false,
-    },
-  ];
-
   const menuItems = [
-    { icon: Package, label: "My Orders", value: "orders", badge: "3" },
-    { icon: MapPin, label: "Addresses", value: "addresses", badge: null },
+    { icon: Package, label: "My Orders", value: "orders" },
     {
       icon: CreditCard,
       label: "Payment Methods",
       value: "payments",
-      badge: null,
     },
-    { icon: Bell, label: "Notifications", value: "notifications", badge: "5" },
+    { icon: Bell, label: "Notifications", value: "notifications" },
     {
       icon: Settings,
       label: "Account Settings",
       value: "settings",
-      badge: null,
     },
   ];
 
@@ -138,7 +64,7 @@ const UserProfile: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Loyalty Points</span>
-                  <span className="font-medium text-[#febd2f]">1,250</span>
+                  <span className="font-medium text-[#febd2f]">🤩😍</span>
                 </div>
               </div>
             </div>
@@ -159,11 +85,6 @@ const UserProfile: React.FC = () => {
                     <span className="font-medium">{item.label}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {item.badge && (
-                      <span className="bg-[#173334] text-white text-xs px-2 py-1 rounded-full">
-                        {item.badge}
-                      </span>
-                    )}
                     <ChevronRight className="w-4 h-4" />
                   </div>
                 </button>
@@ -175,13 +96,7 @@ const UserProfile: React.FC = () => {
           <div className="lg:col-span-3">
             {activeTab === "orders" && (
               <Suspense fallback={<Loader style="h-full" />}>
-                <Orders orders={orders} />
-              </Suspense>
-            )}
-
-            {activeTab === "addresses" && (
-              <Suspense fallback={<Loader style="h-full" />}>
-                <Addresse address={addresses} />
+                <Orders />
               </Suspense>
             )}
 

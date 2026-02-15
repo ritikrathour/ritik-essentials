@@ -37,6 +37,10 @@ const OrderSchema = new mongoose.Schema<IOrder>(
           type: Number,
           required: [true, "Price is required"],
         },
+        isReviewed: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     shippingAddress: {
@@ -71,8 +75,15 @@ const OrderSchema = new mongoose.Schema<IOrder>(
     shippingCharges: { type: Number, default: 0, min: 0 },
     status: {
       type: String,
-      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
-      default: "Pending",
+      enum: [
+        "PLACED",
+        "CONFIRMED",
+        "SHIPPED",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "CANCELLED",
+      ],
+      default: "PLACED",
       index: true,
     },
     paymentMethod: {

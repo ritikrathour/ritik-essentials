@@ -15,15 +15,14 @@ const CreateReview = AsyncHandler(async (req: Request, res: Response) => {
   const data: CreateReviewDTO = req.body;
   // 1. Verify Purchase: Look for a completed order with this product and user
   const hasPurchased = await OrderModel.findOne({
-    user,
-    productId: data?.productId,
-    isPaid: true,
+    user: user._id,
+    "items.productId": data?.productId._id,
   });
   if (!hasPurchased) {
     throw new ApiError(
       403,
       "You can only review products you have purchased.",
-      false
+      false,
     );
   }
   const review = await ReviewService.createReview(user?._id, data);
@@ -59,8 +58,8 @@ const GetProductReview = AsyncHandler(async (req: Request, res: Response) => {
           totalPages: Math.floor(result.totalReviews / limit),
         },
       },
-      "Products Reviews get successfully!"
-    )
+      "Products Reviews get successfully!",
+    ),
   );
 });
 // update review
@@ -72,15 +71,15 @@ const UpdateProductReview = AsyncHandler(
     const updateReview = await ReviewService.updateProductReview(
       reviewId,
       data,
-      user
+      user,
     );
     if (!updateReview) {
       throw new ApiError(500, "Review not updated At!", false);
     }
     res.json(
-      new ApiResponse(200, updateReview, "Review updated successfully!")
+      new ApiResponse(200, updateReview, "Review updated successfully!"),
     );
-  }
+  },
 );
 const DeleteProductreview = AsyncHandler(
   async (req: Request, res: Response) => {
@@ -88,12 +87,12 @@ const DeleteProductreview = AsyncHandler(
     const { reviewId } = req.params;
     const deleteReview = await ReviewService.deleteProductReview(
       reviewId,
-      user
+      user,
     );
     res.json(
-      new ApiResponse(200, { deleteReview }, "Review deleted successfully!")
+      new ApiResponse(200, { deleteReview }, "Review deleted successfully!"),
     );
-  }
+  },
 );
 const InteractWithReview = AsyncHandler(async (req: Request, res: Response) => {
   const { reviewId } = req.params;

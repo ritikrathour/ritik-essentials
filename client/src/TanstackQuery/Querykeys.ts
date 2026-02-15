@@ -28,3 +28,7 @@ export const VendorProductsKeys = {
 export const Cartkeys = {
   cart: ["cart"] as const,
 };
+
+export const ordersKey = {
+  orders: ["orders"] as const,
+};

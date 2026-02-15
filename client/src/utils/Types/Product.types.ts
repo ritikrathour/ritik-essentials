@@ -41,6 +41,7 @@ export interface IProduct {
 export interface IPROD {
   _id: string;
   name: string;
+  vendor: string;
   sku: string;
   status: IProdStatus;
   brand: string;

@@ -13,11 +13,12 @@ import { useCart } from "../hooks/useCart";
 import Loader from "../components/Loader";
 import { validEmail } from "../utils/validation";
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckOutAPIService } from "../services/Checkout.service";
 import toast from "react-hot-toast";
 import ErrorUI from "../components/ErrorsUI/ErrorUI";
 import { CartApi } from "../services/Cart.serveice";
+import { ordersKey } from "../TanstackQuery/Querykeys";
 
 interface FormData {
   fullName: string;
@@ -79,16 +80,17 @@ export default function CheckoutPage() {
       });
     }
   };
-
   const orderData = {
     items: Cart.items,
     shippingAddress: formData,
   };
   // create order hook
+  const qClient = useQueryClient();
   const { error, isPending, mutate, isError, isSuccess } = useMutation({
     mutationFn: (payload: OrderData) => CheckOutAPIService.createOrder(payload),
     onSuccess: () => {
       toast.success("Order Created Successfully");
+      qClient.invalidateQueries({ queryKey: ordersKey.orders });
     },
     retry: 1,
   });

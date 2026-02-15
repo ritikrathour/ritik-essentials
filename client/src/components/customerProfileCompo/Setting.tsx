@@ -13,10 +13,10 @@ const Setting = ({ data }: any) => {
               name="name"
               type="text"
               placeholder="Enter Your Name"
-              defaultValue={data?.data?.name}
+              defaultValue={data?.name}
               value={undefined}
               onchange={function (
-                e: React.ChangeEvent<HTMLInputElement>
+                e: React.ChangeEvent<HTMLInputElement>,
               ): void {
                 throw new Error("Function not implemented.");
               }}
@@ -28,10 +28,10 @@ const Setting = ({ data }: any) => {
               name="email"
               type="email"
               placeholder="Enter Your email"
-              defaultValue={data?.data?.email}
+              defaultValue={data?.email}
               value={undefined}
               onchange={function (
-                e: React.ChangeEvent<HTMLInputElement>
+                e: React.ChangeEvent<HTMLInputElement>,
               ): void {
                 throw new Error("Function not implemented.");
               }}
@@ -43,25 +43,10 @@ const Setting = ({ data }: any) => {
               name="phone number"
               type="text"
               placeholder="Enter Your Phone"
-              defaultValue={data?.data?.phone}
+              defaultValue={data?.phone}
               value={undefined}
               onchange={function (
-                e: React.ChangeEvent<HTMLInputElement>
-              ): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
-          </div>
-          <div>
-            <Input
-              label="Date of birth"
-              name="date of birth"
-              type="date"
-              placeholder="Enter Your date of birth"
-              defaultValue={data?.data?.DOB}
-              value={undefined}
-              onchange={function (
-                e: React.ChangeEvent<HTMLInputElement>
+                e: React.ChangeEvent<HTMLInputElement>,
               ): void {
                 throw new Error("Function not implemented.");
               }}

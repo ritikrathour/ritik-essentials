@@ -78,38 +78,39 @@ const GetOrders = AsyncHandler(async (req: Request, res: Response) => {
   const skip = (page - 1) * limit;
   logger.info(`Get customer Orders request recieved ${customer._id}`);
   // check cache
-  const cachedOrders = await redisClient.get(getOrderskey);
-  if (cachedOrders) {
-    logger.info("orders cache hit", { customerId: customer._id });
-    res.json(
-      new ApiResponse(
-        200,
-        JSON.parse(cachedOrders),
-        "Orders Fetched successfully!",
-      ),
-    );
-    return;
-  }
+  // const cachedOrders = await redisClient.get(getOrderskey);
+  // if (cachedOrders) {
+  //   logger.info("orders cache hit", { customerId: customer._id });
+  //   res.json(
+  //     new ApiResponse(
+  //       200,
+  //       JSON.parse(cachedOrders),
+  //       "Orders Fetched successfully!",
+  //     ),
+  //   );
+  //   return;
+  // }
   logger.info("Orders cache missed, fetching form DB", {
     customerId: customer._id,
   });
-  const orders = await OrderModel.find({ _id: customer?._id })
+  const orders = await OrderModel.find({ user: customer?._id })
+    .populate({ path: "items.product", select: "name price createdAt images" })
     .limit(limit)
     .skip(skip)
     .sort({ createdAt: -1 })
     .populate("items.product", "name images")
     .lean();
-  logger.info("Orders cached in redis", { customerId: customer._id });
+  logger.info("Orders cached in redis", { user: customer._id });
   // store in cache
-  await redisClient.setEx(
-    getOrderkey(customer._id),
-    2 * 60 * 1000,
-    JSON.stringify(orders),
-  );
+  // await redisClient.setEx(
+  //   getOrderkey(customer._id),
+  //   2 * 60 * 1000,
+  //   JSON.stringify(orders),
+  // );
   res.json(
     new ApiResponse(
       200,
-      { ...orders, page, totalPages: Math.ceil(orders?.length / limit) },
+      { orders, page, totalPages: Math.ceil(orders?.length / limit) },
       "Fetched orders successfully",
     ),
   );

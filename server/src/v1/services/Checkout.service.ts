@@ -53,7 +53,7 @@ export const CheckoutService = {
       coupon: pricing.coupon,
       paymentMethod: checkoutData.paymentMethod,
       shippingCharges: pricing.shippingCarges,
-      status: "Pending",
+      status: "PLACED",
       isPaid: false,
     });
     // 6. Reserve inventory
@@ -87,6 +87,7 @@ export const CheckoutService = {
         product,
         quantity: item.quantity,
         vendorId: item.vendorId,
+        name: item.name,
         price: product?.price,
         sku: product?.sku,
         discount: product.discount,

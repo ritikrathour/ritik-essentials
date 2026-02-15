@@ -40,13 +40,13 @@ const ProductDetails = () => {
   // add to cart and navigate to checkout page
   let cartItemPayload = {
     productId: product?._id.toString(),
-    quantity: product?.quantity || 1,
+    quantity: quantity || 1,
     price: product?.price,
     name: product?.name,
     vendorId: product?.vendor,
-    imageUrl: product?.image || "image url add karo",
+    imageUrl: product?.images || "image url add karo",
   };
-  const handleAdd = () => {
+  const handleBuy = () => {
     addTocart(cartItemPayload);
   };
   // handleClickNext
@@ -136,7 +136,7 @@ const ProductDetails = () => {
             <div className="flex gap-3 items-center mt-4">
               {/* Add to Cart <ChevronRight /> */}
               <AddToCartButton product={{ ...product, quantity }} />
-              <Link to="/checkout" onClick={handleAdd}>
+              <Link to="/checkout" onClick={handleBuy}>
                 <Button
                   disabled={isAddingToCart}
                   variant="dark"

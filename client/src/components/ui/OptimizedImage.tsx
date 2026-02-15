@@ -82,7 +82,7 @@ export const OptimizedImage: React.FC<IOptimizedImage> = ({
           ObserverRef.current?.disconnect();
         }
       },
-      options
+      options,
     );
     if (imageRef.current) {
       ObserverRef.current?.observe(imageRef?.current);
@@ -113,10 +113,13 @@ export const OptimizedImage: React.FC<IOptimizedImage> = ({
       // Handle error with retry logic
       img.onerror = (): void => {
         if (retries < retryCount) {
-          retryTimeoutRef.current = setTimeout(() => {
-            setRetries((prev) => prev + 1);
-            loadImage(imageSrc);
-          }, retryDelay * Math.pow(2, retries));
+          retryTimeoutRef.current = setTimeout(
+            () => {
+              setRetries((prev) => prev + 1);
+              loadImage(imageSrc);
+            },
+            retryDelay * Math.pow(2, retries),
+          );
         } else {
           setLoadState("error");
           onError?.();
@@ -142,7 +145,7 @@ export const OptimizedImage: React.FC<IOptimizedImage> = ({
       width,
       height,
       src,
-    ]
+    ],
   );
   // Trigger image load when in view
   useEffect(() => {
