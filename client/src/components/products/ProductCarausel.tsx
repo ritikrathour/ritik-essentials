@@ -5,6 +5,7 @@ import { useProduct } from "../../hooks/useProduct";
 import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
 import ProductBestCard from "./ProductBestCard";
+import { IProduct } from "../../utils/Types/Product.types";
 
 const ProductCarausel = ({ url, QKey }: { url: string; QKey: string }) => {
   // products api call

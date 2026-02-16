@@ -17,6 +17,8 @@ import { LazySection } from "../components/LazySection";
 import { OptimizedImage } from "../components/ui/OptimizedImage";
 import AddToCartButton from "../components/ui/AddToCartButton";
 import { useCart } from "../hooks/useCart";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-store/Store";
 const RatingsAndReviews = lazy(
   () => import("../components/products/RatingsAndReviews"),
 );
@@ -28,6 +30,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [imageIndex, setImageIndex] = useState<number>(0);
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const { addTocart, isAddingToCart } = useCart();
   const { product, error, isError, isLoading, refetch } =
     useProduct().getProductById(id, `/product-details/${id}`);
@@ -136,7 +139,10 @@ const ProductDetails = () => {
             <div className="flex gap-3 items-center mt-4">
               {/* Add to Cart <ChevronRight /> */}
               <AddToCartButton product={{ ...product, quantity }} />
-              <Link to="/checkout" onClick={handleBuy}>
+              <Link
+                to={isAuthenticated ? "/checkout" : "/login"}
+                onClick={handleBuy}
+              >
                 <Button
                   disabled={isAddingToCart}
                   variant="dark"

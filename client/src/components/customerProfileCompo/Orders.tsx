@@ -72,10 +72,7 @@ const Orders = () => {
               className="bg-white rounded-lg shadow-sm border border-[#c4c4c4] p-3 md:p-6"
             >
               <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-                <Link
-                  to={`/product-details/${order.items[0] && order.items[0]?.product?._id}`}
-                  className="h-[220px]"
-                >
+                <Link to="/orders" className="h-[220px]">
                   <img
                     src={"../public/assets/cola.avif"}
                     alt={order.items[0] && order.items[0]?.product?.name}
@@ -105,29 +102,6 @@ const Orders = () => {
                       ₹{order.totalAmount}
                     </span>
                   </div>
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <Button
-                    type="button"
-                    className="w-[230px]"
-                    onClick={() => dispatch(openTrackOrderPopup())}
-                  >
-                    Track Order
-                  </Button>
-                  {/* {order.status === "Delivered" && ( */}
-                  <Button
-                    onClick={() =>
-                      dispatch(
-                        openRatingPopup(),
-                        setProductId(order.items[0]?.product?._id),
-                      )
-                    }
-                    variant="secondary"
-                    type="button"
-                  >
-                    Rate Product
-                  </Button>
-                  {/* )} */}
                 </div>
               </div>
             </div>

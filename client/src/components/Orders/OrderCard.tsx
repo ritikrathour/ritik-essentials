@@ -15,7 +15,7 @@ export const OrderCard = ({ order, refetch }: Props) => {
     string | null | number
   >(null);
   return (
-    <div className="border rounded-xl p-5 shadow-sm bg-white">
+    <div className="border border-[#c4c4c4] rounded-xl p-5 shadow-sm bg-white">
       <div className="flex justify-between">
         <div>
           <h3 className="font-semibold">Order #{order.orderNumber}</h3>
