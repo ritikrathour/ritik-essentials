@@ -18,6 +18,7 @@ import { useCart } from "./hooks/useCart";
 import { initializeCartLocal } from "./redux-store/CartSlice";
 import VendorDashboard from "./pages/VendorPages/VendorDashboard";
 import { OrdersPage } from "./pages/OrdersPage";
+import VendorOrderPage from "./pages/VendorPages/VendorOrder";
 // lazy pages
 const CheckoutPage = lazy(() => import("./pages/CheckOut"));
 const VendorUpdateProduct = lazy(
@@ -268,6 +269,16 @@ function App() {
               </Route>
               <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
                 <Route
+                  path="/vendor-orders"
+                  element={
+                    <PageTransition variants="fade">
+                      <VendorOrderPage />
+                    </PageTransition>
+                  }
+                ></Route>
+              </Route>
+              <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
+                <Route
                   path="/dashboard"
                   element={
                     <PageTransition variants="fade">
@@ -291,10 +302,10 @@ function App() {
               </Route>
               <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
                 <Route
-                  path="/orders"
+                  pavendor-th="/orders"
                   element={
                     <PageTransition variants="fade">
-                      <OrdersPage />
+                      vendor- <OrdersPage />
                     </PageTransition>
                   }
                 />

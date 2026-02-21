@@ -24,11 +24,12 @@ export const userKeys = {
 export const VendorProductsKeys = {
   all: ["venderProducts"] as const,
 };
-
 export const Cartkeys = {
   cart: ["cart"] as const,
 };
-
 export const ordersKey = {
   orders: ["orders"] as const,
+};
+export const vendorDashboard = {
+  dashboard: ["dashboard"] as const,
 };

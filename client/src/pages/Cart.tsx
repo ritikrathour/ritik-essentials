@@ -24,7 +24,7 @@ const VALID_PROMO_CODES: PromoCode[] = [
 ];
 
 const SHIPPING_THRESHOLD = 500;
-const SHIPPING_COST = 21;
+const SHIPPING_COST = 5;
 
 const CartPage: React.FC = () => {
   const { Cart, updateCartItem, removeCartItem, isRemoving, isUpdating } =
@@ -277,7 +277,7 @@ const CartPage: React.FC = () => {
                   )}
                 </span>
               </div>
-              <Link to="/" className="w-full mt-2 block">
+              <Link to="/checkout" className="w-full mt-2 block">
                 <Button type="button" variant="primary" className="w-full">
                   Proceed to Checkout
                   <ArrowRight className="w-5 h-5" />

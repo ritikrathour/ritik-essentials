@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/Button";
 import { Link } from "react-router-dom";
 interface INavItems {
   name: string;
-  icon: string;
+  icon: any;
   url: string;
 }
 interface MobileMenuOpenProps {

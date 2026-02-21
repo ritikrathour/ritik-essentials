@@ -11,7 +11,7 @@ const ImageSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 const Product = new mongoose.Schema<IProduct>(
   {
@@ -139,12 +139,13 @@ const Product = new mongoose.Schema<IProduct>(
       },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 // Compound indexes for better query performance
 Product.index({ category: 1, price: 1 });
 Product.index({ brand: 1, isActive: 1 });
 Product.index({ name: "text", description: "text", tags: "text" });
 Product.index({ createdAt: -1 });
+Product.index({ vendor: 1, status: 1 });
 const ProductModel = mongoose.model<IProduct>("Product", Product);
 export default ProductModel;

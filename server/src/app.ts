@@ -14,6 +14,7 @@ import { categoryRouter } from "./v1/routes/Category.route";
 import { cartRouter } from "./v1/routes/Cart.route";
 import { reviewRouter } from "./v1/routes/Review.route";
 import { checkoutRouter } from "./v1/routes/Checkout.route";
+import vendorDashBoardRoute from "./v1/routes/VendorDashboard.route";
 dotenv.config();
 
 const app = express();
@@ -53,6 +54,7 @@ app.use("/api/v1", categoryRouter);
 app.use("/api/v1", cartRouter);
 app.use("/api/v1", reviewRouter);
 app.use("/api/v1", checkoutRouter);
+app.use("/api/v1", vendorDashBoardRoute);
 // ⛔ Global Error Handler
 app.use(ErrorHandler);
 

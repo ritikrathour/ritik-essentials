@@ -106,5 +106,7 @@ const OrderSchema = new mongoose.Schema<IOrder>(
 OrderSchema.index({ user: 1, createdAt: -1 });
 OrderSchema.index({ status: 1, createdAt: -1 });
 OrderSchema.index({ vendorId: 1, createdAt: -1 });
+OrderSchema.index({ "items.vendorId": 1 });
+OrderSchema.index({ ispaid: 1 });
 const OrderModel: Model<IOrder> = mongoose.model("Order", OrderSchema);
 export default OrderModel;

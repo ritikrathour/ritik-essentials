@@ -39,6 +39,8 @@ const getOrderkey = (orderId: mongoose.Types.ObjectId | string) =>
 const getOrderskey = `orders:All`;
 const vendorOrders = (vendorId: mongoose.Types.ObjectId) =>
   `vendorOrder:${vendorId}`;
+const vendorDashboard = (vendorId: mongoose.Types.ObjectId) =>
+  `vendor:dashboard:${vendorId}`;
 export {
   getOrderkey,
   categoriesExpiry,
@@ -66,4 +68,5 @@ export {
   InventoryReservation,
   vendorOrders,
   getOrderskey,
+  vendorDashboard,
 };
