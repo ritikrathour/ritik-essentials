@@ -22,7 +22,3 @@ export const CheckoutValidatation = z.object({
   items: z.array(OrderItem).min(1, "At least one item is required"),
   shippingAddress: shippingAddressSchema,
 });
-
-export const orderNumberValidate = z.object({
-  orderNumber: z.string().min(1, "Order Number Is required!"),
-});

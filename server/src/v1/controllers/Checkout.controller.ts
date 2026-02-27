@@ -2,7 +2,6 @@ import AsyncHandler from "../../utils/AsyncHandler";
 import {
   CheckoutValidatation,
   objectIdZod,
-  orderNumberValidate,
 } from "../../utils/zodValidation/checkoutValidation";
 import { Request, Response } from "express";
 import { CheckoutService } from "../services/Checkout.service";
@@ -122,70 +121,198 @@ const GetVendorOrders = AsyncHandler(async (req: Request, res: Response) => {
   const limit = parseInt(req.params.limit as string) || 10;
   const page = parseInt(req.params.page as string) || 1;
   const skip = (page - 1) * limit;
+  const status = req.query.status as string;
   logger.info(`Vendor orders request recived ${vendor}`);
   // check in cache
-  const cachedOrders = await redisClient.get(vendorOrders(vendor));
-  if (cachedOrders) {
-    logger.info(`vendor orders Cache hit `, { vendorId: vendor });
-    res.json(
-      new ApiResponse(
-        200,
-        JSON.parse(cachedOrders),
-        "Vendor Orders Fetched successfully",
-      ),
-    );
-  }
+  // const cachedOrders = await redisClient.get(vendorOrders(vendor));
+  // if (cachedOrders) {
+  //   logger.info(`vendor orders Cache hit `, { vendorId: vendor });
+  //   res.json(
+  //     new ApiResponse(
+  //       200,
+  //       JSON.parse(cachedOrders),
+  //       "Vendor Orders Fetched successfully",
+  //     ),
+  //   );
+  // }
   logger.info("Cache vendors orders missed, fetching form DB", {
     vendorId: vendor,
   });
-  const orders = await OrderModel.aggregate([
-    { $unwind: "$items" },
+  const aggregationPipline: any = [
+    {
+      $unwind: "$items",
+    },
     {
       $match: {
         "items.vendorId": vendor,
       },
     },
+  ];
+
+  if (status) {
+    aggregationPipline.push({
+      $match: { status: status },
+    });
+  }
+
+  aggregationPipline.push(
+    {
+      $lookup: {
+        from: "products",
+        localField: "items.product",
+        foreignField: "_id",
+        as: "product",
+      },
+    },
+    {
+      $unwind: "$product",
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $unwind: "$user",
+    },
     {
       $group: {
         _id: "$_id",
-        user: { $first: "$user" },
+        orderNumber: { $first: "$orderNumber" },
+        orderStatus: { $first: "$status" },
+        paymentStatus: { $first: "$isPaid" },
         createdAt: { $first: "$createdAt" },
-        items: { $push: "$items" },
+        customer: {
+          $first: {
+            name: "$user.name",
+            email: "$user.email",
+          },
+        },
+        items: {
+          $push: {
+            productName: "$product.name",
+            quantity: "$items.quantity",
+            price: "$product.price",
+          },
+        },
+        vendorTotalAmount: {
+          $sum: {
+            $multiply: ["$items.quantity", "$items.price"],
+          },
+        },
       },
     },
     {
       $sort: { createdAt: -1 },
     },
-    { $skip: skip },
-    { $limit: limit },
-  ]);
+    {
+      $facet: {
+        metadata: [{ $count: "total" }],
+        data: [{ $skip: skip }, { $limit: limit }],
+      },
+    },
+  );
+  const orders = await OrderModel.aggregate(aggregationPipline);
+
+  // const orders = await OrderModel.aggregate([
+  //   { $unwind: "$items" },
+  //   {
+  //     $match: {
+  //       "items.vendorId": vendor,
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "products",
+  //       localField: "items.product",
+  //       foreignField: "_id",
+  //       as: "product",
+  //     },
+  //   },
+  //   {
+  //     $unwind: "$product",
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "user",
+  //       foreignField: "_id",
+  //       as: "user",
+  //     },
+  //   },
+  //   {
+  //     $unwind: "$user",
+  //   },
+  //   {
+  //     $group: {
+  //       _id: "$_id",
+  //       orderNumber: { $first: "$orderNumber" },
+  //       orderStatus: { $first: "$status" },
+  //       paymentStatus: { $first: "$isPaid" },
+  //       createdAt: { $first: "$createdAt" },
+  //       user: {
+  //         $first: {
+  //           name: "$user.name",
+  //           email: "$user.email",
+  //         },
+  //       },
+  //       items: {
+  //         $push: {
+  //           productName: "$product.name",
+  //           price: "$product.price",
+  //           image: "$product.image",
+  //           quantity: "$product.quantity",
+  //         },
+  //       },
+  //       vendorTotalAmount: {
+  //         $sum: {
+  //           $multiply: ["$items.quantity", "$items.price"],
+  //         },
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $sort: { createdAt: -1 },
+  //   },
+  //   { $skip: skip },
+  //   { $limit: limit },
+  // ]);
   const response = {
     ...orders,
     page,
     total: orders.length,
     pages: Math.ceil(orders.length / limit),
   };
+
   logger.info("Vendor orders cached in redis", { vendorId: vendor });
-  await redisClient.setEx(
-    vendorOrders(vendor),
-    2 * 60 * 1000,
-    JSON.stringify(response),
-  );
+  // await redisClient.setEx(
+  //   vendorOrders(vendor),
+  //   2 * 60 * 1000,
+  //   JSON.stringify(response),
+  // );
+  res.json(new ApiResponse(200, response, "Fetched vendor orders!"));
 });
 // update the status of order by vendor
 const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
   const vendor = req.user._id;
   logger.info("Orders status update request recieved", { vendorId: vendor });
   const orderNumber = req.params?.orderNumber;
-  const { success, data, error } = orderNumberValidate.safeParse(orderNumber);
-  if (!success) {
-    throw new ApiError(400, error.message);
+  if (!orderNumber) {
+    throw new ApiError(400, "Order Number is required");
   }
   const status: OrderStatus = req.body?.status;
   if (
-    !["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].includes(
-      status,
-    )
+    ![
+      "PLACED",
+      "CONFIRMED",
+      "SHIPPED",
+      "OUT_FOR_DELIVERY",
+      "DELIVERED",
+      "CANCELLED",
+    ].includes(status)
   ) {
     logger.warn("Invalid Status", {
       vendorId: vendor,
@@ -193,10 +320,12 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     });
     throw new ApiError(400, "Invalid status!");
   }
+  console.log(orderNumber, vendor);
+
   const updateStatus = await OrderModel.findOneAndUpdate(
     {
-      orderNumber: data.orderNumber,
-      "items?.vendorId": vendor,
+      orderNumber: orderNumber,
+      "items.vendorId": vendor,
     },
     {
       $set: {
@@ -205,6 +334,8 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     },
     { new: true },
   );
+  // console.log(updateStatus);
+
   if (!updateStatus) {
     logger.error("You are not allowed to update this order item", {
       vendorId: vendor,
@@ -216,8 +347,8 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     );
   }
   // invalidate cache
-  await redisClient.del(getOrderskey);
-  await redisClient.del(getOrderkey(updateStatus?._id));
+  // await redisClient.del(getOrderskey);
+  // await redisClient.del(getOrderkey(updateStatus?._id));
 
   res.json(
     new ApiResponse(201, updateStatus, "Order Status Updated successfully!"),

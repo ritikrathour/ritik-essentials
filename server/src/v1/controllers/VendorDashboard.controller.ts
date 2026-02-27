@@ -35,8 +35,8 @@ export const GetVendorDashBoard = AsyncHandler(
       { $unwind: "$items" },
       {
         $match: {
-          "items.vendorId": vendorId,
-          isPaid: true,
+          "items.vendor": vendorId,
+          // isPaid: true,
         },
       },
       {
@@ -56,7 +56,7 @@ export const GetVendorDashBoard = AsyncHandler(
           _id: 0,
           totalRevenue: 1,
           totalOrders: { $size: "$totalOrders" },
-          activeCutomers: { $size: "$customers" },
+          activeCutomers: { $size: "$user" },
         },
       },
     ]);
@@ -65,13 +65,40 @@ export const GetVendorDashBoard = AsyncHandler(
       vendor: vendorId,
       status: "publised",
     });
-    const dashboard = {
+    const stats = orderStats[0] || {
       totalRevenue: 0,
       totalOrders: 0,
       activeCustomer: 0,
-      ...orderStats, // orderStats values override defaults if they exist
-      activeProducts, // Shorthand for activeProducts: activeProducts
     };
+    // const dashboard1 = {
+    //   totalRevenue: 0,
+    //   totalOrders: 0,
+    //   activeCustomer: 0,
+    //   ...orderStats, // orderStats values override defaults if they exist
+    //   activeProducts, // Shorthand for activeProducts: activeProducts
+    // };
+    const dashboard: any = [
+      {
+        key: "totalRevenue",
+        label: "Total Revenue",
+        value: stats.totalRevenue,
+      },
+      {
+        key: "totalOrders",
+        label: "Total Orders",
+        value: stats.totalOrders,
+      },
+      {
+        key: "activeCustomer",
+        label: "Active Customers",
+        value: stats.activeCustomer,
+      },
+      {
+        key: "activeProducts",
+        label: "Active Products",
+        value: activeProducts,
+      },
+    ];
     logger.info("Dashboard cached in redis", vendorId);
     // cache impliment
     // await redisClient.setEx(

@@ -302,10 +302,10 @@ function App() {
               </Route>
               <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
                 <Route
-                  pavendor-th="/orders"
+                  path="/orders"
                   element={
                     <PageTransition variants="fade">
-                      vendor- <OrdersPage />
+                      <OrdersPage />
                     </PageTransition>
                   }
                 />

@@ -4,12 +4,14 @@ interface IInitialState {
   isSignOutOpen: boolean;
   isTrackOrderOpen: boolean;
   isRatingPopupOpen: boolean;
+  selectedOrder: any;
 }
 const initialState: IInitialState = {
   headerMenu: false,
   isSignOutOpen: false,
   isTrackOrderOpen: false,
   isRatingPopupOpen: false,
+  selectedOrder: null,
 };
 export const UISlice = createSlice({
   name: "UISlice",
@@ -39,6 +41,12 @@ export const UISlice = createSlice({
     closeRatingPopup: (state) => {
       state.isRatingPopupOpen = false;
     },
+    handleSelectedOrder: (state, action) => {
+      state.selectedOrder = action.payload;
+    },
+    handleUnSelectedOrder: (state) => {
+      state.selectedOrder = null;
+    },
   },
 });
 export const {
@@ -50,5 +58,7 @@ export const {
   closeSignOutPopup,
   openTrackOrderPopup,
   closeTrackOrderPopup,
+  handleSelectedOrder,
+  handleUnSelectedOrder,
 } = UISlice.actions;
 export default UISlice.reducer;

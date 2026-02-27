@@ -20,8 +20,6 @@ const VendorHeader = () => {
     { name: "Dashboard", icon: "📊", url: "/dashboard" },
     { name: "My-products", icon: "📦", url: "/vendor-products" },
     { name: "Orders", icon: "📋", url: "/vendor-orders" },
-    { name: "Analytics", icon: "📈", url: "/analystics" },
-    { name: "Payments", icon: "💰", url: "/payments" },
     { name: "Reviews", icon: "⭐", url: "/reviews" },
   ];
   return (

@@ -1,28 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, lazy } from "react";
 import {
-  Home,
   Package,
   ShoppingCart,
-  TrendingUp,
-  Settings,
-  HelpCircle,
-  Bell,
-  Search,
   ArrowUp,
   ArrowDown,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  Filter,
-  Download,
   DollarSign,
   Users,
-  Star,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Truck,
   XCircle,
 } from "lucide-react";
 import {
@@ -40,7 +23,13 @@ import { DashBoardHeader } from "../../components/vendor/DashBoardHeader";
 import { useQuery } from "@tanstack/react-query";
 import { vendorDashboard } from "../../TanstackQuery/Querykeys";
 import { VendorProductsApi } from "../../services/VendorApi.service";
-
+import { LazySection } from "../../components/LazySection";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux-store/Store";
+import { handleUnSelectedOrder } from "../../redux-store/UISlice";
+import { STATUS_CONFIG } from "../../utils/constant";
+import OrderDetailsPopup from "../../components/vendor/OrderDetailsPopup";
+const OrdersTable = lazy(() => import("../../components/vendor/OrderTable"));
 // ==================== TYPES ====================
 
 interface Order {
@@ -174,140 +163,148 @@ const MetricCard: React.FC<
   </div>
 );
 
-const OrdersTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
-      confirmed: "bg-blue-50 text-blue-700 border-blue-200",
-      shipped: "bg-purple-50 text-purple-700 border-purple-200",
-      delivered: "bg-green-50 text-green-700 border-green-200",
-      cancelled: "bg-red-50 text-red-700 border-red-200",
-      returned: "bg-orange-50 text-orange-700 border-orange-200",
-    };
-    return colors[status as keyof typeof colors] || "bg-gray-50 text-gray-700";
-  };
-
-  const getStatusIcon = (status: string) => {
-    const icons = {
-      pending: Clock,
-      confirmed: CheckCircle,
-      shipped: Truck,
-      delivered: CheckCircle,
-      cancelled: XCircle,
-      returned: AlertTriangle,
-    };
-    const Icon = icons[status as keyof typeof icons] || Clock;
-    return <Icon className="w-4 h-4" />;
-  };
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
-        <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="w-4 h-4" />
-            Filter
-          </button>
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Order ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Customer
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Product
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Qty
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {orders.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-blue-600">
-                    {order.orderId}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">
-                    {order.customerName}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-sm text-gray-900">{order.product}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">
-                    {order.quantity}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-900">
-                    ₹{order.amount.toLocaleString()}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${getStatusColor(
-                      order.status,
-                    )}`}
-                  >
-                    {getStatusIcon(order.status)}
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-500">{order.date}</span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button className="text-blue-600 hover:text-blue-800">
-                    <Eye className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
+// const OrdersTable = () => {
+//   const getStatusColor = (status: string) => {
+//     const colors = {
+//       PLACED: "bg-yellow-50 text-yellow-700 border-yellow-200",
+//       CONFIRMED: "bg-blue-50 text-blue-700 border-blue-200",
+//       SHIPPED: "bg-purple-50 text-purple-700 border-purple-200",
+//       DELIVERED: "bg-green-50 text-green-700 border-green-200",
+//       CANCELLED: "bg-red-50 text-red-700 border-red-200",
+//       OUT_FOR_DELIVERY: "bg-orange-50 text-orange-700 border-orange-200",
+//     };
+//     return colors[status as keyof typeof colors] || "bg-gray-50 text-gray-700";
+//   };
+//
+//   const getStatusIcon = (status: string) => {
+//     const icons = {
+//       PLACED: Clock,
+//       CONFIRMED: CheckCircle,
+//       SHIPPED: Truck,
+//       DELIVERED: CheckCircle,
+//       CANCELLED: XCircle,
+//       OUT_FOR_DELIVERY: AlertTriangle,
+//     };
+//     const Icon = icons[status as keyof typeof icons] || Clock;
+//     return <Icon className="w-4 h-4" />;
+//   };
+//   const { data, isError, error, isLoading, refetch } = useQuery({
+//     queryKey: ordersKey.vendorOrders("venderId"),
+//     queryFn: () => OrdersApi.vendorOrders(),
+//     retry: 1,
+//     refetchOnWindowFocus: false,
+//   });
+//   return (
+//     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+//       <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+//         <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+//         <div className="flex gap-2">
+//           <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+//             <Filter className="w-4 h-4" />
+//             Filter
+//           </button>
+//           <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">
+//             <Download className="w-4 h-4" />
+//             Export
+//           </button>
+//         </div>
+//       </div>
+//
+//       <div className="overflow-x-auto">
+//         <table className="w-full">
+//           <thead className="bg-gray-50">
+//             <tr>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Order ID
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Customer
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Product
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Qty
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Amount
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Status
+//               </th>
+//               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+//                 Date
+//               </th>
+//
+//             </tr>
+//           </thead>
+//           <tbody className="divide-y divide-gray-200">
+//             {data &&
+//               data[0]?.data?.map((order: any) => (
+//                 <tr
+//                   key={order._id}
+//                   className="hover:bg-gray-50 transition-colors"
+//                 >
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span className="text-sm font-medium text-blue-600">
+//                       {order.orderNumber}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span className="text-sm text-gray-900">
+//                       {order.customer.name}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <span className="text-sm text-gray-900">
+//                       {order?.items[0]?.productName}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span className="text-sm text-gray-900">
+//                       {order?.items[0]?.quantity}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span className="text-sm font-medium text-gray-900">
+//                       ₹{order?.items[0]?.price}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span
+//                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${getStatusColor(
+//                         order?.orderStatus,
+//                       )}`}
+//                     >
+//                       {getStatusIcon(order?.orderStatus)}
+//                       {order?.orderStatus}
+//                     </span>
+//                   </td>
+//                   <td className="px-6 py-4 whitespace-nowrap">
+//                     <span className="text-sm text-gray-500">
+//                       {order?.createdAt}
+//                     </span>
+//                   </td>
+//                 </tr>
+//               ))}
+//           </tbody>
+//         </table>
+//       </div>
+//     </div>
+//   );
+// };
 // ==================== MAIN COMPONENT ====================
 const VendorDashboard: React.FC = () => {
   const salesData = useMemo(() => generateSalesData(), []);
+  const dispatch = useDispatch();
+  const { selectedOrder } = useSelector((state: RootState) => state.ui);
   const { data, isError, error, isLoading, refetch } = useQuery({
     queryKey: vendorDashboard.dashboard,
     queryFn: () => VendorProductsApi.getVendorDashboard(),
     retry: 0,
     refetchOnWindowFocus: false,
   });
-  console.log(data);
+  // console.log(data);
 
   const metrics: (PerformanceMetric & {
     icon: React.ReactNode;
@@ -355,7 +352,7 @@ const VendorDashboard: React.FC = () => {
           <div className="space-y-6">
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {metrics.map((metric, idx) => (
+              {metrics.map((metric: any, idx: number) => (
                 <MetricCard key={idx} {...metric} />
               ))}
             </div>
@@ -434,10 +431,18 @@ const VendorDashboard: React.FC = () => {
             </div>
 
             {/* Orders Table */}
-            <OrdersTable orders={mockOrders} />
+            <LazySection>
+              <OrdersTable />
+            </LazySection>
           </div>
         </main>
       </div>
+      {/* Order Detail Modal */}
+      {selectedOrder && (
+        <LazySection>
+          <OrderDetailsPopup orders={selectedOrder} />
+        </LazySection>
+      )}
     </div>
   );
 };

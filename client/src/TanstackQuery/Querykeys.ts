@@ -29,6 +29,8 @@ export const Cartkeys = {
 };
 export const ordersKey = {
   orders: ["orders"] as const,
+  vendorOrders: (vendorId: string) =>
+    [...ordersKey.orders, "vendor", vendorId] as const,
 };
 export const vendorDashboard = {
   dashboard: ["dashboard"] as const,

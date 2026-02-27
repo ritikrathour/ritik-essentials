@@ -1,3 +1,4 @@
+import { OrderStatus } from "../utils/Types/Order.types";
 import { AxiosInstense } from "./AxiosInstance";
 
 export const OrdersApi = {
@@ -10,6 +11,10 @@ export const OrdersApi = {
       throw error;
     }
   },
+  vendorOrders: async () => {
+    const { data } = await AxiosInstense.get("/vendor-orders");
+    return data?.data;
+  },
   rating: async (payload: {
     productId: string;
     rating: number | null;
@@ -17,6 +22,18 @@ export const OrdersApi = {
   }) => {
     try {
       const { data } = await AxiosInstense.post("/review", payload);
+      return data?.data;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+  updateOrderStatus: async (orderNumber: string, status: OrderStatus) => {
+    try {
+      const { data } = await AxiosInstense.patch(
+        `/order-status/${orderNumber}`,
+        { status: status },
+      );
       return data?.data;
     } catch (error) {
       console.log(error);

@@ -19,4 +19,4 @@ checkoutRouter
   .get(Authenticate, isVendor, GetVendorOrders);
 checkoutRouter
   .route("/order-status/:orderNumber")
-  .post(Authenticate, isVendor, OrdersStatusUpdate);
+  .patch(Authenticate, isVendor, OrdersStatusUpdate);

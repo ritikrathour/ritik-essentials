@@ -1,6 +1,46 @@
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Package,
+  XCircle,
+} from "lucide-react";
+
 export const CART_KEY = "ecommerce_guest_cart";
 export const WISHLIST_KEY = "ecommerce_guest_WishList";
 
+export const STATUS_CONFIG: any = {
+  PLACED: {
+    color: "bg-yellow-100 text-yellow-800",
+    icon: Clock,
+    label: "Pending",
+  },
+  CANCELLED: {
+    color: "bg-red-100 text-red-800",
+    icon: XCircle,
+    label: "Cancelled",
+  },
+  OUT_FOR_DELIVERY: {
+    color: "bg-green-100 text-green-800",
+    icon: AlertCircle,
+    label: "Out for delivery",
+  },
+  CONFIRMED: {
+    color: "bg-blue-100 text-blue-800",
+    icon: AlertCircle,
+    label: "Processing",
+  },
+  SHIPPED: {
+    color: "bg-purple-100 text-purple-800",
+    icon: Package,
+    label: "Shipped",
+  },
+  DELIVERED: {
+    color: "bg-green-100 text-green-800",
+    icon: CheckCircle,
+    label: "Delivered",
+  },
+};
 export const DropDownMenuList = [
   {
     id: 2,
