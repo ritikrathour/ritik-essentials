@@ -118,7 +118,7 @@ const GetOrders = AsyncHandler(async (req: Request, res: Response) => {
 // Fetched orders by vendor which is comes from buy the order of customers
 const GetVendorOrders = AsyncHandler(async (req: Request, res: Response) => {
   const vendor = req.user?._id;
-  const limit = parseInt(req.params.limit as string) || 10;
+  const limit = parseInt(req.params.limit as string) || 20;
   const page = parseInt(req.params.page as string) || 1;
   const skip = (page - 1) * limit;
   const status = req.query.status as string;

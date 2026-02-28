@@ -20,8 +20,7 @@ const VendorProducts = () => {
     isError,
     isLoading,
     refetch,
-  } = useProduct().getVendorProducts("/products", true);
-
+  } = useProduct().getVendorProducts("/vendor-products", true);
   const { mutate, isPending } = useProduct().deleteVendorProduct();
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useProduct().updateProductStatus();
@@ -38,35 +37,40 @@ const VendorProducts = () => {
   };
   // filteredProducts
   const filteredProducts = useMemo(() => {
-    return products?.result?.data?.filter((product: IPROD) => {
-      const matchesSearch =
-        (product?.name &&
-          product?.name
-            ?.toLowerCase()
-            ?.includes(filters?.search?.toLowerCase())) ||
-        (product?.sku &&
-          product?.sku
-            ?.toLowerCase()
-            ?.includes(filters?.search?.toLowerCase()));
-      const matchesStatus =
-        filters.status === "all" || product.status === filters.status;
-      const matchesCategory =
-        filters.category === "all" || product?.category === filters.category;
-      return matchesSearch && matchesStatus && matchesCategory;
-    });
+    return (
+      products?.result &&
+      products?.result?.data?.filter((product: IPROD) => {
+        const matchesSearch =
+          (product?.name &&
+            product?.name
+              ?.toLowerCase()
+              ?.includes(filters?.search?.toLowerCase())) ||
+          (product?.sku &&
+            product?.sku
+              ?.toLowerCase()
+              ?.includes(filters?.search?.toLowerCase()));
+        const matchesStatus =
+          filters.status === "all" || product.status === filters.status;
+        const matchesCategory =
+          filters.category === "all" || product?.category === filters.category;
+        return matchesSearch && matchesStatus && matchesCategory;
+      })
+    );
   }, [
     products?.result?.data,
     filters.category,
     filters.search,
     filters.status,
   ]);
-  if (isError) {
-    return (
-      <>
-        <ErrorUI error={error} onRetry={refetch} />
-      </>
-    );
-  }
+  console.log(filteredProducts);
+
+  // if (isError) {
+  //   return (
+  //     <>
+  //       <ErrorUI error={error} onRetry={refetch} />
+  //     </>
+  //   );
+  // }
   if (isLoading) {
     return <Loader style="h-[80vh]" />;
   }
@@ -92,13 +96,10 @@ const VendorProducts = () => {
               <Loader />
               <p className="mt-4 text-gray-600">Loading products...</p>
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : !filteredProducts ? (
             <div className="p-12 text-center">
               <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">No products found</p>
-              <p className="text-[12px] text-gray-600">
-                Try adjusting your filters
-              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">

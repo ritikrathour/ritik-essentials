@@ -85,9 +85,7 @@ const VendorProducts = AsyncHandler(async (req: Request, res: Response) => {
     ...query,
     vendorId: vendorId,
   });
-  if (!result || result?.data.length === 0) {
-    throw new ApiError(404, "Product not found!", false);
-  }
+
   res.json(
     new ApiResponse(200, result, "Vendor Products retrieved successfully!"),
   );
@@ -146,9 +144,6 @@ const FetchVendorProductById = AsyncHandler(
 const GetProducts = AsyncHandler(async (req: Request, res: Response) => {
   const filters = parseProductFilters(req.query);
   const result = await ProductServices.getProducts(filters);
-  if (!result || result.data.length === 0) {
-    throw new ApiError(404, "No products found", false);
-  }
   res.json(new ApiResponse(200, { result }, "Products retrieved successfully"));
 });
 // get products by vendor

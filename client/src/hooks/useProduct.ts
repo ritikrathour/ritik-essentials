@@ -109,8 +109,8 @@ export const useProduct = () => {
     const { data, error, isError, isLoading, refetch } = useQuery({
       queryKey: productKeys.vendorProds(),
       queryFn: () => ProductApi.getProductsByVendor(url),
-      retry: vendor,
-      enabled: true,
+      retry: 1,
+      enabled: vendor,
       refetchOnWindowFocus: false,
     });
     return { data, error, isError, isLoading, refetch };

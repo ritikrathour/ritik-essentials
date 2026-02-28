@@ -9,33 +9,16 @@ import ErrorUI from "../../components/ErrorsUI/ErrorUI";
 import Loader from "../../components/Loader";
 import { OrderStatus } from "../../utils/Types/Order.types";
 import { Button } from "../../components/ui/Button";
-
+// for git
+// git branch -M main
+// git remote add origin git@github.com:ritikrathour/DevConnect.git
+// git push -u origin main
 const VendorOrderPage: React.FC = () => {
   const { orders, ordersError, ordersIsError, ordersLoading, ordersRefetch } =
     useOrders();
   const { selectedOrder } = useSelector((state: RootState) => state.ui);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
-  // Memoized filtered orders
-  const filteredOrders = useMemo(() => {
-    return (
-      orders &&
-      orders[0]?.data
-        ?.filter((order: any) => {
-          const matchesStatus =
-            statusFilter === "all" || order.orderStatus === statusFilter;
-          return matchesStatus;
-        })
-        .sort(
-          (a: any, b: any) =>
-            new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime(),
-        )
-    );
-  }, [orders && orders[0]?.data, statusFilter]);
-
-  const totalPages = Math.ceil(filteredOrders?.length / itemsPerPage) + 10;
   // Order statistics
   const stats = useMemo(() => {
     return {
@@ -115,38 +98,22 @@ const VendorOrderPage: React.FC = () => {
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex gap-2">
-              {/* <div className="relative">
+              <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <select
                   value={statusFilter}
                   onChange={(e) =>
                     setStatusFilter(e.target.value as OrderStatus | "all")
                   }
-                  className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                  className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg  appearance-none bg-white focus:outline-1 outline-[black]"
                 >
                   <option value="all">All Status</option>
-                  <option value="pending">Pending</option>
-                  <option value="processing">Processing</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="delivered">Delivered</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="PLACED">Placed</option>
+                  <option value="SHIPPED">Shipped</option>
+                  <option value="DELIVERED">Delivered</option>
+                  <option value="CANCELLED">Cancelled</option>
                 </select>
-              </div> */}
-              <select
-                id="status"
-                name="status"
-                // value={filters.status}
-                // onChange={(e) =>
-                //   onFilterChange({ ...filters, status: e.target.value })
-                // }
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-1 outline-[black]"
-              >
-                <option value="all">All Status</option>
-                <option value="PLACED">Placed</option>
-                <option value="SHIPPED">Shipped</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
+              </div>
               <Button type="button" onClick={handleExport}>
                 <Download className="w-4 h-4" />
                 Export
@@ -158,50 +125,6 @@ const VendorOrderPage: React.FC = () => {
         {/* Orders Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <OrdersTable />
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of{" "}
-                {filteredOrders.length} orders
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = i + 1;
-                  return (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-1 border rounded ${
-                        currentPage === page
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

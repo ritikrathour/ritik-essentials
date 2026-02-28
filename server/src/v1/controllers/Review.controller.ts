@@ -101,6 +101,7 @@ const InteractWithReview = AsyncHandler(async (req: Request, res: Response) => {
   const result = await ReviewService.interactWithReview(reviewId, user, action);
   res.json(new ApiResponse(201, result, "Interaction added!"));
 });
+// get vendor reviews on his products
 export {
   CreateReview,
   GetProductReview,
