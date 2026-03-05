@@ -205,8 +205,9 @@ const GetProductBySku = AsyncHandler(async (req: Request, res: Response) => {
   res.json(new ApiResponse(200, product, "Product fetched successfully"));
 });
 // get Categories
-const GetCategories = AsyncHandler(async (_, res: Response) => {
-  const category = await ProductServices.getCategories();
+const GetCategories = AsyncHandler(async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 12;
+  const category = await ProductServices.getCategories(limit);
   if (!category || category.length === 0) {
     throw new ApiError(404, "No categories found", false);
   }
@@ -215,8 +216,9 @@ const GetCategories = AsyncHandler(async (_, res: Response) => {
   );
 });
 // get brands
-const GetBrands = AsyncHandler(async (_, res: Response) => {
-  const brands = await ProductServices.getBrands();
+const GetBrands = AsyncHandler(async (req: Request, res: Response) => {
+  const limit = parseInt(req.query.limit as string) || 20;
+  const brands = await ProductServices.getBrands(limit);
   if (!brands || brands.length === 0) {
     throw new ApiError(404, "No brands found", false);
   }

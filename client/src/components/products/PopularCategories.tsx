@@ -16,7 +16,7 @@ const PopularCategories = () => {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {categories?.category?.slice(0, 12)?.map((category: any) => {
+        {categories?.category?.map((category: any) => {
           return (
             <CategoryCard
               key={category?.name}

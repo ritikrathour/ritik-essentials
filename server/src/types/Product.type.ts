@@ -40,7 +40,7 @@ export interface IProduct {
   featured?: boolean;
   organic?: boolean;
   discount: number;
-  expiryDiscount: Date;
+  expiryDate: Date;
   dimensions?: {
     length: number;
     width: number;

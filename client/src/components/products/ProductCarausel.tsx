@@ -11,7 +11,6 @@ const ProductCarausel = ({ url, QKey }: { url: string; QKey: string }) => {
   // products api call
   let { products, error, isError, isLoading, refetch } =
     useProduct().getProduct(QKey, url);
-
   if (isLoading) {
     return <ProductSkeleton style="h-[455px]" />;
   }

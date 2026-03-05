@@ -33,8 +33,11 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
         >
           <OptimizedImage
             className="group-hover:scale-105 transition-transform duration-300 w-[300px]!"
-            alt={product?.name}
-            src={"../assets/kirana.png"}
+            alt={(product?.images && product?.images[0].alt) || product?.name}
+            src={
+              (product?.images && product?.images[0].image) ||
+              "../assets/kirana.png"
+            }
             // (product?.images && product?.images[0])
           />
           <button

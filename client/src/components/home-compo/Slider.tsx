@@ -14,12 +14,13 @@ const Slider = () => {
     useProduct().getProduct("bestDeals", "products");
   useEffect(() => {
     let id = setInterval(() => {
-      setCurrentIndex((prev) =>
-        prev === sliderData.length - 1 ? 0 : prev + 1,
-      );
+      setCurrentIndex((prev) => {
+        return prev === products?.result?.data?.length - 1 ? 0 : prev + 1;
+      });
     }, 5000);
     return () => clearInterval(id);
   }, [currentIndex]);
+
   if (isError) {
     return <ErrorUI error={error} onRetry={refetch} />;
   }
@@ -64,9 +65,10 @@ const Slider = () => {
                 `}
               >
                 <OptimizedImage
-                  src={slide?.image || ""}
+                  src={(slide.images && slide.images[0].image) || ""}
                   alt={slide?.name}
                   lowQualitySrc={slide?.image}
+                  className="rounded-xl"
                 />
                 <div className="absolute bottom-0 left-0 w-full h-[100px] bg-gradient-to-t from-[#febd2f] to-[rgba(255,255,255,0)]"></div>
               </div>

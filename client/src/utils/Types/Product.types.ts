@@ -30,13 +30,18 @@ export interface IProduct {
   originalPrice: number;
   category?: string;
   image?: string;
-  images?: string[];
+  images?: IImages[];
   rating?: { avarage: number; count: number };
   badge?: string;
   sponsored: boolean;
   discount?: number;
   assured?: boolean;
   quantity?: number;
+}
+interface IImages {
+  alt: string;
+  image: string;
+  isPrimary: boolean;
 }
 export interface IPROD {
   _id: string;
@@ -50,7 +55,7 @@ export interface IPROD {
   originalPrice: number;
   category?: string;
   image?: string;
-  images?: string[];
+  images?: IImages[];
   rating?: { avarage: number; count: number };
   badge?: string;
   sponsored: boolean;

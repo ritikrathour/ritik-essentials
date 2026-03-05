@@ -10,6 +10,9 @@ const ImageSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    alt: {
+      type: String,
+    },
   },
   { _id: false },
 );
@@ -89,7 +92,7 @@ const Product = new mongoose.Schema<IProduct>(
       type: Number,
       default: 0,
     },
-    expiryDiscount: {
+    expiryDate: {
       type: Date,
     },
     sales: {
@@ -143,7 +146,6 @@ const Product = new mongoose.Schema<IProduct>(
 );
 // Compound indexes for better query performance
 Product.index({ category: 1, price: 1 });
-Product.index({ brand: 1, isActive: 1 });
 Product.index({ name: "text", description: "text", tags: "text" });
 Product.index({ createdAt: -1 });
 Product.index({ vendor: 1, status: 1 });

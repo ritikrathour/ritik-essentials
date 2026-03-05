@@ -40,7 +40,7 @@ export const ProductServices = {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
     if (product) {
       // update cache
@@ -103,7 +103,7 @@ export const ProductServices = {
   },
   // get products :
   async getProducts(
-    filters: IProductFilters
+    filters: IProductFilters,
   ): Promise<IPaginationResult<IProduct>> {
     // first get cached result
     // const product = await redisClient.get(getProductFiltersKeyList(filters));
@@ -188,7 +188,7 @@ export const ProductServices = {
     return result;
   },
   // get Categories
-  async getCategories() {
+  async getCategories(limit: number) {
     // cached categories
     // const cachedCategories = await redisClient.get(getProductCategory());
     // if (cachedCategories) {
@@ -196,7 +196,7 @@ export const ProductServices = {
     // }
     const categories = await ProductModel.aggregate([
       {
-        $match: { isActive: true },
+        $match: { status: "publised" },
       },
       {
         $group: {
@@ -213,7 +213,9 @@ export const ProductServices = {
           count: 1,
         },
       },
-    ]);
+    ]).limit(limit);
+    console.log(categories, "helo");
+
     // set cached categories
     // await redisClient.setEx(
     //   getProductCategory(),
@@ -223,7 +225,7 @@ export const ProductServices = {
     return categories;
   },
   // get brands
-  async getBrands() {
+  async getBrands(limit: number) {
     // first get cache
     // const cachedBrands = await redisClient.get(getBrandsKey());
     // if (cachedBrands) {
@@ -232,7 +234,7 @@ export const ProductServices = {
     // call db query for brands
     const brands = await ProductModel.aggregate([
       {
-        $match: { isActive: true },
+        $match: { status: "publised" },
       },
       {
         $group: {
@@ -247,7 +249,7 @@ export const ProductServices = {
           count: 1,
         },
       },
-    ]);
+    ]).limit(limit);
     // store brands in cached
     // await redisClient.setEx(
     //   getBrandsKey(),
@@ -286,7 +288,7 @@ export const ProductServices = {
       },
       {
         new: true,
-      }
+      },
     );
   },
   async getVendorProductById(payload: { productId: string; vendorId: any }) {
