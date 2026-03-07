@@ -16,6 +16,7 @@ const Pagination = ({ pages, page, setPage }: IPaginationProps) => {
   const handleNext = () => {
     setPage((prev) => prev + 1);
   };
+
   return (
     <div className="mt-8 flex items-center justify-center gap-2">
       <button

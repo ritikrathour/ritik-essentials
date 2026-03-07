@@ -155,37 +155,39 @@ const ProductDetails = () => {
             </div>
           </div>
           {/* images   */}
-          <div className="border border-[#c4c4c4] p-2 order-1 rounded-md md:order-2">
+          <div className="border border-[#c4c4c4] order-1 rounded-md md:order-2 overflow-hidden pb-2">
             <div className="h-[300px] m-auto rounded">
               <OptimizedImage
                 src={
-                  (product?.images && product?.images[imageIndex]) ||
+                  (product?.images && product?.images[imageIndex].image) ||
                   "../public/assets/cola.avif"
                 }
                 alt={imageIndex.toString()}
-                objectFit="contain"
+                objectFit="cover"
               />
             </div>
             <div className="flex items-center flex-wrap justify-center mt-4 gap-4">
               <div className="flex justify-start items-center gap-2 w-[250px] overflow-scroll">
                 {product?.images?.length > 1 &&
-                  product?.images.map((image: string, index: number) => {
-                    return (
-                      <div
-                        onClick={() => setImageIndex(index)}
-                        key={index}
-                        className={`${
-                          imageIndex === index && "border-black"
-                        } w-[150px] h-[50px] rounded-md cursor-pointer border-2 border-[#c4c4c4] hover:border-black transition-all duration-200 ease-in-out flex justify-center items-center`}
-                      >
-                        <OptimizedImage
-                          src={image}
-                          alt={image}
-                          className="w-[50px]! object-cover h-[40px] rounded-md"
-                        />
-                      </div>
-                    );
-                  })}
+                  product?.images?.map(
+                    (image: { image: string; alt: string }, index: number) => {
+                      return (
+                        <div
+                          onClick={() => setImageIndex(index)}
+                          key={index}
+                          className={`${
+                            imageIndex === index && "border-black"
+                          } w-[150px] h-[50px] rounded-md cursor-pointer border-2 border-[#c4c4c4] hover:border-black transition-all duration-200 ease-in-out flex justify-center items-center`}
+                        >
+                          <OptimizedImage
+                            src={image?.image}
+                            alt={image?.alt}
+                            className="w-full object-contain h-[40px] rounded-md"
+                          />
+                        </div>
+                      );
+                    },
+                  )}
               </div>
               {product?.images?.length > 1 && (
                 <div className="flex gap-2">
@@ -250,7 +252,7 @@ const ProductDetails = () => {
       {/* similar product */}
       <section className="md:px-10 p-2">
         <LazySection>
-          <SimilarProducts category={{ ...product?.category }} />
+          <SimilarProducts category={{ category: product?.category }} />
         </LazySection>
       </section>
     </>

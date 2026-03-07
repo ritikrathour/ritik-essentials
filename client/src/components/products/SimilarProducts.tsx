@@ -3,12 +3,17 @@ import ErrorUI from "../ErrorsUI/ErrorUI";
 import ProductSkeleton from "../SkeletonUI/ProductSkeleton";
 import Title from "../Title";
 import ProductBestCard from "./ProductBestCard";
-
-const SimilarProducts = ({ category }: { category: string }) => {
+type cate = {
+  category: string;
+};
+interface ICategory {
+  category: cate;
+}
+const SimilarProducts = ({ category }: ICategory) => {
   const { products, error, isError, isLoading, refetch } =
     useProduct().getProduct(
       "category-prod",
-      `/products?category=${category}&limit=4`
+      `/products?category=${category?.category}&limit=4`,
     );
   if (isLoading) {
     return <ProductSkeleton style="h-[455px]" />;

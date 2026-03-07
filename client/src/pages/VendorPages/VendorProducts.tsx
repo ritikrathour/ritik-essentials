@@ -62,8 +62,6 @@ const VendorProducts = () => {
     filters.search,
     filters.status,
   ]);
-  console.log(filteredProducts);
-
   // if (isError) {
   //   return (
   //     <>

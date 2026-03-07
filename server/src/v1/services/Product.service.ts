@@ -214,7 +214,6 @@ export const ProductServices = {
         },
       },
     ]).limit(limit);
-    console.log(categories, "helo");
 
     // set cached categories
     // await redisClient.setEx(

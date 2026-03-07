@@ -56,6 +56,7 @@ const Header = () => {
             type="seacrh"
             placeholder="Search Product..."
             className="text-white outline-0 h-[35px] w-full text-sm"
+            autoComplete="off"
           />
           <button
             type="button"

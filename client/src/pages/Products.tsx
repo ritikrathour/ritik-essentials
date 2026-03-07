@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import CategoryNavigation from "../components/products/CategoryNavigation";
 import ProductBestCard from "../components/products/ProductBestCard";
 import Pagination from "../components/Pagination";
 import { useProduct } from "../hooks/useProduct";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FilterAccordion from "../components/products/FilterAccordian";
 import Loader from "../components/Loader";
 import ErrorUI from "../components/ErrorsUI/ErrorUI";
@@ -26,8 +26,18 @@ const Products = () => {
   const { products, isLoading, error, isError, refetch, isFetching } =
     useProduct().getProduct(
       location.search ? location.search : `products/${paginationPage}`,
-      `/products${location.search}`,
+      `/products${location.search}?page=${paginationPage}`,
     );
+  // calculate text
+  let total = products?.result && products?.result?.pagination?.total;
+  let page = products?.result && products?.result?.pagination?.page;
+  let limit = products?.result && products?.result?.pagination?.limit;
+  let start = total === 0 ? 0 : (page - 1) * limit + 1;
+  let end =
+    total === 0
+      ? 0
+      : start + products?.result && products?.result?.data?.length * page;
+
   const [filters, setFilters] = useState<FilterState>({
     availability: [],
     productTypes: [],
@@ -39,66 +49,7 @@ const Products = () => {
   // decoded name
   let productCategoryName =
     decodeURIComponent(location.search).split("=")[1] || "All Products";
-  // calculate text
-  let total = products?.result && products?.result?.pagination?.total;
-  let page = products?.result && products?.result?.pagination?.page;
-  let limit = products?.result && products?.result?.pagination?.limit;
-  let start = total === 0 ? 0 : (page - 1) * limit + 1;
-  let end =
-    total === 0
-      ? 0
-      : start + products?.result && products?.result?.data?.length * page;
-  // filtered products
-  const filteredProducts = useMemo(() => {
-    let list = [...(products?.result?.data ?? [])];
-    // CATEGORY FILTER
-    if (filters.productTypes?.length > 0) {
-      list = list.filter((p) => filters.productTypes.includes(p.category));
-    }
-    // Brand filter
-    if (filters.brands.length > 0) {
-      list = list.filter((p) => filters.brands.includes(p.brand));
-    }
-    // AVAILABILITY FILTER
-    if (filters.availability[0] === "in-stock") {
-      list = list.filter((p: any) => p.stock > 0);
-    }
-    // PRICE FILTER
-    list = list.filter(
-      (p) =>
-        p?.price >= filters?.priceRange?.min &&
-        p?.price <= filters?.priceRange?.max,
-    );
 
-    // SORTING
-    if (filters.sortBy === "price-asc") {
-      list.sort((a, b) => a.price - b.price);
-    }
-
-    if (filters.sortBy === "price-desc") {
-      list.sort((a, b) => b.price - a.price);
-    }
-    if (filters.sortBy === "name-asc") {
-      list.sort((a, b) => a?.name.localeCompare(b?.name));
-    }
-
-    if (filters.sortBy === "newest") {
-      list.sort(
-        (a, b) =>
-          new Date(b?.createdAt).getTime() - new Date(a?.createdAt).getTime(),
-      );
-    }
-    return list;
-  }, [products, filters]);
-  const resetFilters = () => {
-    setFilters({
-      availability: [],
-      productTypes: [],
-      brands: [],
-      priceRange: { min: 0, max: 1000 },
-      sortBy: "price-asc",
-    });
-  };
   return (
     <section className="md:px-10 px-2 min-h-screen bg-gray-50">
       {/* Navigation */}
@@ -169,7 +120,7 @@ const Products = () => {
                 <ErrorUI error={error} onRetry={refetch} />
               ) : isLoading ? (
                 <Loader style="h-[300px]" />
-              ) : filteredProducts?.length === 0 ? (
+              ) : products?.result?.data?.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm md:p-12">
                   <div className="max-w-md mx-auto text-center">
                     {/* Empty State Icon */}
@@ -203,16 +154,12 @@ const Products = () => {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <button
-                        onClick={resetFilters}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors font-medium shadow-sm"
-                      >
-                        Clear All Filters
-                      </button>
-                      <button
-                        // onClick={() => setSearchInput('')}
-                        className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                      >
+                      <Link to={`/products`}>
+                        <button className="px-6 py-3 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors font-medium shadow-sm">
+                          Clear All Filters
+                        </button>
+                      </Link>
+                      <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
                         Clear Search
                       </button>
                     </div>
@@ -220,7 +167,7 @@ const Products = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
-                  {filteredProducts.map((product: any) => (
+                  {products?.result?.data?.map((product: any) => (
                     <React.Fragment key={product?._id}>
                       <ProductBestCard product={product} isButton={false} />
                     </React.Fragment>

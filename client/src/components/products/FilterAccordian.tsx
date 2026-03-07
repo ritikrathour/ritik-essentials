@@ -1,13 +1,8 @@
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-  useRef,
-} from "react";
+import React, { useState, useCallback } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { useProduct } from "../../hooks/useProduct";
 import { Button } from "../ui/Button";
+import { Link } from "react-router-dom";
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -42,21 +37,6 @@ interface FilterAccordionProps {
   setMobileFiltersOpen: any;
 }
 
-// ============================================================================
-// UTILITIES
-// ============================================================================
-
-const debounce = <T extends (...args: any[]) => void>(
-  func: T,
-  wait: number,
-): ((...args: Parameters<T>) => void) => {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
 const validatePrice = (value: string): boolean => {
   if (value === "") return true;
   const num = parseFloat(value);
@@ -84,9 +64,6 @@ const AccordionSection: React.FC<AccordionSectionProps> = ({
   children,
   testId,
 }) => {
-  // const contentRef = useRef<HTMLDivElement>(null);
-  // const buttonRef = useRef<HTMLButtonElement>(null);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -185,24 +162,34 @@ const CheckboxFilter: React.FC<CheckboxFilterProps> = ({
           }`;
           return (
             <label
-              key={option?.name || option?.brand || option?.value}
               htmlFor={checkboxId}
+              key={option?.name || option?.brand || option?.value}
               className="flex items-center justify-between cursor-pointer group"
             >
-              <div className="flex items-center flex-1 min-w-0">
-                <input
-                  id={checkboxId}
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() =>
-                    onChange(option?.name || option?.brand || option?.value)
-                  }
-                  className="w-5 h-5 border-gray-300 rounded  flex-shrink-0"
-                />
-                <span className="ml-3 text-gray-700 group-hover:text-gray-900 truncate capitalize">
-                  {option?.name || option?.brand || option?.value}
-                </span>
-              </div>
+              <Link
+                to={
+                  option.name
+                    ? `/products?category=${option?.name}`
+                    : option.brand
+                      ? `/products?brand=${option.brand}`
+                      : "/products"
+                }
+              >
+                <div className="flex items-center flex-1 min-w-0">
+                  <input
+                    id={checkboxId}
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() =>
+                      onChange(option?.name || option?.brand || option?.value)
+                    }
+                    className="w-5 h-5 border-gray-300 rounded  flex-shrink-0"
+                  />
+                  <span className="ml-3 text-gray-700 group-hover:text-gray-900 truncate capitalize">
+                    {option?.name || option?.brand || option?.value}
+                  </span>
+                </div>
+              </Link>
             </label>
           );
         })}
@@ -351,17 +338,10 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
 // MAIN FILTER ACCORDION COMPONENT
 // ============================================================================
 
-const DEFAULT_AVAILABILITY_OPTIONS: FilterOption[] = [
-  { label: "In stock", value: "in-stock", count: 25 },
-];
-
 export default function FilterAccordion({
   filters,
   setFilters,
-  availabilityOptions = DEFAULT_AVAILABILITY_OPTIONS,
   maxPrice = 1000,
-  onFilterChange,
-  initialFilters = {},
   className = "",
   mobileFiltersOpen,
   setMobileFiltersOpen,
@@ -377,42 +357,10 @@ export default function FilterAccordion({
   const { brands } = useProduct().getBrands("/brands");
   // get category / type product
   const { categories } = useProduct().getCategories("/categories");
-  // const [filters, setFilters] = useState<FilterState>({
-  //   availability: initialFilters.availability || [],
-  //   productTypes: initialFilters.productTypes || [],
-  //   brands: initialFilters.brands || [],
-  //   priceRange: initialFilters.priceRange || { min: "", max: "" },
-  // });
-  // Debounced filter change callback
-  const debouncedOnFilterChange = useMemo(
-    () => (onFilterChange ? debounce(onFilterChange, 300) : null),
-    [onFilterChange],
-  );
-
-  // Effect to call onFilterChange when filters update
-  useEffect(() => {
-    if (debouncedOnFilterChange) {
-      debouncedOnFilterChange(filters);
-    }
-  }, [filters, debouncedOnFilterChange]);
 
   // Section toggle handler
   const toggleSection = useCallback((section: string) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  }, []);
-
-  // Availability handlers
-  const handleAvailabilityChange = useCallback((value: string) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      availability: prev.availability.includes(value)
-        ? prev.availability.filter((v: any) => v !== value)
-        : [...prev.availability, value],
-    }));
-  }, []);
-
-  const resetAvailability = useCallback(() => {
-    setFilters((prev: any) => ({ ...prev, availability: [] }));
   }, []);
 
   // Product type handlers
@@ -482,23 +430,6 @@ export default function FilterAccordion({
         <header className="bg-white rounded-lg shadow-sm p-5">
           <h1 className="text-lg font-bold mb-4 hidden lg:block">Filters</h1>
         </header>
-
-        {/* Availability Section */}
-        <AccordionSection
-          id="availability"
-          title="Availability"
-          isOpen={openSections.availability}
-          onToggle={() => toggleSection("availability")}
-          testId="availability-section"
-        >
-          <CheckboxFilter
-            options={availabilityOptions}
-            selected={filters.availability}
-            onChange={handleAvailabilityChange}
-            onReset={resetAvailability}
-            ariaLabel="Availability filters"
-          />
-        </AccordionSection>
 
         {/* Price Section */}
         <AccordionSection

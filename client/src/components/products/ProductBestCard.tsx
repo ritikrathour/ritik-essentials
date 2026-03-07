@@ -26,13 +26,13 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
   const [isFill, setIsFill] = useState(false);
   return (
     <div>
-      <div className="relative bg-white sm:w-[280px] md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
+      <div className="relative bg-white sm:w-[280px]  md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
         <Link
           to={`/product-details/${product?._id}`}
-          className=" w-full h-[300px] block "
+          className=" w-full h-[300px] block overflow-hidden"
         >
           <OptimizedImage
-            className="group-hover:scale-105 transition-transform duration-300 w-[300px]!"
+            className="group-hover:scale-105 transition-transform duration-300 w-ful "
             alt={(product?.images && product?.images[0].alt) || product?.name}
             src={
               (product?.images && product?.images[0].image) ||

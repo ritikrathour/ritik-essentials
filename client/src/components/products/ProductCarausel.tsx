@@ -23,11 +23,16 @@ const ProductCarausel = ({ url, QKey }: { url: string; QKey: string }) => {
         <div
           className={`flex gap-4 items-center transition-transform ease-in-out duration-500 overflow-scroll`}
         >
-          {products?.result?.data?.map((prod: any) => {
-            return (
-              <ProductBestCard isButton={true} product={prod} key={prod?._id} />
-            );
-          })}
+          {products?.result &&
+            products?.result?.data?.map((prod: any) => {
+              return (
+                <ProductBestCard
+                  isButton={true}
+                  product={prod}
+                  key={prod?._id}
+                />
+              );
+            })}
         </div>
 
         <div className="flex justify-center mt-5">
