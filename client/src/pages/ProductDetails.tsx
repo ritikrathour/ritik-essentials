@@ -19,6 +19,7 @@ import AddToCartButton from "../components/ui/AddToCartButton";
 import { useCart } from "../hooks/useCart";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux-store/Store";
+import AddToWishListButton from "../components/AddToWishListButton";
 const RatingsAndReviews = lazy(
   () => import("../components/products/RatingsAndReviews"),
 );
@@ -47,7 +48,8 @@ const ProductDetails = () => {
     price: product?.price,
     name: product?.name,
     vendorId: product?.vendor,
-    imageUrl: product?.images || "image url add karo",
+    imageUrl: product?.images,
+    rating: product?.rating,
   };
   const handleBuy = () => {
     addTocart(cartItemPayload);
@@ -69,20 +71,9 @@ const ProductDetails = () => {
       <section className="md:px-10 px-2 w-full">
         <div className="flex justify-end items-center w-full py-2">
           {/* add to wishlist */}
-          <button
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={() => {
-              setIsFill((prev) => !prev);
-            }}
-          >
-            <p className="font-light">Add to wishlist</p>
-            <HeartIcon
-              fill={isFill ? "red" : "transparent"}
-              className={`${
-                isFill && "text-red-600"
-              } cursor-pointer hover:text-red-600 transition-all duration-200 ease-in-out`}
-            />
-          </button>
+          <div className="relative border border-black">
+            <AddToWishListButton product={product} className="-top-10" />
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center gap-2 h-full">
           {/* text    */}

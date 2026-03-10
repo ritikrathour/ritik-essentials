@@ -19,6 +19,9 @@ const Header = () => {
   const handleShowSearchBar = () => {
     setShowSearchBar((prev) => !prev);
   };
+  const handleFetchProduct = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
   // handleDropDown
   const handleDropDown = () => {
     setShowDropDownProfile((prev) => !prev);
@@ -42,6 +45,7 @@ const Header = () => {
         </Link>
         {/* search bar  */}
         <form
+          onSubmit={(e) => handleFetchProduct(e)}
           className={`${
             showSearchBar ? "translate-y-9" : "-translate-y-20"
           } lg:translate-y-0 absolute bg-[#173334] px-[10px] lg:relative w-full z-20 lg:w-[380px] py-[2px] rounded border 

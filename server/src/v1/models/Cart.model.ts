@@ -29,6 +29,7 @@ const CartItemSchema = new mongoose.Schema<ICartItem>(
       type: String,
       required: [true, "Image is required"],
     },
+    rating: { average: Number, count: Number },
   },
   { timestamps: true },
 );

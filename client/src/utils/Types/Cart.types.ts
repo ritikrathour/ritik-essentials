@@ -4,8 +4,12 @@ export interface ICartItem {
   productId: string;
   vendorId: string;
   quantity: number;
-  image: string;
+  imageUrl: string;
   price: number;
+  rating: {
+    avarage: number;
+    count: number;
+  };
 }
 
 export interface ICart {
@@ -29,6 +33,10 @@ export interface IAddToCartPayload {
   price: number;
   name: string;
   imageUrl: string | undefined;
+  rating: {
+    avarage: number;
+    count: number;
+  };
 }
 export interface IUpdateCartItemPayload {
   cartItemId: string;

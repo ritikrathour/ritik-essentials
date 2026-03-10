@@ -429,7 +429,10 @@ export default function CheckoutPage() {
                       return (
                         <div key={item._id} className="flex gap-3 relative">
                           <div className="w-[100px] h-[80px]">
-                            <OptimizedImage alt={item.name} src={item.image} />
+                            <OptimizedImage
+                              alt={item.name}
+                              src={item.imageUrl}
+                            />
                           </div>
                           <div className="flex-1">
                             <p className="text-sm font-medium">{item.name}</p>

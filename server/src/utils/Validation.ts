@@ -373,8 +373,8 @@ export const validateAddToCart = (
   if (!body?.name || typeof body?.name !== "string") {
     errors.push("Product name is required");
   }
-  // if (!body?.imageUrl || typeof body?.imageUrl !== "string") {
-  //   errors.push("Image URL required and must be a string");
-  // }
+  if (!body?.imageUrl || typeof body?.imageUrl !== "string") {
+    errors.push("Image URL required and must be a string");
+  }
   return { isValid: errors.length === 0, errors };
 };

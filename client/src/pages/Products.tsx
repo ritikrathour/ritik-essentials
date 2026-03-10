@@ -25,8 +25,12 @@ const Products = () => {
   // get products
   const { products, isLoading, error, isError, refetch, isFetching } =
     useProduct().getProduct(
-      location.search ? location.search : `products/${paginationPage}`,
-      `/products${location.search}?page=${paginationPage}`,
+      location.search
+        ? location.search
+        : `products/${paginationPage}?page=${paginationPage}`,
+      location.search
+        ? `/products${location.search}`
+        : `/products${location.search}?page=${paginationPage}`,
     );
   // calculate text
   let total = products?.result && products?.result?.pagination?.total;

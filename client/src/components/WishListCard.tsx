@@ -1,11 +1,12 @@
 import React from "react";
-import { IPROD } from "../utils/Types/Product.types";
+import { IPROD, IProduct } from "../utils/Types/Product.types";
 import Rating from "./Rating";
 import { Button } from "./ui/Button";
 import { Link } from "react-router-dom";
 import AddToCartButton from "./ui/AddToCartButton";
+import { OptimizedImage } from "./ui/OptimizedImage";
 interface IItem {
-  product: IPROD;
+  product: IProduct;
   user?: any;
   onRemove: (prodId: string) => void;
   state: {
@@ -20,10 +21,10 @@ const WishlistCard: React.FC<IItem> = ({ product, onRemove, state }) => {
         to={`/product-details/${product?._id}`}
         className="w-full h-52 block"
       >
-        <img
-          src="../public/assets/girl.png"
-          alt="image"
+        <OptimizedImage
           className="object-cover"
+          alt={(product?.images && product?.images[0].alt) || product?.name}
+          src={(product?.images && product?.images[0].image) || ""}
         />
       </Link>
       <div className="p-4 flex flex-col flex-grow justify-between">
@@ -44,7 +45,7 @@ const WishlistCard: React.FC<IItem> = ({ product, onRemove, state }) => {
           <Button
             type="button"
             disabled={state.isPending}
-            onClick={() => onRemove(product?._id)}
+            onClick={() => onRemove(product?._id as string)}
             variant="danger"
             className="w-1/2 bg-red-100! text-red-600! font-medium! hover:bg-red-200! "
           >

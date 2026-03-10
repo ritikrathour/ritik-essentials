@@ -20,7 +20,7 @@ export const OrderCard = ({ order, refetch }: Props) => {
         <div>
           <h3 className="font-semibold">Order #{order.orderNumber}</h3>
           <p className="text-sm text-gray-500">
-            {new Date(order.createdAt).toLocaleDateString()}
+            {new Date(order.createdAt).toDateString()}
           </p>
         </div>
         <p className="font-bold">₹{order.totalAmount}</p>
@@ -34,7 +34,7 @@ export const OrderCard = ({ order, refetch }: Props) => {
             <div key={item.product._id} className="flex gap-4 items-center">
               <Link to={`/product-details/${item.product._id?.toString()}`}>
                 <img
-                  src={item.product.image || ""}
+                  src={item.product.images && item?.product?.images[0]?.image}
                   alt={item.product.name}
                   className="w-16! h-16! object-cover rounded border"
                 />

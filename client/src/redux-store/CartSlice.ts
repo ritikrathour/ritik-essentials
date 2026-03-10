@@ -63,9 +63,13 @@ export const CartSlice = createSlice({
           productId: action.payload.productId,
           vendorId: action.payload.vendorId,
           quantity: action.payload.quantity,
-          image: action.payload.imageUrl || "",
+          imageUrl: action.payload.imageUrl || "",
           name: action.payload.name,
           price: action.payload.price,
+          rating: action.payload.rating || {
+            avarage: 0,
+            count: 0,
+          },
         });
       }
       const totals = calculateTotals(state.Cart.items);

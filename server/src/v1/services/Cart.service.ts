@@ -101,6 +101,8 @@ class CartService {
     const existingItemIndex = (await cart)?.items?.findIndex(
       (i) => i.productId === item.productId,
     );
+    console.log(item);
+
     // if present then increase qty or not sotre in cart
     if (existingItemIndex > -1) {
       (await cart).items[existingItemIndex].quantity += item.quantity;
@@ -114,8 +116,6 @@ class CartService {
       totalAmount: (await totals).totalAmount,
       totalItems: (await totals).totalItems,
     });
-    // console.log(await updateCart, "hello");
-
     return updateCart;
   };
   removeItemFromCart = async (userId: mongoose.Types.ObjectId, itemId: any) => {

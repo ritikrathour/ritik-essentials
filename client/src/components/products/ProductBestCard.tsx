@@ -1,29 +1,15 @@
-import { Heart } from "lucide-react";
-import { IPROD, IProduct } from "../../utils/Types/Product.types";
-import React, { useState } from "react";
+import { IPROD } from "../../utils/Types/Product.types";
+import React from "react";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import Rating from "../Rating";
 import AddToCartButton from "../ui/AddToCartButton";
-import { useWishList } from "../../hooks/useWishList";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux-store/Store";
-import { removeFromWishListLocal } from "../../redux-store/WishListSlice";
+import AddToWishListButton from "../AddToWishListButton";
 interface ProductProps {
   product: IPROD;
   isButton: boolean;
 }
 const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
-  const {
-    addTowishList,
-    isAddingToWishList,
-    removeToWishList,
-    isRemovingToWishList,
-  } = useWishList();
-  const { wishList, isAuthenticate } = useSelector(
-    (state: RootState) => state.whisList,
-  );
-  const [isFill, setIsFill] = useState(false);
   return (
     <div>
       <div className="relative bg-white sm:w-[280px]  md:w-[320px] h-full flex flex-col justify-between rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group border border-[#c4c4c4]">
@@ -38,35 +24,8 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
               (product?.images && product?.images[0].image) ||
               "../assets/kirana.png"
             }
-            // (product?.images && product?.images[0])
           />
-          <button
-            type="button"
-            disabled={isAddingToWishList || isRemovingToWishList}
-            onClick={(e) => {
-              e.preventDefault();
-              wishList?.find((item: any) => item?.product?._id === product?._id)
-                ? isAuthenticate
-                  ? removeToWishList(product._id)
-                  : removeFromWishListLocal({ prodId: product?._id })
-                : addTowishList(product);
-            }}
-            className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer"
-          >
-            <Heart
-              onClick={() => setIsFill((prev) => !prev)}
-              className={`w-5 h-5 
-                 ${
-                   isFill ||
-                   wishList?.find(
-                     (item: any) => item?.product?._id === product?._id,
-                   )
-                     ? "fill-red-500 text-red-500"
-                     : "text-gray-400"
-                 }  
-              `}
-            />
-          </button>
+          <AddToWishListButton product={product} className="top-2" />
           {product.sponsored && (
             <div className="absolute top-2 left-2 px-2 py-1 bg-gray-100 text-xs font-medium rounded">
               Sponsored
@@ -108,7 +67,6 @@ const ProductBestCard: React.FC<ProductProps> = ({ product, isButton }) => {
               </span>
               <span className="text-sm text-green-600 font-medium text-nowrap">
                 {product.discount}% off
-                {/* 35% off */}
               </span>
             </div>
             {product?.rating && product?.rating?.count > 0 && (

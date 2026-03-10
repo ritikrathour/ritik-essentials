@@ -8,6 +8,10 @@ export interface ICartItem {
   price: number;
   name: string;
   imageUrl: string;
+  rating: {
+    average: number;
+    count: number;
+  };
 }
 export interface ICart {
   userId: mongoose.ObjectId;
@@ -22,4 +26,8 @@ export interface IAddToCartRequest {
   price: number;
   name: string;
   imageUrl: string;
+  rating: {
+    average: number;
+    count: number;
+  };
 }

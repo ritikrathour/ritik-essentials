@@ -35,6 +35,7 @@ export interface IProduct {
   badge?: string;
   sponsored: boolean;
   discount?: number;
+  description?: string;
   assured?: boolean;
   quantity?: number;
 }

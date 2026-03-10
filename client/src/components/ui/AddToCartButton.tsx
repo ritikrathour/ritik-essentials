@@ -14,7 +14,11 @@ const AddToCartButton: React.FC<{ product: IProduct }> = ({ product }) => {
     vendorId: product?.vendor,
     price: product.price,
     name: product.name,
-    imageUrl: product.image || "image url add karo",
+    imageUrl: product.images && product.images[0]?.image,
+    rating: product?.rating || {
+      avarage: 0,
+      count: 0,
+    },
   };
   const handleAdd = () => {
     if (hasProd) return;

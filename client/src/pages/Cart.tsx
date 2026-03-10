@@ -87,86 +87,90 @@ const CartPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-2.5">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {Cart?.items.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4"
-              >
-                <Link to={`/product-details/${item?.productId}`}>
-                  <OptimizedImage
-                    alt={item.name}
-                    src={item.image}
-                    className="sm:w-[200px]! h-[200px]! sm:h-[150px]! rounded-md"
-                  />
-                </Link>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {item.name}
-                      </h3>
-                      <Rating average={100} count={20} />
-                    </div>
-                    <button
-                      onClick={() => removeCartItem({ itemId: item?._id })}
-                      className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                      disabled={isRemoving}
-                      aria-label="Remove item"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-2">
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        type="button"
-                        onClick={() =>
-                          updateCartItem({
-                            quantity: item.quantity - 1,
-                            cartItemId: item._id,
-                            productId: item.productId,
-                          })
-                        }
-                        className="w-8! h-8! rounded-full!"
-                        disabled={isUpdating || item.quantity - 1 < 1}
+            {Cart?.items.map((item) => {
+              return (
+                <div
+                  key={item._id}
+                  className="bg-white rounded-lg shadow-sm p-4 flex flex-col sm:flex-row gap-4"
+                >
+                  <Link to={`/product-details/${item?.productId}`}>
+                    <OptimizedImage
+                      alt={item.name}
+                      src={item.imageUrl}
+                      className="sm:w-[200px]! h-[200px]! sm:h-[150px]! rounded-md"
+                    />
+                  </Link>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {item.name}
+                        </h3>
+                        <div className="flex justify-start">
+                          <Rating rating={{ ...item?.rating }} />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeCartItem({ itemId: item?._id })}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                        disabled={isRemoving}
+                        aria-label="Remove item"
                       >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <span className="w-8 text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        onClick={() =>
-                          updateCartItem({
-                            quantity: item.quantity + 1,
-                            cartItemId: item._id,
-                            productId: item.productId,
-                          })
-                        }
-                        disabled={isUpdating}
-                        className="w-8! h-8! rounded-full!"
-                        aria-label="Increase quantity"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
+                        <Trash2 className="w-5 h-5" />
+                      </button>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-gray-900">
-                        ₹{(item.price * item.quantity)?.toFixed(2)}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        ₹{item.price?.toFixed(2)} each
-                      </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-2">
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() =>
+                            updateCartItem({
+                              quantity: item.quantity - 1,
+                              cartItemId: item._id,
+                              productId: item.productId,
+                            })
+                          }
+                          className="w-8! h-8! rounded-full!"
+                          disabled={isUpdating || item.quantity - 1 < 1}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="w-8 text-center font-medium">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={() =>
+                            updateCartItem({
+                              quantity: item.quantity + 1,
+                              cartItemId: item._id,
+                              productId: item.productId,
+                            })
+                          }
+                          disabled={isUpdating}
+                          className="w-8! h-8! rounded-full!"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-gray-900">
+                          ₹{(item.price * item.quantity)?.toFixed(2)}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          ₹{item.price?.toFixed(2)} each
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Order Summary */}
