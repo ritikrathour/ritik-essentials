@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import app from "./src/app";
-import connectDB from "./src/v1/DB/db";
+import connectDB from "./v1/DB/db";
 import mongoose from "mongoose";
-import { redisClient } from "./src/libs/RedisClient";
-import { config } from "./src/config";
-import { logger } from "./src/config/Logger";
+import { redisClient } from "./libs/RedisClient";
+import { config } from "./config";
+import { logger } from "./config/Logger";
+import app from "./app";
 
 const PORT = config.port || 5000;
 // db connect
@@ -27,7 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 
 const shutDown = (server: { close: (arg0: () => void) => void }) => {
   logger.warn({ message: "shutting down server...." });
-  server.close(() => {
+  server?.close(() => {
     logger.warn({ message: "closed Server..." });
     mongoose.connection.close();
   });
