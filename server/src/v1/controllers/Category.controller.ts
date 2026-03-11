@@ -4,8 +4,8 @@ import { CategoryValidate } from "../../utils/Validation";
 import ApiError from "../../utils/ApiError";
 import CategoryModel from "../models/Category.model";
 import { ApiResponse } from "../../utils/ApiResponse";
-// import { redisClient } from "../../libs/RedisClient";
-// import { categoriesExpiry, categoriesKey } from "../../libs/Redis_keys";
+import { redisClient } from "../../libs/RedisClient";
+import { categoriesExpiry, categoriesKey } from "../../libs/Redis_keys";
 
 // create category
 const CreateCategory = AsyncHandler(async (req: Request, res: Response) => {
@@ -29,26 +29,26 @@ const CreateCategory = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(500, "Category not Created yet!");
   }
   res.json(
-    new ApiResponse(201, CreateCategory, "Category Created Successfully!")
+    new ApiResponse(201, CreateCategory, "Category Created Successfully!"),
   );
 });
 // fetch Categories
 const FetchCategroy = AsyncHandler(async (req: Request, res: Response) => {
   const categories = await CategoryModel.find().lean();
-  // const isCategories = await redisClient.get(categoriesKey());
-  // if (isCategories) {
-  //   return JSON.parse(isCategories);
-  // }
+  const isCategories = await redisClient.get(categoriesKey());
+  if (isCategories) {
+    return JSON.parse(isCategories);
+  }
   if (!categories) {
     throw new ApiError(500, "Categories Not Fetched!");
   }
-  // await redisClient.setEx(
-  //   categoriesKey(),
-  //   categoriesExpiry,
-  //   JSON.stringify(categories)
-  // );
+  await redisClient.setEx(
+    categoriesKey(),
+    categoriesExpiry,
+    JSON.stringify(categories),
+  );
   res.json(
-    new ApiResponse(200, categories, "Categories Fetched successfully!")
+    new ApiResponse(200, categories, "Categories Fetched successfully!"),
   );
 });
 export { CreateCategory, FetchCategroy };

@@ -17,18 +17,18 @@ export const GetVendorDashBoard = AsyncHandler(
       throw new ApiError(401, "Unauthorised User!");
     }
     // check cache
-    // const cachedDashboard = await redisClient.get(vendorDashboard(vendorId));
-    // if (cachedDashboard) {
-    //   logger.info("Dashboard cache hit", vendorId);
-    //   res.json(
-    //     new ApiResponse(
-    //       200,
-    //       cachedDashboard,
-    //       "Vendor dashboard fetched succefully!",
-    //     ),
-    //   );
-    //   return;
-    // }
+    const cachedDashboard = await redisClient.get(vendorDashboard(vendorId));
+    if (cachedDashboard) {
+      logger.info("Dashboard cache hit", vendorId);
+      res.json(
+        new ApiResponse(
+          200,
+          cachedDashboard,
+          "Vendor dashboard fetched succefully!",
+        ),
+      );
+      return;
+    }
     logger.info("Cache miss fetch from DB", vendorId);
     //  1️⃣ TOTAL REVENUE + TOTAL ORDERS + ACTIVE CUSTOMERS
     const orderStats = await OrderModel.aggregate([
@@ -70,13 +70,6 @@ export const GetVendorDashBoard = AsyncHandler(
       totalOrders: 0,
       activeCustomer: 0,
     };
-    // const dashboard1 = {
-    //   totalRevenue: 0,
-    //   totalOrders: 0,
-    //   activeCustomer: 0,
-    //   ...orderStats, // orderStats values override defaults if they exist
-    //   activeProducts, // Shorthand for activeProducts: activeProducts
-    // };
     const dashboard: any = [
       {
         key: "totalRevenue",
@@ -101,11 +94,11 @@ export const GetVendorDashBoard = AsyncHandler(
     ];
     logger.info("Dashboard cached in redis", vendorId);
     // cache impliment
-    // await redisClient.setEx(
-    //   vendorDashboard(vendorId),
-    //   300,
-    //   JSON.stringify(dashboard),
-    // );
+    await redisClient.setEx(
+      vendorDashboard(vendorId),
+      300,
+      JSON.stringify(dashboard),
+    );
     res.json(
       new ApiResponse(200, dashboard, "Vendor dashboard fetched succefully!"),
     );

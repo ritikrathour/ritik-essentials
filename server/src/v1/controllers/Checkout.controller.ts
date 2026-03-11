@@ -124,17 +124,17 @@ const GetVendorOrders = AsyncHandler(async (req: Request, res: Response) => {
   const status = req.query.status as string;
   logger.info(`Vendor orders request recived ${vendor}`);
   // check in cache
-  // const cachedOrders = await redisClient.get(vendorOrders(vendor));
-  // if (cachedOrders) {
-  //   logger.info(`vendor orders Cache hit `, { vendorId: vendor });
-  //   res.json(
-  //     new ApiResponse(
-  //       200,
-  //       JSON.parse(cachedOrders),
-  //       "Vendor Orders Fetched successfully",
-  //     ),
-  //   );
-  // }
+  const cachedOrders = await redisClient.get(vendorOrders(vendor));
+  if (cachedOrders) {
+    logger.info(`vendor orders Cache hit `, { vendorId: vendor });
+    res.json(
+      new ApiResponse(
+        200,
+        JSON.parse(cachedOrders),
+        "Vendor Orders Fetched successfully",
+      ),
+    );
+  }
   logger.info("Cache vendors orders missed, fetching form DB", {
     vendorId: vendor,
   });
@@ -217,69 +217,6 @@ const GetVendorOrders = AsyncHandler(async (req: Request, res: Response) => {
   );
   const orders = await OrderModel.aggregate(aggregationPipline);
 
-  // const orders = await OrderModel.aggregate([
-  //   { $unwind: "$items" },
-  //   {
-  //     $match: {
-  //       "items.vendorId": vendor,
-  //     },
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: "products",
-  //       localField: "items.product",
-  //       foreignField: "_id",
-  //       as: "product",
-  //     },
-  //   },
-  //   {
-  //     $unwind: "$product",
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: "users",
-  //       localField: "user",
-  //       foreignField: "_id",
-  //       as: "user",
-  //     },
-  //   },
-  //   {
-  //     $unwind: "$user",
-  //   },
-  //   {
-  //     $group: {
-  //       _id: "$_id",
-  //       orderNumber: { $first: "$orderNumber" },
-  //       orderStatus: { $first: "$status" },
-  //       paymentStatus: { $first: "$isPaid" },
-  //       createdAt: { $first: "$createdAt" },
-  //       user: {
-  //         $first: {
-  //           name: "$user.name",
-  //           email: "$user.email",
-  //         },
-  //       },
-  //       items: {
-  //         $push: {
-  //           productName: "$product.name",
-  //           price: "$product.price",
-  //           image: "$product.image",
-  //           quantity: "$product.quantity",
-  //         },
-  //       },
-  //       vendorTotalAmount: {
-  //         $sum: {
-  //           $multiply: ["$items.quantity", "$items.price"],
-  //         },
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $sort: { createdAt: -1 },
-  //   },
-  //   { $skip: skip },
-  //   { $limit: limit },
-  // ]);
   const response = {
     ...orders,
     page,
@@ -288,11 +225,11 @@ const GetVendorOrders = AsyncHandler(async (req: Request, res: Response) => {
   };
 
   logger.info("Vendor orders cached in redis", { vendorId: vendor });
-  // await redisClient.setEx(
-  //   vendorOrders(vendor),
-  //   2 * 60 * 1000,
-  //   JSON.stringify(response),
-  // );
+  await redisClient.setEx(
+    vendorOrders(vendor),
+    2 * 60 * 1000,
+    JSON.stringify(response),
+  );
   res.json(new ApiResponse(200, response, "Fetched vendor orders!"));
 });
 // update the status of order by vendor
@@ -320,8 +257,6 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     });
     throw new ApiError(400, "Invalid status!");
   }
-  console.log(orderNumber, vendor);
-
   const updateStatus = await OrderModel.findOneAndUpdate(
     {
       orderNumber: orderNumber,
@@ -334,7 +269,6 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     },
     { new: true },
   );
-  // console.log(updateStatus);
 
   if (!updateStatus) {
     logger.error("You are not allowed to update this order item", {
@@ -347,8 +281,8 @@ const OrdersStatusUpdate = AsyncHandler(async (req: Request, res: Response) => {
     );
   }
   // invalidate cache
-  // await redisClient.del(getOrderskey);
-  // await redisClient.del(getOrderkey(updateStatus?._id));
+  await redisClient.del(getOrderskey);
+  await redisClient.del(getOrderkey(updateStatus?._id));
 
   res.json(
     new ApiResponse(201, updateStatus, "Order Status Updated successfully!"),

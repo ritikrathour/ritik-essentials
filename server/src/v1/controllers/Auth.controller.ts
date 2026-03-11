@@ -65,22 +65,22 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
   if (!name || !email || !password) {
     throw new ApiError(401, "Please Provide all fields", false);
   }
-  // if (!(await isDomainValid(email))) {
-  //   throw new ApiError(401, "Email domain does not exist");
-  // }
+  if (!(await isDomainValid(email))) {
+    throw new ApiError(401, "Email domain does not exist");
+  }
   // check password length greater than 6
   if (password.length < 6) {
     throw new ApiError(
       401,
       "Password must be at least 6 characters long",
-      false
+      false,
     );
   }
   // Check if user already exists in redis
-  // const checkUserInRedis = await redisClient.get(getUserKey(email));
-  // if (checkUserInRedis) {
-  //   throw new ApiError(401, "User already exists with this email", false);
-  // }
+  const checkUserInRedis = await redisClient.get(getUserKey(email));
+  if (checkUserInRedis) {
+    throw new ApiError(401, "User already exists with this email", false);
+  }
   // check user exists in mongodb database
   const checkUserInDB = await UserModel.findOne({ email });
   if (checkUserInDB) {
@@ -94,7 +94,7 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
       throw new ApiError(
         401,
         "Please Provide all fields like shopName and address",
-        false
+        false,
       );
     }
     userData = {
@@ -128,33 +128,33 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(401, "Invalid role!", false);
   }
   // stroe user and verification token in redis
-  // await redisClient.setEx(
-  //   getUserKey(email),
-  //   VERIFICATION_EXPIRY,
-  //   JSON.stringify(userData)
-  // );
-  // await redisClient.setEx(
-  //   getVerificationKey(emailVerificationToken),
-  //   VERIFICATION_EXPIRY,
-  //   email
-  // );
+  await redisClient.setEx(
+    getUserKey(email),
+    VERIFICATION_EXPIRY,
+    JSON.stringify(userData),
+  );
+  await redisClient.setEx(
+    getVerificationKey(emailVerificationToken),
+    VERIFICATION_EXPIRY,
+    email,
+  );
   // Send verification email
   const verificationURL = `${config.frontendUrl}/verify-email?token=/${emailVerificationToken}`;
 
-  // const emailSent = await SendEmail(
-  //   email,
-  //   "Verify Your Email Address",
-  //   VERIFICATION_HTML_TEMPLATE(name, verificationURL)
-  // );
-  // if (!emailSent) {
-  //   throw new ApiError(500, "Sending email failed...", false);
-  // }
+  const emailSent = await SendEmail(
+    email,
+    "Verify Your Email Address",
+    VERIFICATION_HTML_TEMPLATE(name, verificationURL),
+  );
+  if (!emailSent) {
+    throw new ApiError(500, "Sending email failed...", false);
+  }
   res.json(
     new ApiResponse(
       201,
       { email },
-      "Registration successful. Please check your email to verify your account."
-    )
+      "Registration successful. Please check your email to verify your account.",
+    ),
   );
 });
 // resend verification link email //TODO
@@ -210,8 +210,8 @@ const VerifyEmail = AsyncHandler(async (req: Request, res: Response) => {
         201,
         {},
         // userObj,
-        "Email verified successfully."
-      )
+        "Email verified successfully.",
+      ),
     );
 });
 // login
@@ -221,14 +221,14 @@ const Login = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "All fields are required!", false);
   }
   // is otp present in redis
-  // const storedOTP = await redisClient.get(getOTPkey(email, "login"));
-  // if (storedOTP) {
-  //   throw new ApiError(
-  //     400,
-  //     "Verify OTP sent to your email! Please complete login!",
-  //     false
-  //   );
-  // }
+  const storedOTP = await redisClient.get(getOTPkey(email, "login"));
+  if (storedOTP) {
+    throw new ApiError(
+      400,
+      "Verify OTP sent to your email! Please complete login!",
+      false,
+    );
+  }
   // find user in Database
   const checkUser = await UserModel.findOne({ email });
   if (!checkUser) {
@@ -240,27 +240,27 @@ const Login = AsyncHandler(async (req: Request, res: Response) => {
   }
   // check password
   const checkPassword = await bcrypt.compare(password, checkUser.password);
-  // if (!checkPassword) {
-  //   throw new ApiError(400, "Invalid password!", false);
-  // }
+  if (!checkPassword) {
+    throw new ApiError(400, "Invalid password!", false);
+  }
   // store otp in redis, send OTP
   const otp = GENERATE_OTP();
-  // await redisClient.setEx(getOTPkey(email, "login"), OTP_EXPIRY, otp);
+  await redisClient.setEx(getOTPkey(email, "login"), OTP_EXPIRY, otp);
   // send email
-  // const SentEmailOTP = await SendEmail(
-  //   email,
-  //   "Login OTP Verification",
-  //   LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp))
-  // );
-  // if (!SentEmailOTP) {
-  //   throw new ApiError(500, "Failed to send OTP", false);
-  // }
+  const SentEmailOTP = await SendEmail(
+    email,
+    "Login OTP Verification",
+    LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp)),
+  );
+  if (!SentEmailOTP) {
+    throw new ApiError(500, "Failed to send OTP", false);
+  }
   res.json(
     new ApiResponse(
       200,
       { email },
-      "We sent OTP to your email. Please verify to complete login."
-    )
+      "We sent OTP to your email. Please verify to complete login.",
+    ),
   );
 });
 // Verify Login OTP (Complete Login)
@@ -273,14 +273,14 @@ const VerifyLogInOTP = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "OTP is required", false);
   }
   // get storedOTP from redis
-  // const storedOTP = await redisClient.get(getOTPkey(email, "login"));
-  // if (!storedOTP) {
-  //   throw new ApiError(400, "OTP expired or Used!", false);
-  // }
-  // // compare otp to storedOTP
-  // if (storedOTP !== otp) {
-  //   throw new ApiError(400, "Invalid OTP", false);
-  // }
+  const storedOTP = await redisClient.get(getOTPkey(email, "login"));
+  if (!storedOTP) {
+    throw new ApiError(400, "OTP expired or Used!", false);
+  }
+  // compare otp to storedOTP
+  if (storedOTP !== otp) {
+    throw new ApiError(400, "Invalid OTP", false);
+  }
   // get user by email
   const user = await UserModel.findOne({ email });
   if (!user) {
@@ -294,7 +294,7 @@ const VerifyLogInOTP = AsyncHandler(async (req: Request, res: Response) => {
     role: user.role,
   });
   // delete storedOTP from redis
-  // await redisClient.del(getOTPkey(email, "login"));
+  await redisClient.del(getOTPkey(email, "login"));
   // update refresh token in mongodb
   user.refreshToken = JWTRefreshToken;
   await user.save();
@@ -342,15 +342,15 @@ const ReSendOTP = AsyncHandler(async (req: Request, res: Response) => {
   }
   // Check if user is in cooldown period
   const cooldownExists = await redisClient.exists(
-    getOTPCooldownKey(email, type)
+    getOTPCooldownKey(email, type),
   );
   if (cooldownExists) {
     const coolDownTtl = await redisClient.ttl(getOTPCooldownKey(email, type));
     throw new ApiError(
       401,
       `Please wait ${Math.ceil(
-        coolDownTtl / 60
-      )} menutes before requesting a new OTP`
+        coolDownTtl / 60,
+      )} menutes before requesting a new OTP`,
     );
   }
   // Check rate limiting (max 3 attempts per hour)
@@ -360,7 +360,7 @@ const ReSendOTP = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(
       429,
       "Too many OTP requests. Please try after 1 hour.",
-      false
+      false,
     );
   }
   // find user in DB
@@ -380,20 +380,20 @@ const ReSendOTP = AsyncHandler(async (req: Request, res: Response) => {
   await redisClient.setEx(
     getOTPCooldownKey(email, type),
     RESEND_COOLDOWN,
-    "true"
+    "true",
   );
   // Increment attempt counter with 1-hour TTL
   const currAttempts = attempts ? parseInt(attempts) + 1 : 1;
   await redisClient.setEx(
     getOTPAttemptsKey(email, type),
     OTP_BLOCK_DURATION,
-    currAttempts.toString()
+    currAttempts.toString(),
   );
   // // send email with otp
   const sentEmailOTP = await SendEmail(
     email,
     type + " OTP",
-    RESEND_OTP_HTML_TEMPLATE(parseInt(otp), type)
+    RESEND_OTP_HTML_TEMPLATE(parseInt(otp), type),
   );
   if (!sentEmailOTP) {
     // Clean up Redis if sending fails
@@ -440,7 +440,7 @@ const RefreshAccessToken = AsyncHandler(async (req: Request, res: Response) => {
     .cookie("accessToken", accessToken, accessTokenOptions)
     .cookie("refreshToken", refreshToken, refreshTokenOptions)
     .json(
-      new ApiResponse(200, { accessToken }, "Tokens refreshed successfully")
+      new ApiResponse(200, { accessToken }, "Tokens refreshed successfully"),
     );
 });
 // forget password
@@ -467,19 +467,19 @@ const ForgetPassword = AsyncHandler(async (req: Request, res: Response) => {
   await redisClient.setEx(
     getOTPkey(OTP, "forget-password"),
     OTP_EXPIRY,
-    user.email
+    user.email,
   );
   // send Email to user email
   const sentEmail = await SendEmail(
     user.email,
     "FORGET PASSWORD",
-    FORGET_PASS_OTP_HTML_TEMPLATE(email, Number(OTP))
+    FORGET_PASS_OTP_HTML_TEMPLATE(email, Number(OTP)),
   );
   if (!sentEmail) {
     throw new ApiError(500, "Email not Sent Successfully", false);
   }
   res.json(
-    new ApiResponse(200, email, "Forget Password OTP send successfully!")
+    new ApiResponse(200, email, "Forget Password OTP send successfully!"),
   );
 });
 // verify forget password
@@ -499,12 +499,12 @@ const VerifyForgetPassword = AsyncHandler(
       throw new ApiError(
         400,
         "Password must be at least 6 characters long",
-        false
+        false,
       );
     }
     // get otp from redis
     const storedOTP = await redisClient.get(
-      getOTPkey(email, "forget-password")
+      getOTPkey(email, "forget-password"),
     );
     if (!storedOTP) {
       throw new ApiError(400, "OTP expired or Used!", false);
@@ -522,7 +522,7 @@ const VerifyForgetPassword = AsyncHandler(
       },
       {
         new: true,
-      }
+      },
     );
     if (!user) {
       throw new ApiError(500, "Password not Updated!", false);
@@ -530,7 +530,7 @@ const VerifyForgetPassword = AsyncHandler(
     // delete the otp form redis
     await redisClient.del(getOTPkey(email, "forget-password"));
     res.json(new ApiResponse(200, user, "Password reset successful."));
-  }
+  },
 );
 export {
   Register,
