@@ -20,7 +20,9 @@ dotenv.config();
 const app = express();
 const isProduction = config.nodeENV === "production";
 const allowedOrigins = [
-  isProduction ? config.corsOriginProd! : config.corsOrigindev!,
+  process.env.CORS_ORIGIN_PROD!,
+  "http://localhost:5173",
+  // isProduction ? config.corsOriginProd! : config.corsOrigindev!,
 ];
 // Use morgan for HTTP request logs (pipe it to Winston)
 // app.use(
@@ -33,7 +35,7 @@ const allowedOrigins = [
 //  middlewares
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: allowedOrigins || "",
     methods: ["PUT", "GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
