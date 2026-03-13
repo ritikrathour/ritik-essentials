@@ -12,7 +12,7 @@ const AdProduct = () => {
             transitionTimingFunction: "ease",
             backgroundSize: "contain",
             backgroundImage:
-              "linear-gradient(to right, #173334 , transparent ), url('./assets/kirana.png')",
+              "linear-gradient(to right, #173334 , transparent ), url('https://res.cloudinary.com/dgylu8hez/image/upload/v1773427152/e-commerce-images/kirana_jn7v0v.png')",
           }}
         ></div>
         {/* Content */}

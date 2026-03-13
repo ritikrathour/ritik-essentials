@@ -3,7 +3,7 @@ import ApiError from "../../utils/ApiError";
 import { ApiResponse } from "../../utils/ApiResponse";
 import AsyncHandler from "../../utils/AsyncHandler";
 import UserModel from "../models/User.model";
-import UploadOnCloudinary from "../../utils/UploadOnCloudinary";
+// import UploadOnCloudinary from "../../utils/UploadOnCloudinary";
 // logged in user
 const User = AsyncHandler(async (req: Request, res: Response) => {
   const user = req.user; // user is set by Authenticate middleware
@@ -29,13 +29,13 @@ const UserDetails = AsyncHandler(async (req: Request, res: Response) => {
     },
     {
       new: true,
-    }
+    },
   );
   if (!updateUser) {
     throw new ApiError(500, "User details update failed", false);
   }
   res.json(
-    new ApiResponse(200, updateUser, "User details update successfully")
+    new ApiResponse(200, updateUser, "User details update successfully"),
   );
 });
 // update avtar image
@@ -45,23 +45,23 @@ const UploadeUserAvatar = AsyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(401, "please Provide valid avtar Image", false);
   }
   // upload on cloudinary
-  const uploadedImagePath = await UploadOnCloudinary(avatar);
-  if (!uploadedImagePath) {
-    throw new ApiError(500, "Failed To upload Avatar");
-  }
-  // find user and update
-  const user = await UserModel.findByIdAndUpdate(
-    req.user && req.user._id,
-    {
-      avatar: uploadedImagePath,
-    },
-    {
-      new: true,
-    }
-  );
-  if (!user) {
-    throw new ApiError(500, "Failed to update Avatar");
-  }
-  res.json(new ApiResponse(200, user.avatar, "Avatar Updated Successfully"));
+  // const uploadedImagePath = await UploadOnCloudinary(avatar);
+  // if (!uploadedImagePath) {
+  //   throw new ApiError(500, "Failed To upload Avatar");
+  // }
+  // // find user and update
+  // const user = await UserModel.findByIdAndUpdate(
+  //   req.user && req.user._id,
+  //   {
+  //     avatar: uploadedImagePath,
+  //   },
+  //   {
+  //     new: true,
+  //   }
+  // );
+  // if (!user) {
+  //   throw new ApiError(500, "Failed to update Avatar");
+  // }
+  res.json(new ApiResponse(200, {}, "Avatar Updated Successfully"));
 });
 export { User, UserDetails, UploadeUserAvatar };

@@ -12,13 +12,13 @@ import Title from "../components/Title";
 import CategoryCom from "../components/home-compo/CategoryCom";
 import ProductSkeleton from "../components/SkeletonUI/ProductSkeleton";
 const BrandCarausel = lazy(
-  () => import("../components/home-compo/BrandCarausel")
+  () => import("../components/home-compo/BrandCarausel"),
 );
 const ProductCarausel = lazy(
-  () => import("../components/products/ProductCarausel")
+  () => import("../components/products/ProductCarausel"),
 );
 const PopularCategories = lazy(
-  () => import("../components/products/PopularCategories")
+  () => import("../components/products/PopularCategories"),
 );
 const HomeProducts = lazy(() => import("../components/products/HomeProducts"));
 
@@ -46,7 +46,7 @@ const Home = () => {
           {/* CARD */}
           <div className="">
             <Card
-              image="../assets/girl.png"
+              image="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426536/e-commerce-images/GooglePlay_umyrea.png"
               style="w-full md:w-[300px] mt-2.5"
               title="Delivery in 24 hours"
               subtitle="Delevery Service"
@@ -133,7 +133,8 @@ const Home = () => {
       <section
         className="pt-8 mt-5 overflow-hidden"
         style={{
-          backgroundImage: 'url("../assets/bg-image.avif")',
+          backgroundImage:
+            'url("https://res.cloudinary.com/dgylu8hez/image/upload/v1773426534/e-commerce-images/bg-image_eble3w.avif")',
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
         }}
@@ -142,7 +143,7 @@ const Home = () => {
           <div className="h-[400px] md:h-[500px] w-[250px] p-2 shadow-2xl drop-shadow-2xl rounded-2xl md:-order-1 order-1 m-auto md:m-0">
             <img
               className="w-full rounded-2xl object-fill"
-              src="../assets/mobile.avif"
+              src="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426504/e-commerce-images/mobile_ny5jad.avif"
               alt=""
             />
           </div>
@@ -163,7 +164,7 @@ const Home = () => {
               >
                 <img
                   className="rounded-md"
-                  src="../assets/Appstore.png"
+                  src="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426536/e-commerce-images/Appstore_vz2ocs.png"
                   alt="app-store"
                 />
               </Link>
@@ -173,7 +174,7 @@ const Home = () => {
               >
                 <img
                   className=""
-                  src="../assets/GooglePlay.png"
+                  src="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426536/e-commerce-images/GooglePlay_umyrea.png"
                   alt="google-play"
                 />
               </Link>
