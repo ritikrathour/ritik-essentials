@@ -35,7 +35,7 @@ const allowedOrigins = [
 //  middlewares
 app.use(
   cors({
-    origin: allowedOrigins || "",
+    origin: "https://ritik-essentials-frontend.onrender.com",
     methods: ["PUT", "GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

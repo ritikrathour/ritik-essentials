@@ -7,6 +7,8 @@ import { useProduct } from "../../hooks/useProduct";
 import ErrorUI from "../ErrorsUI/ErrorUI";
 import Loader from "../Loader";
 import { IPROD } from "../../utils/Types/Product.types";
+import ImageSkeleton from "../SkeletonUI/ImageSkeleton";
+import AdSkeleton from "../SkeletonUI/AdSkeleton";
 
 const Slider = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -25,7 +27,7 @@ const Slider = () => {
     return <ErrorUI error={error} onRetry={refetch} />;
   }
   if (isLoading) {
-    return <Loader />;
+    return <AdSkeleton />;
   }
   return (
     <>
