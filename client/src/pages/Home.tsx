@@ -46,7 +46,7 @@ const Home = () => {
           {/* CARD */}
           <div className="">
             <Card
-              image="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426536/e-commerce-images/GooglePlay_umyrea.png"
+              image="https://res.cloudinary.com/dgylu8hez/image/upload/v1773426475/e-commerce-images/girl_wihcu4.png"
               style="w-full md:w-[300px] mt-2.5"
               title="Delivery in 24 hours"
               subtitle="Delevery Service"

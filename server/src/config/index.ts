@@ -14,7 +14,7 @@ export const config = {
   mongoDBProdURI: process.env.MONGODB_PROD_URI,
   corsOriginProd: process.env.CORS_ORIGIN_PROD,
   corsOrigindev: process.env.CORS_ORIGIN_DEV,
-  nodeENV: process.env.CORS_ORIGIN_DEV,
+  nodeENV: process.env.NODE_ENV,
   redisURL: process.env.REDIS_URL,
   redisPassword: process.env.REDIS_PASSWORD,
   emailHost: process.env.EMAIL_HOST,
