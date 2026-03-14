@@ -1,6 +1,4 @@
 const AdSkeleton = ({ className }: any) => {
-  console.log(className, "nsdkjfad");
-
   return (
     <>
       <div

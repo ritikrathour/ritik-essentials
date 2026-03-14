@@ -17,7 +17,7 @@ const SignOutPopUp = () => {
   const { isSignOutOpen } = useSelector((state: RootState) => state.ui);
   const { closeOnOutsideClick } = useOverlayManager(
     isSignOutOpen,
-    closeSignOutPopup
+    closeSignOutPopup,
   );
   const closePopup = () => {
     return dispatch(closeSignOutPopup());
@@ -26,8 +26,6 @@ const SignOutPopUp = () => {
     try {
       setLoading(true);
       const { data } = await AxiosInstense.post("/logout", {});
-      console.log(data);
-
       setLoading(false);
       toast.success(data?.message);
       navigate("/");
@@ -38,7 +36,7 @@ const SignOutPopUp = () => {
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error?.response?.data?.error
-          : "Log Out Failed!"
+          : "Log Out Failed!",
       );
       setLoading(false);
     }
