@@ -1,11 +1,7 @@
 import axios, { AxiosError } from "axios";
-const isProduction =
-  process.env.NODE_ENV === "PRODUCTION"
-    ? (import.meta.env.VITE_BASE_URL_PRODUCTION as string)
-    : (import.meta.env.VITE_BASE_URL_DEVELOPMENT as string);
-
+const URI = import.meta.env.VITE_BASE_URL as string;
 export const AxiosInstense = axios.create({
-  baseURL: isProduction,
+  baseURL: URI,
   withCredentials: true,
 });
 AxiosInstense.interceptors.response.use(
@@ -14,11 +10,7 @@ AxiosInstense.interceptors.response.use(
     try {
       const originalRequest = error.config;
       if (error.response?.status === 401 && originalRequest) {
-        await axios.post(
-          `${isProduction}/refresh-token`,
-          {},
-          { withCredentials: true }
-        );
+        await axios.post(`${URI}/refresh-token`, {}, { withCredentials: true });
         return AxiosInstense(originalRequest);
       }
     } catch (error) {
@@ -26,5 +18,5 @@ AxiosInstense.interceptors.response.use(
       return Promise.reject(error);
     }
     return Promise.reject(error);
-  }
+  },
 );
