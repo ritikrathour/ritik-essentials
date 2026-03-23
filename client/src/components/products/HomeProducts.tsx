@@ -3,9 +3,13 @@ import { memo } from "react";
 import ProductSkeleton from "../SkeletonUI/ProductSkeleton";
 import ErrorUI from "../ErrorsUI/ErrorUI";
 import { useProduct } from "../../hooks/useProduct";
-
+type image = {
+  image: string;
+  alt: string;
+  isPrimary: boolean;
+};
 interface ICategory {
-  images: string;
+  images: image[];
   _id: string;
   name: string;
   description: string;
@@ -26,7 +30,7 @@ const HomeProducts = () => {
         {products?.result?.data?.map((item: ICategory) => {
           return (
             <Card
-              image="/assets/kirana.png"
+              image={item.images && item.images[0]?.image}
               key={item._id}
               title={item.name}
               description={item.description}
