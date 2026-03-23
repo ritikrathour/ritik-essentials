@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { sliderData } from "../../utils/constant";
 import { Button } from "../ui/Button";
 import { Link } from "react-router-dom";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { useProduct } from "../../hooks/useProduct";
 import ErrorUI from "../ErrorsUI/ErrorUI";
-import Loader from "../Loader";
 import { IPROD } from "../../utils/Types/Product.types";
-import ImageSkeleton from "../SkeletonUI/ImageSkeleton";
 import AdSkeleton from "../SkeletonUI/AdSkeleton";
 
 const Slider = () => {
@@ -54,9 +51,8 @@ const Slider = () => {
                   <Button
                     type="button"
                     variant="secondary"
-                    className="w-[200px]"
+                    className="w-[200px] text-nowrap"
                   >
-                    <i className="fas fa-grid"></i>
                     Show Products
                     <i className="fas fa-chevron-right"></i>
                   </Button>

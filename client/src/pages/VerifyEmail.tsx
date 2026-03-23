@@ -9,29 +9,29 @@ const VerifyEmail = () => {
   const navigate = useNavigate();
   const token = searchParams.get("token");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  //   useEffect(() => {
-  //     const verifyEmail = async () => {
-  //       setIsVerifying(true);
-  //       try {
-  //         const { data } = await AxiosInstense.get(
-  //           `/verify-email/?token=${token}`,
-  //           { withCredentials: true }
-  //         );
-  //         toast.success(
-  //           data.response?.data?.message || "Email verified successfully!"
-  //         );
-  //         setIsVerifying(false);
-  //         navigate("/"); // redirect to home
-  //       } catch (error) {
-  //         console.log(error);
-  //         toast.error("Invalid or expired verification link.");
-  //         setIsVerifying(false);
-  //         // navigate("/");
-  //       }
-  //     };
-  //
-  //     if (token) verifyEmail();
-  //   }, [token, navigate]);
+  useEffect(() => {
+    const verifyEmail = async () => {
+      setIsVerifying(true);
+      try {
+        const { data } = await AxiosInstense.get(
+          `/verify-email/?token=${token}`,
+          { withCredentials: true },
+        );
+        toast.success(
+          data.response?.data?.message || "Email verified successfully!",
+        );
+        setIsVerifying(false);
+        navigate("/"); // redirect to home
+      } catch (error) {
+        console.log(error);
+        toast.error("Invalid or expired verification link.");
+        setIsVerifying(false);
+        navigate("/");
+      }
+    };
+
+    if (token) verifyEmail();
+  }, [token, navigate]);
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-2">
       <div className="bg-white/40 backdrop-blur-lg rounded-2xl shadow-xl p-8 max-w-md w-full text-center">

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { Role } from "../utils/constant";
@@ -22,6 +22,7 @@ const Register = () => {
     password: formData.password,
     type: "Register",
   });
+  const navigate = useNavigate();
   // handleChange
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -45,26 +46,27 @@ const Register = () => {
         ...formData,
         role: role,
       });
+      toast.success(
+        response?.data?.message ||
+          "Registration successful. Please check your email to verify your account.",
+      );
+      sessionStorage.setItem(
+        "register_message",
+        response?.data?.message ||
+          "Registration successful. Please check your email to verify your account.",
+      );
+      navigate("/verify-email");
       setFormData({
         name: "",
         email: "",
         password: "",
       });
-      toast.success(
-        response?.data?.message ||
-          "Registration successful. Please check your email to verify your account."
-      );
-      sessionStorage.setItem(
-        "register_message",
-        response?.data?.message ||
-          "Registration successful. Please check your email to verify your account."
-      );
       setLoading(false);
     } catch (error) {
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error?.response?.data?.error
-          : "Registration failed"
+          : "Registration failed",
       );
       console.log(error);
       setLoading(false);

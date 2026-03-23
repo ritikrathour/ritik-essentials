@@ -21,5 +21,8 @@ export const config = {
   emailPort: process.env.EMAIL_PORT,
   emailFrom: process.env.EMAIL_FROM,
   emailpass: process.env.EMAIL_Pass,
-  frontendUrl: process.env.FRONTEND_DEV_URL,
+  frontendUrl:
+    process.env.NODE_ENV === "development"
+      ? process.env.CORS_ORIGIN_DEV
+      : process.env.CORS_ORIGIN_PROD,
 };

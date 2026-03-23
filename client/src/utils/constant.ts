@@ -211,40 +211,6 @@ export const Role = [
     title: "vendor",
   },
 ];
-export const sliderData = [
-  {
-    id: 0,
-    title: "Daily Essentials Products",
-    description:
-      "Step in to a world of fresh product, vibrant colors, and enticing aromos at our grocery store. We offer a wide selection of pulses and oils, organic products and cookies and biscutes for daily Essentials",
-    image: "/assets/daily.png",
-    url: "?category=Essentials",
-  },
-  {
-    id: 1,
-    title: "Pulse, Oils & dry fruits",
-    description:
-      "“Discover our wide range of protein-rich pulses, pure cooking oils, and premium dry fruits to make every meal healthier and tastier.”",
-    image: "/assets/kirana.png",
-    url: "?category=pulse",
-  },
-  {
-    id: 2,
-    title: "Cookies, Biscuits & Chocolates",
-    description:
-      "From crunchy cookies and classic biscuits to rich, velvety chocolates, our wide selection brings you the perfect treats to enjoy with family, share with friends, or satisfy sweet cravings anytime.",
-    image: "/assets/cookies.png",
-    url: "?category=Bakery & Snack",
-  },
-  {
-    id: 3,
-    title: "Drinks, Water & Beverages",
-    description:
-      "From pure drinking water and soft drinks to energizing beverages and refreshing juices, our collection offers everything you need to stay hydrated, refreshed, and satisfied throughout the day.",
-    image: "/assets/drinks.png",
-    url: "?category=drink",
-  },
-];
 export const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;

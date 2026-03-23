@@ -60,43 +60,43 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
     req.body;
   const emailRegex = /^\S+@\S+\.\S+$/;
   if (!emailRegex.test(email)) {
-    throw new ApiError(401, "Invalid Email! please provide valid email", false);
+    throw new ApiError(400, "Invalid Email! please provide valid email", false);
   }
   if (!name || !email || !password) {
-    throw new ApiError(401, "Please Provide all fields", false);
+    throw new ApiError(400, "Please Provide all fields", false);
   }
   if (!(await isDomainValid(email))) {
-    throw new ApiError(401, "Email domain does not exist");
+    throw new ApiError(400, "Email domain does not exist");
   }
   // check password length greater than 6
   if (password.length < 6) {
     throw new ApiError(
-      401,
+      400,
       "Password must be at least 6 characters long",
       false,
     );
   }
-  // Check if user already exists in redis
+  // // Check if user already exists in redis
   const checkUserInRedis = await redisClient.get(getUserKey(email));
   if (checkUserInRedis) {
-    throw new ApiError(401, "User already exists with this email", false);
+    throw new ApiError(400, "User already exists with this email", false);
   }
   // check user exists in mongodb database
   const checkUserInDB = await UserModel.findOne({ email });
   if (checkUserInDB) {
-    throw new ApiError(401, "User already exists in DB with this email", false);
+    throw new ApiError(402, "User already exists in DB with this email", false);
   }
   // hashed the password
   const hashedPassword = await bcrypt.hash(password, 12);
   let userData;
   if (role === "vendor") {
-    if (!shopName || !address) {
-      throw new ApiError(
-        401,
-        "Please Provide all fields like shopName and address",
-        false,
-      );
-    }
+    // if (!shopName || !address) {
+    //   throw new ApiError(
+    //     401,
+    //     "Please Provide all fields like shopName and address",
+    //     false,
+    //   );
+    // }
     userData = {
       email,
       password: hashedPassword,
@@ -161,58 +161,49 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
 // verify email by token
 const VerifyEmail = AsyncHandler(async (req: Request, res: Response) => {
   const { token } = req.query;
-
-  // if (!token?.token) {
-  //   throw new ApiError(401, "token Expired or used!", false);
-  // }
-
+  if (!token) {
+    throw new ApiError(401, "token Expired or used!", false);
+  }
   // get email by verification token
-  // const email = await redisClient.get(getVerificationKey(token as string));
-  // if (!email) {
-  //   throw new ApiError(401, "Invalid or expired verification token", false);
-  // }
+  const email = await redisClient.get(getVerificationKey(token as string));
+  if (!email) {
+    throw new ApiError(401, "Invalid or expired verification token", false);
+  }
   // get user by email
-  // const userData = await redisClient.get(getUserKey(email));
-  // if (!userData) {
-  //   throw new ApiError(401, "User not found");
-  // }
+  const userData = await redisClient.get(getUserKey(email));
+  if (!userData) {
+    throw new ApiError(401, "User not found");
+  }
   // parse the user
-  // const user = JSON.parse(userData);
+  const user = JSON.parse(userData);
   // verify the user
-  // user.isEmailVerified = true;
+  user.isEmailVerified = true;
   // Clean up verification token and sotored user in redis
-  // await redisClient.del(getVerificationKey(token as string));
-  // await redisClient.del(getUserKey(email));
+  await redisClient.del(getVerificationKey(token as string));
+  await redisClient.del(getUserKey(email));
   // Generate JWT tokens
-  // const JWTAccessToken = GENERATE_ACCESSTOKEN({ email: "ritik@gmail.com" });
-  // const JWTRefreshToken = GENERATE_REFRESHTOKEN({
-  //   email: "ritik@gmail.com",
-  //   name: "ritik",
-  //   role: "customer",
-  // });
+  const JWTAccessToken = GENERATE_ACCESSTOKEN({ email: "ritik@gmail.com" });
+  const JWTRefreshToken = GENERATE_REFRESHTOKEN({
+    email: "ritik@gmail.com",
+    name: "ritik",
+    role: "customer",
+  });
   // Store verified user permanently in mongodb
-  // const savedUser = await UserModel.create({
-  //   email: "ritik@gmail.com",
-  //   password: "Ritik1@",
-  //   name: "ritik",
-  //   role: "customer",
-  //   isEmailVerified: false,
-  // });
-  // savedUser.refreshToken = JWTRefreshToken;
-  // await savedUser.save();
-  // const userObj = savedUser.toObject() as any;
-  // delete userObj.password;
+  const savedUser = await UserModel.create({
+    email: "ritik@gmail.com",
+    password: "Ritik1@",
+    name: "ritik",
+    role: "customer",
+    isEmailVerified: false,
+  });
+  savedUser.refreshToken = JWTRefreshToken;
+  await savedUser.save();
+  const userObj = savedUser.toObject() as any;
+  delete userObj.password;
   res
-    // .cookie("accessToken", JWTAccessToken, accessTokenOptions)
-    // .cookie("refreshToken", JWTRefreshToken, refreshTokenOptions)
-    .json(
-      new ApiResponse(
-        201,
-        {},
-        // userObj,
-        "Email verified successfully.",
-      ),
-    );
+    .cookie("accessToken", JWTAccessToken, accessTokenOptions)
+    .cookie("refreshToken", JWTRefreshToken, refreshTokenOptions)
+    .json(new ApiResponse(201, userObj, "Email verified successfully."));
 });
 // login
 const Login = AsyncHandler(async (req: Request, res: Response) => {
