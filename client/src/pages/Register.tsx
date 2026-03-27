@@ -8,12 +8,15 @@ import axios from "axios";
 import { AxiosInstense } from "../services/AxiosInstance";
 import { Button } from "../components/ui/Button";
 import { useValidateAuthForm } from "../hooks/Validationhooks/useValidateAuthForm";
+import { useDispatch } from "react-redux";
+import { setToken } from "../redux-store/User.slice";
 const Register = () => {
   const [formData, setFormData] = useState<IUser>({
     name: "",
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
   const [role, setRole] = useState<string>("customer"); // default role
   const [loading, setLoading] = useState<boolean>(false);
   const { errors, setErrors, validate } = useValidateAuthForm({
@@ -46,6 +49,9 @@ const Register = () => {
         ...formData,
         role: role,
       });
+      dispatch(
+        setToken(response.data && response?.data?.data?.emailVerificationToken),
+      );
       toast.success(
         response?.data?.message ||
           "Registration successful. Please check your email to verify your account.",

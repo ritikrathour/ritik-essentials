@@ -42,10 +42,11 @@ const Login = () => {
       const response = await AxiosInstense.post("/login", formData);
       toast.success(
         response?.data?.message ||
-          "We sent OTP to your email. Please verify to complete login."
+          "We sent OTP to your email. Please verify to complete login.",
       );
+      let otp = response.data && response?.data?.data?.otp;
       setLogging(false);
-      navigate(`/login-otp-verify/${formData.email}`);
+      navigate(`/login-otp-verify/${formData.email}?otp=${otp}`);
       setFormData({
         email: "",
         password: "",
@@ -56,7 +57,7 @@ const Login = () => {
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error?.response?.data?.error
-          : "Login failed"
+          : "Login failed",
       );
       setLogging(false);
     }

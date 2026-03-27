@@ -41,6 +41,7 @@ export interface IInitialState {
   error: any;
   loading: boolean;
   isAuthenticated: boolean;
+  token: any;
 }
 // intialState
 const initialState: IInitialState = {
@@ -48,6 +49,7 @@ const initialState: IInitialState = {
   error: null,
   loading: false,
   isAuthenticated: false,
+  token: "",
 };
 export const userSlice = createSlice({
   name: "user",
@@ -62,7 +64,11 @@ export const userSlice = createSlice({
     logout: (state) => {
       state.user = null; // Clear user data on logout
     },
+    setToken: (state, action) => {
+      console.log(action.payload);
+      state.token = action.payload;
+    },
   },
 });
-export const { setUser, logout } = userSlice.actions;
+export const { setUser, logout, setToken } = userSlice.actions;
 export default userSlice.reducer;

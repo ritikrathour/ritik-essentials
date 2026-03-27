@@ -8,7 +8,7 @@ export const useOTP = ({ email, otp, setTtl, data }: IuseOTP) => {
   const [isResending, setIsResending] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isOtpSending, setIsOtpSending] = useState<boolean>(false);
-  const navgate = useNavigate();
+  const navigate = useNavigate();
   // verify otp
   const VerifyOTP = async (endpoint: string) => {
     let joinedOTP = otp?.join("");
@@ -20,13 +20,17 @@ export const useOTP = ({ email, otp, setTtl, data }: IuseOTP) => {
         newPassword: data?.newPass,
       });
       toast.success(response?.data?.message);
+      setTimeout(() => {
+        navigate("/");
+        window.location.reload();
+      }, 500);
       setIsVerifying(false);
     } catch (error) {
       setIsVerifying(false);
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error.message
-          : "Error"
+          : "Error",
       );
       console.log(error);
     }
@@ -39,11 +43,14 @@ export const useOTP = ({ email, otp, setTtl, data }: IuseOTP) => {
       toast.success(response?.data?.message);
       setTtl && setTtl(response?.data?.ttl);
       setIsResending(false);
+      navigate(
+        `/login-otp-verify/${email}?otp=${response?.data && response.data?.data?.otp}`,
+      );
     } catch (error) {
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error.message
-          : "Error"
+          : "Error",
       );
       setIsResending(false);
       console.log(error);
@@ -56,13 +63,13 @@ export const useOTP = ({ email, otp, setTtl, data }: IuseOTP) => {
       const response = await AxiosInstense.post(endpoint, { email });
       toast.success(response?.data?.message);
       setIsOtpSending(false);
-      navgate(`/forget-password-otp-verify/${email}`);
+      navigate(`/forget-password-otp-verify/${email}`);
     } catch (error) {
       setIsOtpSending(false);
       toast.error(
         axios.isAxiosError(error)
           ? error?.response?.data?.message || error.message
-          : "OTP sending failed"
+          : "OTP sending failed",
       );
     }
   };

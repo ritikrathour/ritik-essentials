@@ -66,7 +66,7 @@ export const Button: React.FC<ButtonProps> = ({
         buttonVariants[variant],
         buttonSizes[size],
         reflectionEffect,
-        className
+        className,
       )}
       type={type}
       disabled={isLoading || props.disabled}
@@ -100,7 +100,7 @@ export const Button: React.FC<ButtonProps> = ({
         <div
           className={clsx(
             "flex items-center gap-2",
-            iconPosition === "right" && "flex-row-reverse"
+            iconPosition === "right" && "flex-row-reverse",
           )}
         >
           {icon && <span className="text-lg">{icon}</span>}
@@ -114,7 +114,7 @@ export const Button: React.FC<ButtonProps> = ({
           "hover:opacity-30",
           variant === "primary" && "bg-blue-400/30",
           variant === "danger" && "bg-red-400/30",
-          variant === "glass" && "bg-white/10"
+          variant === "glass" && "bg-white/10",
         )}
       />
     </button>

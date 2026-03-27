@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import OTPInputBox from "../components/OTPInputBox";
 import toast from "react-hot-toast";
-import { Form, useNavigate, useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useOTP } from "../hooks/useOTP";
 import OTPTimer from "../components/OTPTimer";
 import { Button } from "../components/ui/Button";
@@ -10,9 +10,12 @@ const LoginOTP = () => {
   const otp_length = 6;
   const [ttl, setTtl] = useState<number>(30);
   const { email } = useParams<{ email: string }>();
+  const [searchParams] = useSearchParams();
+  const paramsValue = searchParams.get("otp");
+
   const [value, setValue] = useState(new Array(otp_length).fill(""));
   const isOtpComplete = value.every((digit) => digit !== "");
-  const navigate = useNavigate();
+
   if (!email) {
     return toast.error("Email is required!");
   }
@@ -23,10 +26,9 @@ const LoginOTP = () => {
     setTtl,
   });
   // handleVerifyOTP
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = (e: any) => {
+    e.preventDefault();
     VerifyOTP("/verify-login-otp");
-    navigate("/");
-    window.location.reload();
   };
   // timer count down for otp
   useEffect(() => {
@@ -40,15 +42,16 @@ const LoginOTP = () => {
   return (
     <section className="min-h-[80vh] flex justify-center items-center px-1">
       <form
-        onSubmit={() => handleVerifyOTP()}
+        onSubmit={(e) => handleVerifyOTP(e)}
         className="text-center border border-[#c4c4c4] p-2 sm:p-4 rounded-[5px] w-full max-w-[600px]"
       >
-        <div className="mb-16">
+        <div className="mb-12">
           <h2 className="text-[15px] md:text-3xl font-bold">Verify Login</h2>
           <p className="text-[14px] md:text-[16px]">
             Please enter the verification OTP we sent to
           </p>
           <p className="text-[14px] text-[#febd2f]">{email}</p>
+          <h3 className="text-red-600">{paramsValue}</h3>
         </div>
         <OTPInputBox otpvalue={value} setValue={setValue} />
         <Button

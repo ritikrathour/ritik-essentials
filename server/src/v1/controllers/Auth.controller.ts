@@ -16,13 +16,11 @@ import {
   OTP_BLOCK_DURATION,
   emailVerificationToken,
   GENERATE_OTP,
-  LOGIN_OTP_HTML_TEMPLATE,
   MAX_OTP_ATTEMPTS,
   OTP_EXPIRY,
   RESEND_COOLDOWN,
   RESEND_OTP_HTML_TEMPLATE,
   VERIFICATION_EXPIRY,
-  VERIFICATION_HTML_TEMPLATE,
   FORGET_PASS_OTP_HTML_TEMPLATE,
 } from "../../libs/Constants";
 // utils and services
@@ -139,20 +137,20 @@ const Register = AsyncHandler(async (req: Request, res: Response) => {
     email,
   );
   // Send verification email
-  const verificationURL = `${config.frontendUrl}/verify-email?token=/${emailVerificationToken}`;
+  // const verificationURL = `${config.frontendUrl}/verify-email?token=/${emailVerificationToken}`;
 
-  const emailSent = await SendEmail(
-    email,
-    "Verify Your Email Address",
-    VERIFICATION_HTML_TEMPLATE(name, verificationURL),
-  );
-  if (!emailSent) {
-    throw new ApiError(500, "Sending email failed...", false);
-  }
+  // const emailSent = await SendEmail(
+  //   email,
+  //   "Verify Your Email Address",
+  //   VERIFICATION_HTML_TEMPLATE(name, verificationURL),
+  // );
+  // if (!emailSent) {
+  //   throw new ApiError(500, "Sending email failed...", false);
+  // }
   res.json(
     new ApiResponse(
       201,
-      { email },
+      { emailVerificationToken },
       "Registration successful. Please check your email to verify your account.",
     ),
   );
@@ -182,20 +180,10 @@ const VerifyEmail = AsyncHandler(async (req: Request, res: Response) => {
   await redisClient.del(getVerificationKey(token as string));
   await redisClient.del(getUserKey(email));
   // Generate JWT tokens
-  const JWTAccessToken = GENERATE_ACCESSTOKEN({ email: "ritik@gmail.com" });
-  const JWTRefreshToken = GENERATE_REFRESHTOKEN({
-    email: "ritik@gmail.com",
-    name: "ritik",
-    role: "customer",
-  });
+  const JWTAccessToken = GENERATE_ACCESSTOKEN({ email });
+  const JWTRefreshToken = GENERATE_REFRESHTOKEN(user);
   // Store verified user permanently in mongodb
-  const savedUser = await UserModel.create({
-    email: "ritik@gmail.com",
-    password: "Ritik1@",
-    name: "ritik",
-    role: "customer",
-    isEmailVerified: false,
-  });
+  const savedUser = await UserModel.create(user);
   savedUser.refreshToken = JWTRefreshToken;
   await savedUser.save();
   const userObj = savedUser.toObject() as any;
@@ -238,18 +226,18 @@ const Login = AsyncHandler(async (req: Request, res: Response) => {
   const otp = GENERATE_OTP();
   await redisClient.setEx(getOTPkey(email, "login"), OTP_EXPIRY, otp);
   // send email
-  const SentEmailOTP = await SendEmail(
-    email,
-    "Login OTP Verification",
-    LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp)),
-  );
-  if (!SentEmailOTP) {
-    throw new ApiError(500, "Failed to send OTP", false);
-  }
+  // const SentEmailOTP = await SendEmail(
+  //   email,
+  //   "Login OTP Verification",
+  //   LOGIN_OTP_HTML_TEMPLATE(checkUser.name, parseInt(otp)),
+  // );
+  // if (!SentEmailOTP) {
+  //   throw new ApiError(500, "Failed to send OTP", false);
+  // }
   res.json(
     new ApiResponse(
       200,
-      { email },
+      { otp },
       "We sent OTP to your email. Please verify to complete login.",
     ),
   );
@@ -381,18 +369,18 @@ const ReSendOTP = AsyncHandler(async (req: Request, res: Response) => {
     currAttempts.toString(),
   );
   // // send email with otp
-  const sentEmailOTP = await SendEmail(
-    email,
-    type + " OTP",
-    RESEND_OTP_HTML_TEMPLATE(parseInt(otp), type),
-  );
-  if (!sentEmailOTP) {
-    // Clean up Redis if sending fails
-    await redisClient.del(getOTPkey(email, type));
-    await redisClient.del(getOTPCooldownKey(email, type));
-    await redisClient.del(getOTPAttemptsKey(email, type));
-    throw new ApiError(500, "Failed to send OTP", false);
-  }
+  // const sentEmailOTP = await SendEmail(
+  //   email,
+  //   type + " OTP",
+  //   RESEND_OTP_HTML_TEMPLATE(parseInt(otp), type),
+  // );
+  // if (!sentEmailOTP) {
+  //   // Clean up Redis if sending fails
+  //   await redisClient.del(getOTPkey(email, type));
+  //   await redisClient.del(getOTPCooldownKey(email, type));
+  //   await redisClient.del(getOTPAttemptsKey(email, type));
+  //   throw new ApiError(500, "Failed to send OTP", false);
+  // }
   // Get TTL for client information
   const ttl = await redisClient.ttl(getOTPkey(email, type));
   res.json(new ApiResponse(200, { otp, ttl }, "OTP resent successfully"));

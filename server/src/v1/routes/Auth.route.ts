@@ -17,7 +17,10 @@ authRoute.route("/register").post(authLimiter, Register);
 authRoute.route("/login").post(authLimiter, Login);
 // authLimiter
 authRoute.route("/verify-email").get(authLimiter, VerifyEmail);
-authRoute.route("/verify-login-otp").post(authLimiter, VerifyLogInOTP);
+authRoute.route("/verify-login-otp").post(
+  // authLimiter
+  VerifyLogInOTP,
+);
 // authLimiter
 authRoute.route("/resend-otp").post(authLimiter, ReSendOTP);
 authRoute.route("/refresh-token").post(authLimiter, RefreshAccessToken);

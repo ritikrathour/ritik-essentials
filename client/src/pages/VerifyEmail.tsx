@@ -1,37 +1,41 @@
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Send } from "lucide-react";
 import { AxiosInstense } from "../services/AxiosInstance";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "../components/ui/Button";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-store/Store";
+import axios from "axios";
 const VerifyEmail = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get("token");
+  const verifyTokenURI = useSelector((state: RootState) => state.user.token);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  useEffect(() => {
-    const verifyEmail = async () => {
-      setIsVerifying(true);
-      try {
-        const { data } = await AxiosInstense.get(
-          `/verify-email/?token=${token}`,
-          { withCredentials: true },
-        );
-        toast.success(
-          data.response?.data?.message || "Email verified successfully!",
-        );
-        setIsVerifying(false);
-        navigate("/"); // redirect to home
-      } catch (error) {
-        console.log(error);
-        toast.error("Invalid or expired verification link.");
-        setIsVerifying(false);
-        navigate("/");
-      }
-    };
-
-    if (token) verifyEmail();
-  }, [token, navigate]);
+  const verifyEmail = async () => {
+    setIsVerifying(true);
+    try {
+      const { data } = await AxiosInstense.get(
+        `/verify-email/?token=${verifyTokenURI!}`,
+        { withCredentials: true },
+      );
+      toast.success(
+        data.response?.data?.message || "Email verified successfully!",
+      );
+      sessionStorage.removeItem("register_message");
+      setIsVerifying(false);
+      navigate("/"); // redirect to home
+      window.location.reload();
+    } catch (error: any) {
+      console.log(error);
+      toast.error(
+        axios.isAxiosError(error)
+          ? error?.response?.data?.message || error?.response?.data?.error
+          : "Invalid or expired verification link.",
+      );
+      setIsVerifying(false);
+      navigate("/");
+    }
+  };
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-2">
       <div className="bg-white/40 backdrop-blur-lg rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
@@ -51,8 +55,12 @@ const VerifyEmail = () => {
         </p>
 
         <div className="flex flex-col gap-3">
-          <Button type="button" isLoading={isVerifying}>
-            {isVerifying ? "Verifying..." : "Please Check your Email box."}
+          <Button
+            type="button"
+            isLoading={isVerifying}
+            onClick={() => verifyEmail()}
+          >
+            {isVerifying ? "Verifying..." : "Please Click here to Verify."}
           </Button>
           <p className="text-[14px] mt-2">
             Back to home?{" "}

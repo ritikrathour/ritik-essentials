@@ -5,7 +5,6 @@ import { redisClient } from "./libs/RedisClient";
 import { config } from "./config";
 import { logger } from "./config/Logger";
 import app from "./app";
-
 const PORT = config.port || 5000;
 // db connect
 connectDB();
