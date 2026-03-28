@@ -81,7 +81,10 @@ const VendorHeader = () => {
                 <div className="w-10 h-10 bg-white rounded-full overflow-hidden">
                   <img
                     className=" object-cover border"
-                    src={"./assets/girl.png"}
+                    src={
+                      user?.user?.avatar ||
+                      "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3383.jpg?semt=ais_incoming&w=740&q=80"
+                    }
                     alt={user?.user?.email}
                   />
                 </div>
