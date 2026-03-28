@@ -189,7 +189,7 @@ export const OptimizedImage: React.FC<IOptimizedImage> = ({
         {currentSrc && loadState === "loaded" && (
           <img
             src={currentSrc}
-            className="w-full h-full transition-opacity duration-300 "
+            className="w-full h-full transition-opacity duration-300 object-fill!"
             alt={alt}
             sizes={sizes}
             srcSet={srcSet}
