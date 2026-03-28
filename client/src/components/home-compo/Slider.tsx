@@ -59,7 +59,7 @@ const Slider = () => {
                 </Link>
               </div>
               <div
-                className={`lg:w-[600px] relative hidden md:block h-[300px]  
+                className={`lg:w-[600px] relative hidden md:block h-[400px]  
                 `}
               >
                 <OptimizedImage
