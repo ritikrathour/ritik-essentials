@@ -19,7 +19,7 @@ const WishlistCard: React.FC<IItem> = ({ product, onRemove, state }) => {
     <div className="bg-white shadow-sm border border-[#c4c4c4] rounded-xl overflow-hidden flex flex-col">
       <Link
         to={`/product-details/${product?._id}`}
-        className="w-full h-52 block"
+        className="w-full h-72 block"
       >
         <OptimizedImage
           className="object-cover"

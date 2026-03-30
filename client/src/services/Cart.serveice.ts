@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import {
   IAddToCartPayload,
   IUpdateCartItemPayload,
@@ -12,6 +13,7 @@ export const CartApi = {
   addToCart: async (payload: IAddToCartPayload) => {
     try {
       const { data } = await AxiosInstense.post(`/cart/item`, payload);
+      toast.success(data?.message);
       return data?.data;
     } catch (error) {
       console.log(error);
@@ -22,6 +24,7 @@ export const CartApi = {
       `/cart/item/update-quantity/${payload?.cartItemId}`,
       payload,
     );
+    toast.success(data?.message);
     return data?.data;
   },
   removeItemFromCart: async (payload: { itemId: string }) => {
@@ -29,10 +32,12 @@ export const CartApi = {
       `/cart/item/${payload.itemId}`,
       {},
     );
+    toast.success(data?.message);
     return data?.data;
   },
   clearCart: async () => {
     const { data } = await AxiosInstense.delete("/cart/clear", {});
+    toast.success(data?.message);
     return data?.data;
   },
 };

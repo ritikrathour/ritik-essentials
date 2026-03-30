@@ -9,15 +9,16 @@ import {
 } from "../redux-store/WishListSlice";
 import { RootState } from "../redux-store/Store";
 export const useWishList = () => {
-  const { isAuthenticate, wishList, totalItems } = useSelector(
+  const { wishList, totalItems } = useSelector(
     (state: RootState) => state.whisList,
   );
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const addToWishListMutation = useMutation({
     mutationKey: productKeys.favProduct(),
     mutationFn: (payload: any) =>
-      isAuthenticate
+      isAuthenticated
         ? ProductApi.addToWishList(payload)
         : Promise.resolve(null),
     onMutate: (data) => {
@@ -27,7 +28,7 @@ export const useWishList = () => {
       if (data) {
         dispatch(
           setWhisList({
-            isAuthenticate: isAuthenticate,
+            isAuthenticate: isAuthenticated,
             wishList: [...wishList, data?.product],
             totalItems: totalItems + 1,
           }),
@@ -39,13 +40,11 @@ export const useWishList = () => {
   const removeToWishListMutaion = useMutation({
     mutationKey: productKeys.favProduct(),
     mutationFn: (prodId: string) =>
-      isAuthenticate
+      isAuthenticated
         ? ProductApi.removeFromWishList(prodId)
         : Promise.resolve(null),
     onMutate: (prodId) => dispatch(removeFromWishListLocal({ prodId })),
     onSuccess: (data) => {
-      console.log("hello");
-
       if (data) {
         queryClient.invalidateQueries({ queryKey: productKeys.favProduct() });
       }
@@ -58,7 +57,7 @@ export const useWishList = () => {
     removeToWishList: removeToWishListMutaion.mutate,
     isRemovingToWishList: addToWishListMutation.isPending,
     isRemovingToWishListError: addToWishListMutation.error,
-    isAuthenticate,
+    isAuthenticated,
     wishList,
     totalItems,
   };

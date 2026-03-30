@@ -152,6 +152,7 @@ export const ProductApi = {
       const { data } = await AxiosInstense.post(`/fav-product`, {
         productId: payload._id,
       });
+      toast.success(data?.message);
       return data?.data;
     } catch (error) {
       console.log(error);
