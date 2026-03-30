@@ -30,7 +30,7 @@ const CartItem: React.FC<IItem> = ({ item }) => {
                 objectFit="contain"
                 className=""
                 alt={item.name}
-                src="../assets/cola.avif"
+                src={item.imageUrl}
               />
             </div>
           </Link>
