@@ -69,7 +69,7 @@ const Login = () => {
           Welcome Back
         </h2>
         <p className="text-[14px] text-center">
-          For Demo credentials: test@gmail.com / password123
+          For Demo credentials: test@gmail.com / Password12@
         </p>
         <form
           onSubmit={(e) => handleLogin(e)}

@@ -61,7 +61,7 @@ const ProfileDropDown = ({
               <div className="w-[38px] h-[38px] flex items-center justify-center cursor-pointer overflow-hidden rounded-full">
                 <img
                   className=" object-cover border rounded-full"
-                  src={"./assets/girl.png"}
+                  src={user?.avatar}
                   alt={user?.email}
                 />
               </div>
