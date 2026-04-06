@@ -7,7 +7,7 @@ import { IProdStatus } from "../types/Product.type";
 export const validatePaginationQuery = (query: any) => {
   return {
     page: Math.max(1, parseInt(query.page) || 1),
-    limit: Math.min(100, Math.max(1, parseInt(query.limit) || 10)),
+    limit: Math.min(100, Math.max(1, parseInt(query.limit) || 20)),
     sortOrder: query.sortOrder === "asc" ? "asc" : "desc",
     search: query.search?.trim(),
     category: query.category?.trim(),

@@ -1,16 +1,7 @@
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ProductApi } from "../services/Product.service";
 import { productKeys } from "../TanstackQuery/Querykeys";
-import {
-  IProdStatus,
-  IProduct,
-  IProductFormData,
-} from "../utils/Types/Product.types";
+import { IProdStatus, IProductFormData } from "../utils/Types/Product.types";
 type updateStatus = {
   productId: string;
   status: IProdStatus;
@@ -105,12 +96,13 @@ export const useProduct = () => {
     });
     return { data, isError, error, isPending, createCategory };
   };
-  const getVendorProducts = (url: string, vendor: boolean) => {
+  const getVendorProducts = (url: string, vendor: boolean, page: number) => {
     const { data, error, isError, isLoading, refetch } = useQuery({
-      queryKey: productKeys.vendorProds(),
+      queryKey: productKeys.vendorProds(page),
       queryFn: () => ProductApi.getProductsByVendor(url),
       retry: 1,
       enabled: vendor,
+      placeholderData: (prev) => prev,
       refetchOnWindowFocus: false,
     });
     return { data, error, isError, isLoading, refetch };

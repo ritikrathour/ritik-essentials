@@ -4,11 +4,9 @@ import { IVendorProucts } from "../../utils/Types/Vendor.types";
 import { OptimizedImage } from "../ui/OptimizedImage";
 import { Link } from "react-router-dom";
 import { IProdStatus } from "../../utils/Types/Product.types";
-import { OverlayBackdrop } from "../ui/OverlayBackdrop";
 interface IProductProps {
   product: IVendorProucts;
   onStatusToggle: (id: string, status: IProdStatus) => void;
-  onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   isPending: boolean;
   isUpdatingStatus: boolean;
@@ -16,7 +14,6 @@ interface IProductProps {
 export const ProductRow: React.FC<IProductProps> = ({
   product,
   onStatusToggle,
-  onEdit,
   onDelete,
   isPending,
   isUpdatingStatus,
@@ -41,7 +38,6 @@ export const ProductRow: React.FC<IProductProps> = ({
   };
 
   const stockStatus = getStockStatus(product.stock);
-
   return (
     <tr className="border-b border-gray-200 hover:bg-gray-50">
       <td className="px-6 py-4">
@@ -50,7 +46,7 @@ export const ProductRow: React.FC<IProductProps> = ({
             <OptimizedImage
               className="w-[50px]! h-[55px]! rounded-lg border border-[#c4c4c4]"
               alt={product.sku}
-              src="../public/assets/cola.avif"
+              src={product?.images && product?.images[0]?.image}
             />
           </Link>
           <div className="ml-4">
@@ -87,7 +83,7 @@ export const ProductRow: React.FC<IProductProps> = ({
           onClick={() =>
             onStatusToggle(
               product._id,
-              product.status === "draft" ? "published" : "draft"
+              product.status === "draft" ? "published" : "draft",
             )
           }
           className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 cursor-pointer ${
@@ -129,7 +125,6 @@ export const ProductRow: React.FC<IProductProps> = ({
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
               <button
                 onClick={() => {
-                  onEdit(product._id);
                   setShowMenu(false);
                 }}
                 className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 "

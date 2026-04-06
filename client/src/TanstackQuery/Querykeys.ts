@@ -10,7 +10,7 @@ export const productKeys = {
   productId: (id: string) => [...productKeys.all, id] as const,
   brands: () => [...productKeys.all, "brands"],
   favProduct: () => [...productKeys.all, "fav-product"],
-  vendorProds: () => [...productKeys.all, "vendor"],
+  vendorProds: (url?: number) => [...productKeys.all, "vendor", url],
   vendorProductById: (productId: string) => [...productKeys.all, productId],
 };
 export const userKeys = {

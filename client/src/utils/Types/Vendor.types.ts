@@ -5,7 +5,7 @@ export interface IVendorProucts {
   price: number;
   originalPrice: number;
   category: string;
-  image: string;
+  images: any;
   stock: number;
   label: string;
   status: "published" | "draft" | "out_of_stock";

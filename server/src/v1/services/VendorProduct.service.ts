@@ -1,15 +1,16 @@
 import { FilterQuery } from "mongoose";
-import { getProductFiltersKeyList, productExpiry } from "../../libs/Redis_keys";
+import { productExpiry } from "../../libs/Redis_keys";
 import { redisClient } from "../../libs/RedisClient";
 import { IProduct } from "../../types/Product.type";
 import ProductModel from "../models/Product.model";
 export const VendorProduct = {
   async getProduct(filters: any) {
     // first get products from redis cache
-    // const products = await redisClient.get(getProductFiltersKeyList(filters))
-    // if(products){
-    //     return JSON.parse(products)
-    // }
+    const cacheKey = `products:${filters?.vendorId}:page=${filters?.page}:limit=${filters?.limit}:category=${filters?.category || "all"}`;
+    const VendorProducts = await redisClient.get(cacheKey);
+    if (VendorProducts) {
+      return JSON.parse(VendorProducts);
+    }
     const { category, limit, page, search, status, sortOrder, vendorId } =
       filters;
     //   build query filter
@@ -34,8 +35,8 @@ export const VendorProduct = {
     // execute query
     const [products, total] = await Promise.all([
       ProductModel.find(query)
-        .sort(sortOrder || "asc")
         .skip(skip)
+        .sort({ createdAt: -1 })
         .limit(limit)
         .lean(),
       ProductModel.countDocuments(query),
@@ -44,7 +45,7 @@ export const VendorProduct = {
     const totalPages = Math.ceil(total / limit);
     // structure the result
     const result = {
-      data: products as IProduct[],
+      data: products,
       pagination: {
         page,
         limit,
@@ -53,11 +54,7 @@ export const VendorProduct = {
       },
     };
     // cache the reuslt
-    // await redisClient.setEx(
-    //   getProductFiltersKeyList(filters),
-    //   productExpiry,
-    //   JSON.stringify(result)
-    // );
+    await redisClient.setEx(cacheKey, productExpiry, JSON.stringify(result));
     return result;
   },
 };

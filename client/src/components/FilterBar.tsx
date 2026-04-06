@@ -32,9 +32,15 @@ export const FilterBar = ({ filters, onFilterChange }: any) => {
           className="px-4 py-2 border border-gray-300 rounded-md focus:outline-1 outline-[black]"
         >
           <option value="all">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-          <option value="out_of_stock">Out of Stock</option>
+          <option key="publised" value="publised">
+            Publised
+          </option>
+          <option key="draft" value="draft">
+            Draft
+          </option>
+          <option key="out of stock" value="out_of_stock">
+            Out of Stock
+          </option>
         </select>
 
         <select
