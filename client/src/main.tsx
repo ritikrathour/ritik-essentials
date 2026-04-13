@@ -1,7 +1,6 @@
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Provider } from "react-redux";
@@ -30,6 +29,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <App />
       </QueryClientProvider>
     </Provider>
-  </BrowserRouter>
+  </BrowserRouter>,
   // </React.StrictMode>
 );

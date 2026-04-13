@@ -23,7 +23,7 @@ export const GetVendorDashBoard = AsyncHandler(
       res.json(
         new ApiResponse(
           200,
-          cachedDashboard,
+          JSON.parse(cachedDashboard),
           "Vendor dashboard fetched succefully!",
         ),
       );

@@ -7,6 +7,7 @@ export const VendorProductsApi = {
   getVendorDashboard: async () => {
     try {
       const { data } = await AxiosInstense.get("/dashboard");
+      console.log(data);
       return data?.data;
     } catch (error) {
       throw error;

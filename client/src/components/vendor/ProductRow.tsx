@@ -42,7 +42,7 @@ export const ProductRow: React.FC<IProductProps> = ({
     <tr className="border-b border-gray-200 hover:bg-gray-50">
       <td className="px-6 py-4">
         <div className="flex items-center">
-          <Link to={`/products/${product?._id}`}>
+          <Link to={`/product-details/${product?._id}`}>
             <OptimizedImage
               className="w-[50px]! h-[55px]! rounded-lg border border-[#c4c4c4]"
               alt={product.sku}
