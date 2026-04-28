@@ -1,10 +1,4 @@
-import {
-  ChevronLeft,
-  ChevronRight,
-  HeartIcon,
-  Minus,
-  Plus,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { lazy, memo, useCallback, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Link, useParams } from "react-router-dom";
@@ -35,7 +29,6 @@ const ProductDetails = () => {
   const { addTocart, isAddingToCart } = useCart();
   const { product, error, isError, isLoading, refetch } =
     useProduct().getProductById(id, `/product-details/${id}`);
-  const [isFill, setIsFill] = useState(false);
   // handleClickPrev
   const handleClickPrev = useCallback(() => {
     if (imageIndex === 0) return;
@@ -48,8 +41,11 @@ const ProductDetails = () => {
     price: product?.price,
     name: product?.name,
     vendorId: product?.vendor,
-    imageUrl: product?.images,
-    rating: product?.rating,
+    imageUrl: product?.images && product.images[0]?.image,
+    rating: product?.rating || {
+      avarage: 0,
+      count: 0,
+    },
   };
   const handleBuy = () => {
     addTocart(cartItemPayload);
@@ -130,11 +126,9 @@ const ProductDetails = () => {
             <div className="flex gap-3 items-center mt-4">
               {/* Add to Cart <ChevronRight /> */}
               <AddToCartButton product={{ ...product, quantity }} />
-              <Link
-                to={isAuthenticated ? "/checkout" : "/login"}
-                onClick={handleBuy}
-              >
+              <Link to={isAuthenticated ? "/checkout" : "/login"}>
                 <Button
+                  onClick={handleBuy}
                   disabled={isAddingToCart}
                   variant="dark"
                   type="button"
