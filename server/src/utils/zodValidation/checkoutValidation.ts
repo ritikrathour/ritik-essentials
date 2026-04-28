@@ -12,7 +12,7 @@ const OrderItem = z.object({
 const shippingAddressSchema = z.object({
   fullName: z.string().min(5, "Full name is required"),
   phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
-  email: z.literal(""),
+  email: z.email("Invalid email address").optional(),
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
   pinCode: z.string(),
