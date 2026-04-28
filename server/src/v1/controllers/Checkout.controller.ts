@@ -15,12 +15,12 @@ import { OrderStatus } from "../../types/Auth.type";
 // InitiateCheckout
 const InitiateCheckout = AsyncHandler(async (req: Request, res: Response) => {
   // validation
-  const { data, success, error } = CheckoutValidatation.safeParse(req.body);
-  if (!success) {
-    throw new ApiError(400, "validation error", false, error.message);
-  }
+  // const { data, success, error } = CheckoutValidatation.safeParse(req.body);
+  // if (!success) {
+  //   throw new ApiError(400, "validation error", false, error.message);
+  // }
   const userId = req.user._id;
-  const order = await CheckoutService.initiateCheckout(userId, data as any);
+  const order = await CheckoutService.initiateCheckout(userId, req.body as any);
   res.json(new ApiResponse(201, order, "Checkout initiated successfully"));
 });
 // fetch order by orderId for customer
